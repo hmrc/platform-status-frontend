@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,17 +12,23 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
-@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+package uk.gov.hmrc.platformstatusfrontend.services
 
-@contentHeader = {
-  <h1>@heading</h1>
+import org.mongodb.scala.MongoSocketException
+import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.mockito.MockitoSugar
+
+class StatusControllerSpec extends WordSpec with Matchers with MockitoSugar {
+
+  "iteration 2 status checker" should {
+    "connect to Mongo" in {
+      new StatusChecker().iteration2Status("mongodb://localhost:27017").isWorking shouldBe true
+    }
+    "fail to connect to Mongo" in {
+        new StatusChecker().iteration2Status("mongodb://not_there:27017").isWorking shouldBe false
+    }
+  }
+
 }
-
-@mainContent = {
-  <p>@message</p>
-}
-
-@govuk_wrapper(appConfig = appConfig, title = pageTitle, contentHeader = Some(contentHeader), mainContent = mainContent)
