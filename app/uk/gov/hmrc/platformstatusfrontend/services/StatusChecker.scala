@@ -66,7 +66,7 @@ class StatusChecker () {
 
   def checkMongoConnection(dbUrl: String): Boolean = {
     val mongoClient: MongoClient = MongoClient(dbUrl)
-    val database: MongoDatabase = mongoClient.getDatabase("platform-status-fe")
+    val database: MongoDatabase = mongoClient.getDatabase("platform-status-frontend")
     val collection: MongoCollection[Document] = database.getCollection("status");
 
     val doc: Document = Document("_id" -> 0, "name" -> "MongoDB")
