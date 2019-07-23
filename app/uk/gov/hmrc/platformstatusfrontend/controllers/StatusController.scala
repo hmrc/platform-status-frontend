@@ -31,6 +31,8 @@ class StatusController @Inject()(appConfig: AppConfig, mcc: MessagesControllerCo
 
   implicit val config: AppConfig = appConfig
 
+  val defaultLanding: Action[AnyContent] = Action.async { implicit request => Future.successful(Redirect(routes.StatusController.platformStatus())) }
+
   val platformStatus: Action[AnyContent] = Action.async { implicit request =>
     val statusMap = List( statusChecker.iteration1Status(),
                           statusChecker.iteration2Status(appConfig.dbUrl),

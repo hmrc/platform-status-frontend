@@ -1,3 +1,6 @@
 # microservice specific routes
 
+GET        /             uk.gov.hmrc.platformstatusfrontend.controllers.StatusController.defaultLanding
 GET        /status             uk.gov.hmrc.platformstatusfrontend.controllers.StatusController.platformStatus
+GET        /noise             uk.gov.hmrc.platformstatusfrontend.controllers.NoiseController.noise
+POST       /noise             uk.gov.hmrc.platformstatusfrontend.controllers.NoiseController.createNoise

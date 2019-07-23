@@ -20,28 +20,31 @@ import javax.inject.Singleton
 import org.mongodb.scala._
 import uk.gov.hmrc.platformstatusfrontend.MongoHelpers._
 import org.mongodb.scala.model.Filters._
+import play.api.Logger
 
 
 @Singleton
 class StatusChecker () {
 
-  val baseIteration1Status = PlatformStatus(name = "iteration1",
+
+
+  val baseIteration1Status = PlatformStatus(name = "iteration 1",
     isWorking = true,
     description = "Service up and running in the public zone.")
 
-  val baseIteration2Status = PlatformStatus(name = "iteration2",
+  val baseIteration2Status = PlatformStatus(name = "iteration 2",
     isWorking = true,
     description = "Read and write to Mongo in public zone")
 
-  val baseIteration3Status = PlatformStatus(name = "iteration3",
+  val baseIteration3Status = PlatformStatus(name = "iteration 3",
     isWorking = true,
     description = "Call through to service in protected zone that can read/write to protected Mongo")
 
-  val baseIteration4Status = PlatformStatus(name = "iteration4",
+  val baseIteration4Status = PlatformStatus(name = "iteration 4",
     isWorking = true,
     description = "Call through to service in protected zone that can call out to internet via squid")
 
-  val baseIteration5Status = PlatformStatus(name = "iteration5",
+  val baseIteration5Status = PlatformStatus(name = "iteration 5",
     isWorking = true,
     description = "Call through to service in protected zone that can call a HOD via DES")
 
@@ -58,9 +61,9 @@ class StatusChecker () {
     }
   }
 
-  def iteration3Status() = baseIteration3Status.copy(isWorking = false, reason = Some("Not yet implemented"))
-  def iteration4Status() = baseIteration3Status.copy(isWorking = false, reason = Some("Not yet implemented"))
-  def iteration5Status() = baseIteration3Status.copy(isWorking = false, reason = Some("Not yet implemented"))
+  def iteration3Status() = baseIteration3Status.copy(isWorking = false, reason = Some("Test not yet implemented"))
+  def iteration4Status() = baseIteration4Status.copy(isWorking = false, reason = Some("Test not yet implemented"))
+  def iteration5Status() = baseIteration5Status.copy(isWorking = false, reason = Some("Test not yet implemented"))
 
 
 
@@ -73,8 +76,12 @@ class StatusChecker () {
     try {
       collection.replaceOne(equal(fieldName = "_id", value = 0), doc).results(secondsToWait = 2)
     } catch {
-      case ex: Exception => throw new IllegalStateException("Failed to connect to MongoDB", ex)
+      case ex: Exception => {
+        Logger.warn("Failed to connect to Mongo")
+        throw new IllegalStateException("Failed to connect to MongoDB", ex)
+      }
     }
+    Logger.info("Successfully connected to Mongo")
     true
   }
 
