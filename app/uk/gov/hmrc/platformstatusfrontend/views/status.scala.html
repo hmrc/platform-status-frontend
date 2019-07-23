@@ -19,7 +19,7 @@
 @(statusList: List[PlatformStatus])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 
-@main_template(title = "Hello from platform-status-frontend") {
+@main_template(title = "Platform Status - what's up and what's not") {
     <h1>Hello from platform-status-frontend !</h1>
     <table>
     @for(status <- statusList) {
