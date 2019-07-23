@@ -36,6 +36,7 @@ class NoiseController @Inject()(appConfig: AppConfig, mcc: MessagesControllerCom
   extends FrontendController(mcc) {
 
   implicit val config: AppConfig = appConfig
+  val logger: Logger = Logger(this.getClass)
 
   val noiseForm: Form[NoiseRequest] = Form(
     mapping(
@@ -64,11 +65,11 @@ class NoiseController @Inject()(appConfig: AppConfig, mcc: MessagesControllerCom
   private def makeSomeNoise(request: NoiseRequest) = {
     for(i <- 1 to request.amount) {
       request.level match {
-        case "WARN" => Logger.warn(s"$i: " + request.message)
-        case "DEBUG" => Logger.debug(s"$i: " + request.message)
-        case "INFO" => Logger.info(s"$i: " + request.message)
-        case "TRACE" => Logger.trace(s"$i: " + request.message)
-        case _ => Logger.warn("Unrecognized log level")
+        case "WARN" => logger.warn(s"$i: " + request.message)
+        case "DEBUG" => logger.debug(s"$i: " + request.message)
+        case "INFO" => logger.info(s"$i: " + request.message)
+        case "TRACE" => logger.trace(s"$i: " + request.message)
+        case _ => logger.warn("Unrecognized log level")
       }
     }
   }

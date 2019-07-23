@@ -26,7 +26,7 @@
 
     @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.NoiseController.createNoise()){
         @CSRF.formField
-        @helper.select(noiseForm("level"), Seq("WARN" -> "WARN", "DEBUG" -> "DEBUG", "INFO" -> "INFO", "TRACE" -> "TRACE"))
+        @helper.select(noiseForm("level"), Seq("ERROR" -> "ERROR", "WARN" -> "WARN", "INFO" -> "INFO", "DEBUG" -> "DEBUG", "TRACE" -> "TRACE"))
         @helper.inputText(noiseForm("message"), args = 'size -> 60)
         @helper.inputText(noiseForm("amount"))
 

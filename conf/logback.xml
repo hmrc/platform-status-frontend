@@ -53,7 +53,7 @@
         <appender-ref ref="STDOUT"/>
     </logger>
 
-    <logger name="uk.gov.hmrc.platformstatusfrontend" level="TRACE">
+    <logger name="uk.gov.hmrc.platformstatusfrontend.controllers.NoiseController" level="TRACE">
         <appender-ref ref="STDOUT"/>
     </logger>
 
