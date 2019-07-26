@@ -16,10 +16,12 @@
 
 package uk.gov.hmrc.platformstatusfrontend.services
 
+import com.mongodb.client.model.UpdateOptions
 import javax.inject.Singleton
 import org.mongodb.scala._
 import uk.gov.hmrc.platformstatusfrontend.MongoHelpers._
 import org.mongodb.scala.model.Filters._
+import org.mongodb.scala.model.{ReplaceOptions, UpdateOptions}
 import play.api.Logger
 
 
@@ -42,7 +44,7 @@ class StatusChecker () {
 
   val baseIteration4Status = PlatformStatus(name = "iteration 4",
     isWorking = true,
-    description = "Call through to service in protected zone that can call out to internet via squid")
+    description = "Call out to internet via squid from a service in the public zone")
 
   val baseIteration5Status = PlatformStatus(name = "iteration 5",
     isWorking = true,
@@ -74,7 +76,7 @@ class StatusChecker () {
 
     val doc: Document = Document("_id" -> 0, "name" -> "MongoDB")
     try {
-      collection.replaceOne(equal(fieldName = "_id", value = 0), doc).results(secondsToWait = 2)
+      collection.replaceOne(equal(fieldName = "_id", value = 0), doc, ReplaceOptions().upsert(true)).results(secondsToWait = 2)
     } catch {
       case ex: Exception => {
         Logger.warn("Failed to connect to Mongo")
