@@ -17,31 +17,42 @@
 package uk.gov.hmrc.platformstatusfrontend.controllers
 
 import javax.inject.{Inject, Singleton}
+import play.api.Logger
 import play.api.mvc._
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
-import uk.gov.hmrc.platformstatusfrontend.services.StatusChecker
+import uk.gov.hmrc.platformstatusfrontend.services.{PlatformStatus, StatusChecker}
 import uk.gov.hmrc.platformstatusfrontend.views
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-
-import scala.concurrent.Future
+import play.api.libs.concurrent.{Futures, Timeout}
+import scala.concurrent.duration._
+import play.api.libs.concurrent.Futures._
+import PlatformStatus._
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class StatusController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, val statusChecker: StatusChecker)
+class StatusController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, val statusChecker: StatusChecker)(implicit executionContext: ExecutionContext, futures: Futures)
   extends FrontendController(mcc) {
 
   implicit val config: AppConfig = appConfig
 
-  val defaultLanding: Action[AnyContent] = Action.async { implicit request => Future.successful(Redirect(routes.StatusController.platformStatus())) }
+  def defaultLanding: Action[AnyContent] = Action.async { implicit request => Future.successful(Redirect(routes.StatusController.platformStatus())) }
 
-  val platformStatus: Action[AnyContent] = Action.async { implicit request =>
-    val statusMap = List( statusChecker.iteration1Status(),
-                          statusChecker.iteration2Status(appConfig.dbUrl),
-                          statusChecker.iteration3Status(),
-                          statusChecker.iteration4Status(),
-                          statusChecker.iteration5Status()
+  def platformStatus: Action[AnyContent] = Action.async { implicit request =>
 
-    )
-    Future.successful(Ok(views.html.status(statusMap)))
+    val iteration2Future = statusChecker.iteration2Status(appConfig.dbUrl)
+    val iteration3Future = statusChecker.iteration3Status()
+
+    for {
+      iter2 <- iteration2Future
+      iter3 <- iteration3Future
+
+      statusMap = List(statusChecker.iteration1Status(),
+        iter2,
+        iter3,
+        statusChecker.iteration4Status(),
+        statusChecker.iteration5Status()
+      )
+    } yield Ok(views.html.status(statusMap))
   }
 
 }

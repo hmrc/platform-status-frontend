@@ -16,75 +16,58 @@
 
 package uk.gov.hmrc.platformstatusfrontend.services
 
+import com.google.inject.Inject
 import com.mongodb.client.model.UpdateOptions
 import javax.inject.Singleton
 import org.mongodb.scala._
-import uk.gov.hmrc.platformstatusfrontend.MongoHelpers._
 import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model.{ReplaceOptions, UpdateOptions}
 import play.api.Logger
+import play.api.libs.concurrent.{Futures, Timeout}
+import play.api.libs.concurrent.Futures._
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.platformstatusfrontend.connectors.BackendConnector
 
+import scala.concurrent.duration._
+import PlatformStatus._
+
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success}
 
 @Singleton
-class StatusChecker () {
+class StatusChecker @Inject()(backendConnector: BackendConnector) extends Timeout {
 
-
-
-  val baseIteration1Status = PlatformStatus(name = "iteration 1",
-    isWorking = true,
-    description = "Service up and running in the public zone.")
-
-  val baseIteration2Status = PlatformStatus(name = "iteration 2",
-    isWorking = true,
-    description = "Read and write to Mongo in public zone")
-
-  val baseIteration3Status = PlatformStatus(name = "iteration 3",
-    isWorking = true,
-    description = "Call through to service in protected zone that can read/write to protected Mongo")
-
-  val baseIteration4Status = PlatformStatus(name = "iteration 4",
-    isWorking = true,
-    description = "Call out to internet via squid from a service in the public zone")
-
-  val baseIteration5Status = PlatformStatus(name = "iteration 5",
-    isWorking = true,
-    description = "Call through to service in protected zone that can call a HOD via DES")
 
 
   def iteration1Status(): PlatformStatus = baseIteration1Status
 
-
-  def iteration2Status(dbUrl: String): PlatformStatus = {
-    try {
-      checkMongoConnection(dbUrl)
-      baseIteration2Status
-    } catch {
-      case ex: IllegalStateException => baseIteration2Status.copy(isWorking = false, reason = Some(ex.getMessage))
+  def iteration2Status(dbUrl: String)(implicit executionContext: ExecutionContext, futures: Futures): Future[PlatformStatus] = {
+    checkMongoConnection(dbUrl).withTimeout(2.seconds).recoverWith {
+      case ex: Exception => {
+        Logger.warn("Failed to connect to Mongo")
+        Future(baseIteration2Status.copy(isWorking = false, reason = Some(ex.getMessage)))
+      }
     }
   }
 
-  def iteration3Status() = baseIteration3Status.copy(isWorking = false, reason = Some("Test not yet implemented"))
+  private def checkMongoConnection(dbUrl: String)(implicit executionContext: ExecutionContext, futures: Futures): Future[PlatformStatus] = {
+    val mongoClient: MongoClient = MongoClient(dbUrl)
+    val database: MongoDatabase = mongoClient.getDatabase("platform-status-frontend")
+    val collection: MongoCollection[Document] = database.getCollection("status");
+    val doc: Document = Document("_id" -> 0, "name" -> "MongoDB")
+
+    for {
+      _ <- collection.replaceOne(equal(fieldName = "_id", value = 0), doc, ReplaceOptions().upsert(true)).toFuture()
+      result = baseIteration2Status
+      // TODO - handle error states better
+    } yield result
+  }
+
+  def iteration3Status()(implicit headerCarrier: HeaderCarrier): Future[PlatformStatus] = backendConnector.iteration3Status()
+
   def iteration4Status() = baseIteration4Status.copy(isWorking = false, reason = Some("Test not yet implemented"))
   def iteration5Status() = baseIteration5Status.copy(isWorking = false, reason = Some("Test not yet implemented"))
 
 
-
-  def checkMongoConnection(dbUrl: String): Boolean = {
-    val mongoClient: MongoClient = MongoClient(dbUrl)
-    val database: MongoDatabase = mongoClient.getDatabase("platform-status-frontend")
-    val collection: MongoCollection[Document] = database.getCollection("status");
-
-    val doc: Document = Document("_id" -> 0, "name" -> "MongoDB")
-    try {
-      collection.replaceOne(equal(fieldName = "_id", value = 0), doc, ReplaceOptions().upsert(true)).results(secondsToWait = 2)
-    } catch {
-      case ex: Exception => {
-        Logger.warn("Failed to connect to Mongo")
-        throw new IllegalStateException("Failed to connect to MongoDB", ex)
-      }
-    }
-    Logger.info("Successfully connected to Mongo")
-    true
-  }
 
 }

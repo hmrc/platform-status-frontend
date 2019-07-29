@@ -19,7 +19,7 @@ object AppDependencies {
     "org.jsoup"               %  "jsoup"                    % "1.10.2"                % "test",
     "com.typesafe.play"       %% "play-test"                % current                 % "test",
     "org.pegdown"             %  "pegdown"                  % "1.6.0"                 % "test, it",
-    "org.mockito"             %  "mockito-core"             % "2.2.6"                 % Test,
+    "org.mockito"             %  "mockito-core"             % "2.28.2"                 % Test,
     "org.scalatestplus.play"  %% "scalatestplus-play"       % "3.1.2"                 % "test, it"
   )
 

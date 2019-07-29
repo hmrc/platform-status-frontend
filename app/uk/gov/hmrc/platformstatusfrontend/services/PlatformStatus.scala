@@ -27,4 +27,26 @@ case class PlatformStatus(name: String,
 
 object PlatformStatus {
   implicit val mongoFormat: OFormat[PlatformStatus] = Json.format[PlatformStatus]
+
+  val baseIteration1Status = PlatformStatus(name = "iteration 1",
+    isWorking = true,
+    description = "Service up and running in the public zone.")
+
+  val baseIteration2Status = PlatformStatus(name = "iteration 2",
+    isWorking = true,
+    description = "Read and write to Mongo in public zone")
+
+  val baseIteration3Status = PlatformStatus(name = "iteration 3",
+    isWorking = true,
+    description = "Call through to service in protected zone that can read/write to protected Mongo")
+
+  val baseIteration4Status = PlatformStatus(name = "iteration 4",
+    isWorking = true,
+    description = "Call out to internet via squid from a service in the public zone")
+
+  val baseIteration5Status = PlatformStatus(name = "iteration 5",
+    isWorking = true,
+    description = "Call through to service in protected zone that can call a HOD via DES")
+
+
 }

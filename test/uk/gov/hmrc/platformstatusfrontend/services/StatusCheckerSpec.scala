@@ -16,19 +16,46 @@
 
 package uk.gov.hmrc.platformstatusfrontend.services
 
+import akka.actor.ActorSystem
 import org.mongodb.scala.MongoSocketException
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{Matchers, WordSpec}
 import org.scalatest.mockito.MockitoSugar
+import play.api.libs.concurrent.{DefaultFutures, Futures}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.platformstatusfrontend.connectors.BackendConnector
+import org.mockito.ArgumentMatchers._
+import org.scalatest.time.Span
 
-class StatusControllerSpec extends WordSpec with Matchers with MockitoSugar {
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.concurrent.duration._
+
+class StatusCheckerSpec extends WordSpec with Matchers with MockitoSugar with ScalaFutures {
+
+  private val testTimeoutDuration: Span = 6 seconds // underlying method calls should timeout before this
+
+  private trait Setup {
+    implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
+    val backendConnectorMock = mock[BackendConnector]
+    implicit val futures: Futures = new DefaultFutures(ActorSystem.create)
+  }
 
   "iteration 2 status checker" should {
-    "connect to Mongo" in {
-      new StatusChecker().iteration2Status("mongodb://localhost:27017").isWorking shouldBe true
+    "connect to Mongo" in new Setup() {
+      whenReady(new StatusChecker(backendConnectorMock).iteration2Status("mongodb://localhost:27017"), timeout(testTimeoutDuration)) {
+        r =>
+          r shouldBe PlatformStatus.baseIteration2Status
+          r.isWorking shouldBe true
+      }
     }
-    "fail to connect to Mongo" in {
-        new StatusChecker().iteration2Status("mongodb://not_there:27017").isWorking shouldBe false
+    "fail to connect to Mongo" in new Setup() {
+      whenReady(new StatusChecker(backendConnectorMock).iteration2Status("mongodb://not_there:27017"), timeout(testTimeoutDuration)) {
+        r => r shouldBe PlatformStatus.baseIteration2Status.copy(isWorking = false, reason = Some("Timeout after 2 seconds"))
+          r.isWorking shouldBe false
+      }
     }
   }
+  // TODO - iteration3 tests
 
 }
