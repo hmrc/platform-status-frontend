@@ -60,7 +60,7 @@ class StatusControllerSpec extends WordSpec with Matchers with GuiceOneAppPerSui
     val dummyStatus = PlatformStatus("name", true, "description", Some("No reason"))
     when(statusChecker.iteration1Status()) thenReturn dummyStatus.copy(name = "it1")
     when(statusChecker.iteration2Status(anyString()) (any[ExecutionContext], any[Futures]) ) thenReturn Future(dummyStatus.copy(name = "it2"))
-    when(statusChecker.iteration3Status()(any[HeaderCarrier])) thenReturn Future(dummyStatus.copy(name = "it3"))
+    when(statusChecker.iteration3Status()(any[HeaderCarrier], any[ExecutionContext]  )) thenReturn Future(dummyStatus.copy(name = "it3"))
     when(statusChecker.iteration4Status()) thenReturn dummyStatus.copy(name = "it4")
     when(statusChecker.iteration5Status()) thenReturn dummyStatus.copy(name = "it5")
 

@@ -22,14 +22,17 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{Matchers, WordSpec}
 import org.scalatest.mockito.MockitoSugar
 import play.api.libs.concurrent.{DefaultFutures, Futures}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.platformstatusfrontend.connectors.BackendConnector
 import org.mockito.ArgumentMatchers._
 import org.scalatest.time.Span
+import PlatformStatus._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
+import org.mockito.Mockito._
+import org.mockito.ArgumentMatchers._
 
 class StatusCheckerSpec extends WordSpec with Matchers with MockitoSugar with ScalaFutures {
 
@@ -39,23 +42,37 @@ class StatusCheckerSpec extends WordSpec with Matchers with MockitoSugar with Sc
     implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
     val backendConnectorMock = mock[BackendConnector]
     implicit val futures: Futures = new DefaultFutures(ActorSystem.create)
+    val statusChecker = new StatusChecker(backendConnectorMock)
   }
 
   "iteration 2 status checker" should {
     "connect to Mongo" in new Setup() {
-      whenReady(new StatusChecker(backendConnectorMock).iteration2Status("mongodb://localhost:27017"), timeout(testTimeoutDuration)) {
+      whenReady(statusChecker.iteration2Status("mongodb://localhost:27017"), timeout(testTimeoutDuration)) {
         r =>
-          r shouldBe PlatformStatus.baseIteration2Status
+          r shouldBe baseIteration2Status
           r.isWorking shouldBe true
       }
     }
     "fail to connect to Mongo" in new Setup() {
-      whenReady(new StatusChecker(backendConnectorMock).iteration2Status("mongodb://not_there:27017"), timeout(testTimeoutDuration)) {
-        r => r shouldBe PlatformStatus.baseIteration2Status.copy(isWorking = false, reason = Some("Timeout after 2 seconds"))
+      whenReady(statusChecker.iteration2Status("mongodb://not_there:27017"), timeout(testTimeoutDuration)) {
+        r => r shouldBe baseIteration2Status.copy(isWorking = false, reason = Some("Timeout after 2 seconds"))
           r.isWorking shouldBe false
       }
     }
   }
-  // TODO - iteration3 tests
+  "iteration 3 status check" should{
+    "be happy when backend responds with a good result" in new Setup() {
+      when(backendConnectorMock.iteration3Status()) thenReturn Future(baseIteration3Status)
+      whenReady(statusChecker.iteration3Status(), timeout((testTimeoutDuration)) ){
+        result => result shouldBe baseIteration3Status
+      }
+    }
+    "not blow up when backend responds with a bad result" in new Setup() {
+      when(backendConnectorMock.iteration3Status()) thenReturn  Future.failed(Upstream5xxResponse("Borked", 500, 500))
+      whenReady(statusChecker.iteration3Status(), timeout((testTimeoutDuration)) ){
+        result => result shouldBe baseIteration3Status.copy(isWorking = false, reason = Some("Borked"))
+      }
+    }
+  }
 
 }

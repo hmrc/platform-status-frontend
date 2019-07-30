@@ -37,14 +37,14 @@ import scala.util.{Failure, Success}
 @Singleton
 class StatusChecker @Inject()(backendConnector: BackendConnector) extends Timeout {
 
-
+  val logger = Logger(this.getClass)
 
   def iteration1Status(): PlatformStatus = baseIteration1Status
 
   def iteration2Status(dbUrl: String)(implicit executionContext: ExecutionContext, futures: Futures): Future[PlatformStatus] = {
     checkMongoConnection(dbUrl).withTimeout(2.seconds).recoverWith {
       case ex: Exception => {
-        Logger.warn("Failed to connect to Mongo")
+        logger.warn("Failed to connect to Mongo")
         Future(baseIteration2Status.copy(isWorking = false, reason = Some(ex.getMessage)))
       }
     }
@@ -63,7 +63,14 @@ class StatusChecker @Inject()(backendConnector: BackendConnector) extends Timeou
     } yield result
   }
 
-  def iteration3Status()(implicit headerCarrier: HeaderCarrier): Future[PlatformStatus] = backendConnector.iteration3Status()
+  def iteration3Status()(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[PlatformStatus] = {
+    backendConnector.iteration3Status().recoverWith{
+      case ex: Exception => {
+        logger.warn("iteration3Status call to backend service failed.")
+        Future(baseIteration3Status.copy(isWorking = false, reason = Some(ex.getMessage)))
+      }
+    }
+  }
 
   def iteration4Status() = baseIteration4Status.copy(isWorking = false, reason = Some("Test not yet implemented"))
   def iteration5Status() = baseIteration5Status.copy(isWorking = false, reason = Some("Test not yet implemented"))
