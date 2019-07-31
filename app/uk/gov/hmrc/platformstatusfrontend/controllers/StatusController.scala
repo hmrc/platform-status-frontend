@@ -41,15 +41,17 @@ class StatusController @Inject()(appConfig: AppConfig, mcc: MessagesControllerCo
 
     val iteration2Future = statusChecker.iteration2Status(appConfig.dbUrl)
     val iteration3Future = statusChecker.iteration3Status()
+    val iteration4Future = statusChecker.iteration4Status()
 
     for {
       iter2 <- iteration2Future
       iter3 <- iteration3Future
+      iter4 <- iteration4Future
 
       statusMap = List(statusChecker.iteration1Status(),
         iter2,
         iter3,
-        statusChecker.iteration4Status(),
+        iter4,
         statusChecker.iteration5Status()
       )
     } yield Ok(views.html.status(statusMap))

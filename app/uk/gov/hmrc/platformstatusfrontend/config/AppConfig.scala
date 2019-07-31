@@ -31,4 +31,10 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
 
   val dbUrl = servicesConfig.getString("mongodb.uri")
 
+  val proxyProtocol: String = servicesConfig.getString("proxy.protocol")
+  val proxyHost: String = servicesConfig.getString("proxy.host")
+  val proxyPort: Integer = servicesConfig.getInt("proxy.port")
+  val proxyUsername: String = servicesConfig.getString("proxy.username")
+  val proxyPassword: String = servicesConfig.getString("proxy.password")
+  val proxyRequired: Boolean = servicesConfig.getBoolean("proxy.required")
 }

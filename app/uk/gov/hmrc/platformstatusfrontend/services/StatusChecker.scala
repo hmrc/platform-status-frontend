@@ -26,16 +26,16 @@ import play.api.Logger
 import play.api.libs.concurrent.{Futures, Timeout}
 import play.api.libs.concurrent.Futures._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.platformstatusfrontend.connectors.BackendConnector
+import uk.gov.hmrc.platformstatusfrontend.connectors.{BackendConnector, InternetConnector}
 
 import scala.concurrent.duration._
 import PlatformStatus._
+import play.api.libs.ws.WSResponse
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success}
 
 @Singleton
-class StatusChecker @Inject()(backendConnector: BackendConnector) extends Timeout {
+class StatusChecker @Inject()(backendConnector: BackendConnector, internetConnector: InternetConnector) extends Timeout {
 
   val logger = Logger(this.getClass)
 
@@ -64,7 +64,7 @@ class StatusChecker @Inject()(backendConnector: BackendConnector) extends Timeou
   }
 
   def iteration3Status()(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[PlatformStatus] = {
-    backendConnector.iteration3Status().recoverWith{
+    backendConnector.iteration3Status().recoverWith {
       case ex: Exception => {
         logger.warn("iteration3Status call to backend service failed.")
         Future(baseIteration3Status.copy(isWorking = false, reason = Some(ex.getMessage)))
@@ -72,7 +72,25 @@ class StatusChecker @Inject()(backendConnector: BackendConnector) extends Timeou
     }
   }
 
-  def iteration4Status() = baseIteration4Status.copy(isWorking = false, reason = Some("Test not yet implemented"))
+  def iteration4Status()(implicit executionContext: ExecutionContext, futures: Futures): Future[PlatformStatus] = {
+    for {
+      wsResult <- internetConnector.callTheWeb("http://www.bbc.co.uk").withTimeout(2.seconds).recoverWith {
+        case ex: Exception => {
+          logger.warn("Unable to call out via squid proxy")
+          Future(baseIteration4Status.copy(isWorking = false, reason = Some(ex.getMessage)))
+        }
+      }
+    } yield {
+      wsResult match {
+        case r: WSResponse => baseIteration4Status
+        case e: PlatformStatus => e
+        case _ => throw new IllegalStateException("That shouldn't happen")
+      }
+    }
+  }
+
+
+
   def iteration5Status() = baseIteration5Status.copy(isWorking = false, reason = Some("Test not yet implemented"))
 
 
