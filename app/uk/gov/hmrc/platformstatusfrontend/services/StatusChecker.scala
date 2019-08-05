@@ -39,6 +39,8 @@ class StatusChecker @Inject()(backendConnector: BackendConnector, internetConnec
 
   val logger = Logger(this.getClass)
 
+  val webTestEndpoint = "https://www.gov.uk/bank-holidays.json"
+
   def iteration1Status(): PlatformStatus = baseIteration1Status
 
   def iteration2Status(dbUrl: String)(implicit executionContext: ExecutionContext, futures: Futures): Future[PlatformStatus] = {
@@ -71,10 +73,9 @@ class StatusChecker @Inject()(backendConnector: BackendConnector, internetConnec
       }
     }
   }
-
   def iteration4Status()(implicit executionContext: ExecutionContext, futures: Futures): Future[PlatformStatus] = {
     for {
-      wsResult <- internetConnector.callTheWeb("https://www.gov.uk/bank-holidays.json").withTimeout(2.seconds).recoverWith {
+      wsResult <- internetConnector.callTheWeb(webTestEndpoint).withTimeout(2.seconds).recoverWith {
         case ex: Exception => {
           logger.warn("Unable to call out via squid proxy")
           Future(baseIteration4Status.copy(isWorking = false, reason = Some(ex.getMessage)))

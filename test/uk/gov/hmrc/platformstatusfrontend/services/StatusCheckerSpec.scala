@@ -77,14 +77,14 @@ class StatusCheckerSpec extends WordSpec with Matchers with MockitoSugar with Sc
   "iteration 4 outbound call via squid" should {
     "be happy when a response is received" in new Setup() {
       val fakeResponse = mock[WSResponse]
-      when(internetConnector.callTheWeb("https://www.gov.uk/bank-holidays.json")) thenReturn Future(fakeResponse)
+      when(internetConnector.callTheWeb(statusChecker.webTestEndpoint)) thenReturn Future(fakeResponse)
       whenReady(statusChecker.iteration4Status(), timeout(testTimeoutDuration)) {
         result => result shouldBe baseIteration4Status
       }
     }
     "handle things when an error response is received" in new Setup() {
       val fakeResponse = mock[WSResponse]
-      when(internetConnector.callTheWeb("http://www.bbc.co.uk")) thenReturn Future.failed(new Exception("Borked"))
+      when(internetConnector.callTheWeb(statusChecker.webTestEndpoint)) thenReturn Future.failed(new Exception("Borked"))
       whenReady(statusChecker.iteration4Status(), timeout(testTimeoutDuration)) {
         result => result shouldBe baseIteration4Status.copy(isWorking = false, reason = Some("Borked"))
       }
