@@ -74,7 +74,7 @@ class StatusChecker @Inject()(backendConnector: BackendConnector, internetConnec
 
   def iteration4Status()(implicit executionContext: ExecutionContext, futures: Futures): Future[PlatformStatus] = {
     for {
-      wsResult <- internetConnector.callTheWeb("http://www.bbc.co.uk").withTimeout(2.seconds).recoverWith {
+      wsResult <- internetConnector.callTheWeb("https://www.gov.uk/bank-holidays.json").withTimeout(2.seconds).recoverWith {
         case ex: Exception => {
           logger.warn("Unable to call out via squid proxy")
           Future(baseIteration4Status.copy(isWorking = false, reason = Some(ex.getMessage)))
