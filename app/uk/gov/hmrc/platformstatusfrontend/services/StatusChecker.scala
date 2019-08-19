@@ -31,11 +31,12 @@ import uk.gov.hmrc.platformstatusfrontend.connectors.{BackendConnector, Internet
 import scala.concurrent.duration._
 import PlatformStatus._
 import play.api.libs.ws.WSResponse
+import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class StatusChecker @Inject()(backendConnector: BackendConnector, internetConnector: InternetConnector) extends Timeout {
+class StatusChecker @Inject()(backendConnector: BackendConnector, internetConnector: InternetConnector, appConfig: AppConfig) extends Timeout {
 
   val logger = Logger(this.getClass)
 
@@ -43,12 +44,17 @@ class StatusChecker @Inject()(backendConnector: BackendConnector, internetConnec
 
   def iteration1Status(): PlatformStatus = baseIteration1Status
 
-  def iteration2Status(dbUrl: String)(implicit executionContext: ExecutionContext, futures: Futures): Future[PlatformStatus] = {
-    checkMongoConnection(dbUrl).withTimeout(2.seconds).recoverWith {
-      case ex: Exception => {
-        logger.warn("Failed to connect to Mongo")
-        Future(baseIteration2Status.copy(isWorking = false, reason = Some(ex.getMessage)))
+  def iteration2Status()(implicit executionContext: ExecutionContext, futures: Futures): Future[PlatformStatus] = {
+    try {
+      val dbUrl = appConfig.dbUrl
+      checkMongoConnection(dbUrl).withTimeout(2.seconds).recoverWith {
+        case ex: Exception => {
+          logger.warn("Failed to connect to Mongo")
+          genericError(baseIteration2Status, ex)
+        }
       }
+    } catch {
+      case ex: Exception => genericError(baseIteration2Status, ex)
     }
   }
 
@@ -69,21 +75,22 @@ class StatusChecker @Inject()(backendConnector: BackendConnector, internetConnec
     backendConnector.iteration3Status().recoverWith {
       case ex: Exception => {
         logger.warn("iteration3Status call to backend service failed.")
-        Future(baseIteration3Status.copy(isWorking = false, reason = Some(ex.getMessage)))
+        genericError(baseIteration3Status, ex)
       }
     }
   }
+
   def iteration4Status()(implicit executionContext: ExecutionContext, futures: Futures): Future[PlatformStatus] = {
     for {
-      wsResult <- internetConnector.callTheWeb(webTestEndpoint).withTimeout(2.seconds).recoverWith {
+      wsResult <- internetConnector.callTheWeb(webTestEndpoint, appConfig.proxyRequired).withTimeout(2.seconds).recoverWith {
         case ex: Exception => {
           logger.warn("Unable to call out via squid proxy")
-          Future(baseIteration4Status.copy(isWorking = false, reason = Some(ex.getMessage)))
+          genericError(baseIteration4Status, ex)
         }
       }
     } yield {
       wsResult match {
-        case r: WSResponse => baseIteration4Status
+        case r: WSResponse if r.status < 300 => baseIteration4Status
         case e: PlatformStatus => e
         case _ => throw new IllegalStateException("That shouldn't happen")
       }
@@ -94,6 +101,9 @@ class StatusChecker @Inject()(backendConnector: BackendConnector, internetConnec
 
   def iteration5Status() = baseIteration5Status.copy(isWorking = false, reason = Some("Test not yet implemented"))
 
+  private def genericError(status: PlatformStatus, ex: Exception)(implicit executionContext: ExecutionContext): Future[PlatformStatus] = {
+    Future(status.copy(isWorking = false, reason = Some(ex.getMessage)))
+  }
 
 
 }

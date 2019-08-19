@@ -34,8 +34,8 @@ class InternetConnector @Inject()(config: AppConfig, wsClient: WSClient) {
     principal = Some(config.proxyUsername),
     password = Some(config.proxyPassword))
 
-  def callTheWeb(url: String)= {
-    config.proxyRequired match {
+  def callTheWeb(url: String, proxyRequired: Boolean)= {
+    proxyRequired match {
       case true => wsClient.url(url).withProxyServer(proxyServer).get()
       case _ => {
         logger.info("Proxy configured off.  Attempting to access internet directly. Consider setting the proxy.required config setting.")

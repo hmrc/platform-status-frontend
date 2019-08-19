@@ -31,7 +31,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
 import org.mockito.Mockito._
+import play.api.Configuration
 import play.api.libs.ws.WSResponse
+import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 
 class StatusCheckerSpec extends WordSpec with Matchers with MockitoSugar with ScalaFutures {
 
@@ -42,19 +44,22 @@ class StatusCheckerSpec extends WordSpec with Matchers with MockitoSugar with Sc
     val backendConnectorMock = mock[BackendConnector]
     val internetConnector = mock[InternetConnector]
     implicit val futures: Futures = new DefaultFutures(ActorSystem.create)
-    val statusChecker = new StatusChecker(backendConnectorMock, internetConnector)
+    val appConfig = mock[AppConfig]
+    val statusChecker = new StatusChecker(backendConnectorMock, internetConnector, appConfig)
   }
 
   "iteration 2 status checker" should {
     "connect to Mongo" in new Setup() {
-      whenReady(statusChecker.iteration2Status("mongodb://localhost:27017"), timeout(testTimeoutDuration)) {
+      when(appConfig.dbUrl) thenReturn ("mongodb://localhost:27017")
+      whenReady(statusChecker.iteration2Status(), timeout(testTimeoutDuration)) {
         r =>
           r shouldBe baseIteration2Status
           r.isWorking shouldBe true
       }
     }
     "fail to connect to Mongo" in new Setup() {
-      whenReady(statusChecker.iteration2Status("mongodb://not_there:27017"), timeout(testTimeoutDuration)) {
+      when(appConfig.dbUrl) thenReturn ("mongodb://not_there:27017")
+      whenReady(statusChecker.iteration2Status(), timeout(testTimeoutDuration)) {
         r => r shouldBe baseIteration2Status.copy(isWorking = false, reason = Some("Timeout after 2 seconds"))
           r.isWorking shouldBe false
       }
@@ -77,14 +82,14 @@ class StatusCheckerSpec extends WordSpec with Matchers with MockitoSugar with Sc
   "iteration 4 outbound call via squid" should {
     "be happy when a response is received" in new Setup() {
       val fakeResponse = mock[WSResponse]
-      when(internetConnector.callTheWeb(statusChecker.webTestEndpoint)) thenReturn Future(fakeResponse)
+      when(internetConnector.callTheWeb(statusChecker.webTestEndpoint, false)) thenReturn Future(fakeResponse)
       whenReady(statusChecker.iteration4Status(), timeout(testTimeoutDuration)) {
         result => result shouldBe baseIteration4Status
       }
     }
     "handle things when an error response is received" in new Setup() {
       val fakeResponse = mock[WSResponse]
-      when(internetConnector.callTheWeb(statusChecker.webTestEndpoint)) thenReturn Future.failed(new Exception("Borked"))
+      when(internetConnector.callTheWeb(statusChecker.webTestEndpoint, false)) thenReturn Future.failed(new Exception("Borked"))
       whenReady(statusChecker.iteration4Status(), timeout(testTimeoutDuration)) {
         result => result shouldBe baseIteration4Status.copy(isWorking = false, reason = Some("Borked"))
       }

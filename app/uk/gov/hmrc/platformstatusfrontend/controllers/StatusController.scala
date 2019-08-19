@@ -39,7 +39,7 @@ class StatusController @Inject()(appConfig: AppConfig, mcc: MessagesControllerCo
 
   def platformStatus: Action[AnyContent] = Action.async { implicit request =>
 
-    val iteration2Future = statusChecker.iteration2Status(appConfig.dbUrl)
+    val iteration2Future = statusChecker.iteration2Status()
     val iteration3Future = statusChecker.iteration3Status()
     val iteration4Future = statusChecker.iteration4Status()
 
