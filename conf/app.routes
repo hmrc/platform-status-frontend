@@ -4,3 +4,6 @@ GET        /             uk.gov.hmrc.platformstatusfrontend.controllers.StatusCo
 GET        /status             uk.gov.hmrc.platformstatusfrontend.controllers.StatusController.platformStatus
 GET        /noise             uk.gov.hmrc.platformstatusfrontend.controllers.NoiseController.noise
 POST       /noise             uk.gov.hmrc.platformstatusfrontend.controllers.NoiseController.createNoise
+
+GET         /kill             uk.gov.hmrc.platformstatusfrontend.controllers.KillController.kill
+POST        /kill             uk.gov.hmrc.platformstatusfrontend.controllers.KillController.meteOutDeath
