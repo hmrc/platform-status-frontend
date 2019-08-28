@@ -1,0 +1,42 @@
+@*
+ * Copyright 2019 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
+@import uk.gov.hmrc.platformstatusfrontend.services.PlatformStatus
+@import uk.gov.hmrc.platformstatusfrontend.controllers.NoiseRequest
+
+@import views.html.helper.CSRF
+@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig, requestHeader: RequestHeader, flash: Flash)
+
+@main_template(title = "Hello from platform-status-frontend") {
+    <h1>@flash.get("success").getOrElse("!!! Here be dragons !!! ")</h1>
+
+    <p>
+        Clicking this button will kill the Java process that is running this instance of platform-status-frontend.<br/>
+        Whether the slugrunner docker image is still running or if nginx still thinks this instance is routable are separate processes that may take a while to catch up.<br/>
+            There are several failure states here.
+    </p>
+    <p>
+        If there are other instances running and you get routed to them you will still be able to see the app.<br/>
+        If you kill the final instance then you will see a 4xx/5xx
+    </p>
+
+    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.KillController.meteOutDeath){
+        @CSRF.formField
+        <input type="submit" value="Kill the Java process">
+    }
+    <p><a href="@uk.gov.hmrc.platformstatusfrontend.controllers.routes.StatusController.platformStatus()">frontpage</a></p>
+}
