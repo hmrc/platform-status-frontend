@@ -22,26 +22,46 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.mvc._
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
-import uk.gov.hmrc.platformstatusfrontend.services.StatusChecker
+import uk.gov.hmrc.platformstatusfrontend.services.{MemoryHog, StatusChecker}
 import uk.gov.hmrc.platformstatusfrontend.views
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.Future
 
+case class LeakRequest(mb: Int = 10, sleep: Int = 100)
 
 @Singleton
-class KillController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents) extends FrontendController(mcc) {
+class KillController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, memoryHog: MemoryHog) extends FrontendController(mcc) {
+
+  val leakForm: Form[LeakRequest] = Form(
+    mapping(
+      "mb" -> number,
+      "sleep"  -> number
+    )(LeakRequest.apply)(LeakRequest.unapply)
+  )
 
   implicit val config: AppConfig = appConfig
   val logger: Logger = Logger(this.getClass)
 
   def kill = Action.async { implicit request =>
-    Future.successful( Ok(views.html.kill())  )
+    Future.successful( Ok(views.html.kill( leakForm.fill(LeakRequest()))  ) )
   }
 
   def meteOutDeath = Action { implicit request =>
     System.exit(0)
     Redirect(routes.KillController.kill()).flashing("success" -> "If you see this then the container did not die.")
+  }
+
+  def leakMemory = Action { implicit request =>
+    leakForm.bindFromRequest.fold(
+      formWithErrors => {
+        BadRequest(views.html.kill(formWithErrors))
+      },
+      killRequest => {
+        memoryHog.eatMemory(killRequest.mb, killRequest.sleep)
+        Redirect(routes.KillController.kill()).flashing("success" -> "If you see this then the container did not die.")
+      }
+    )
   }
 
 }

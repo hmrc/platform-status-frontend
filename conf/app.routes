@@ -7,3 +7,4 @@ POST       /noise             uk.gov.hmrc.platformstatusfrontend.controllers.Noi
 
 GET         /kill             uk.gov.hmrc.platformstatusfrontend.controllers.KillController.kill
 POST        /kill             uk.gov.hmrc.platformstatusfrontend.controllers.KillController.meteOutDeath
+POST        /leak              uk.gov.hmrc.platformstatusfrontend.controllers.KillController.leakMemory
