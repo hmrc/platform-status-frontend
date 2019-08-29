@@ -17,13 +17,16 @@
 @import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 @import uk.gov.hmrc.platformstatusfrontend.services.PlatformStatus
 @import uk.gov.hmrc.platformstatusfrontend.controllers.NoiseRequest
+@import uk.gov.hmrc.platformstatusfrontend.controllers.LeakRequest
 
 @import views.html.helper.CSRF
-@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig, requestHeader: RequestHeader, flash: Flash)
+@(leakForm: Form[LeakRequest])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, requestHeader: RequestHeader, flash: Flash)
 
 @main_template(title = "Hello from platform-status-frontend") {
     <h1>@flash.get("success").getOrElse("!!! Here be dragons !!! ")</h1>
 
+    <hr/>
+    <h3>Killing the Java process immediately</h3>
     <p>
         Clicking this button will kill the Java process that is running this instance of platform-status-frontend.<br/>
         Whether the slugrunner docker image is still running or if nginx still thinks this instance is routable are separate processes that may take a while to catch up.<br/>
@@ -38,5 +41,22 @@
         @CSRF.formField
         <input type="submit" value="Kill the Java process">
     }
+    <hr/>
+    <h3>Kill the JVM by leaking memory</h3>
+    <p>
+        The JVM claims to have @{Runtime.getRuntime.maxMemory() / (1024 * 1024)} Mb max memory.<br/>
+        @{Runtime.getRuntime.freeMemory() / (1024 * 1024)} Mb of that is currently free.  Garbage collection can change this at anytime.
+    </p>
+    <p>
+        You can alter how quickly the service will run out of memory by playing with these 2 values, taking into account how much free memory it currently has.
+    </p>
+
+    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.KillController.leakMemory){
+        @CSRF.formField
+        @helper.inputText(leakForm("mb"), '_label -> "Megabytes to eat in each iteration.")
+        @helper.inputText(leakForm("sleep"), '_label -> "Milliseconds to sleep between each iteration.")
+        <input type="submit" value="Leak memory">
+    }
+    <hr/>
     <p><a href="@uk.gov.hmrc.platformstatusfrontend.controllers.routes.StatusController.platformStatus()">frontpage</a></p>
 }
