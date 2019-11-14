@@ -28,6 +28,7 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
   val assetsPrefix: String   = assetsUrl + config.get[String]("assets.version")
   val analyticsToken: String = config.get[String](s"google-analytics.token")
   val analyticsHost: String  = config.get[String](s"google-analytics.host")
+  val startupDelay: Option[Int] = config.getOptional[Int]("startup-delay")
 
   lazy val dbUrl = servicesConfig.getString("mongodb.uri")
 
