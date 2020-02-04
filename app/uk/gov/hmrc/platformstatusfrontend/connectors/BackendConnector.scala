@@ -39,4 +39,7 @@ class BackendConnector @Inject()(
 
   def iteration3Status()(implicit hc: HeaderCarrier) =
     http.GET[PlatformStatus](s"$backendBaseUrl/status/iteration3")
+
+  def iteration5Status()(implicit hc: HeaderCarrier) =
+    http.GET[PlatformStatus](s"$backendBaseUrl/status/iteration5")
 }

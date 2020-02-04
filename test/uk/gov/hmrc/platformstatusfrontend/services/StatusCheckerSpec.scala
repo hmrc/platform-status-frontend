@@ -73,7 +73,7 @@ class StatusCheckerSpec extends WordSpec with Matchers with MockitoSugar with Sc
       }
     }
     "not blow up when backend responds with a bad result" in new Setup() {
-      when(backendConnectorMock.iteration3Status()) thenReturn  Future.failed(Upstream5xxResponse("Borked", 500, 500))
+      when(backendConnectorMock.iteration3Status()) thenReturn Future.failed(Upstream5xxResponse("Borked", 500, 500))
       whenReady(statusChecker.iteration3Status(), timeout(testTimeoutDuration) ){
         result => result shouldBe baseIteration3Status.copy(isWorking = false, reason = Some("Borked"))
       }
@@ -92,6 +92,20 @@ class StatusCheckerSpec extends WordSpec with Matchers with MockitoSugar with Sc
       when(internetConnector.callTheWeb(statusChecker.webTestEndpoint, false)) thenReturn Future.failed(new Exception("Borked"))
       whenReady(statusChecker.iteration4Status(), timeout(testTimeoutDuration)) {
         result => result shouldBe baseIteration4Status.copy(isWorking = false, reason = Some("Borked"))
+      }
+    }
+  }
+  "iteration 5 status check" should {
+    "be happy when backend responds with a good result" in new Setup() {
+      when(backendConnectorMock.iteration5Status()) thenReturn Future(baseIteration5Status)
+      whenReady(statusChecker.iteration5Status(), timeout(testTimeoutDuration) ){
+        result => result shouldBe baseIteration5Status
+      }
+    }
+    "not blow up when backend responds with a bad result" in new Setup() {
+      when(backendConnectorMock.iteration5Status()) thenReturn Future.failed(Upstream5xxResponse("Borked", 500, 500))
+      whenReady(statusChecker.iteration5Status(), timeout(testTimeoutDuration) ){
+        result => result shouldBe baseIteration5Status.copy(isWorking = false, reason = Some("Borked"))
       }
     }
   }
