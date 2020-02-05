@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,9 +97,14 @@ class StatusChecker @Inject()(backendConnector: BackendConnector, internetConnec
     }
   }
 
-
-
-  def iteration5Status() = baseIteration5Status.copy(isWorking = false, reason = Some("Test not yet implemented"))
+  def iteration5Status()(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[PlatformStatus] = {
+    backendConnector.iteration5Status().recoverWith {
+      case ex: Exception => {
+        logger.warn("iteration5Status call to backend service failed.")
+        genericError(baseIteration5Status, ex)
+      }
+    }
+  }
 
   private def genericError(status: PlatformStatus, ex: Exception)(implicit executionContext: ExecutionContext): Future[PlatformStatus] = {
     Future(status.copy(isWorking = false, reason = Some(ex.getMessage)))

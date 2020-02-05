@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ class StatusControllerSpec extends WordSpec with Matchers with GuiceOneAppPerSui
     when(statusChecker.iteration2Status() (any[ExecutionContext], any[Futures]) ) thenReturn Future(dummyStatus.copy(name = "it2"))
     when(statusChecker.iteration3Status()(any[HeaderCarrier], any[ExecutionContext]  )) thenReturn Future(dummyStatus.copy(name = "it3"))
     when(statusChecker.iteration4Status()(any[ExecutionContext], any[Futures]  ) ) thenReturn Future(dummyStatus.copy(name = "it4"))
-    when(statusChecker.iteration5Status()) thenReturn dummyStatus.copy(name = "it5")
+    when(statusChecker.iteration5Status()(any[HeaderCarrier], any[ExecutionContext]  )) thenReturn Future(dummyStatus.copy(name = "it5"))
 
     val controller = new StatusController(appConfig, stubMessagesControllerComponents(), statusChecker)
   }
