@@ -53,11 +53,13 @@ class CodeController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComp
         BadRequest( views.html.code(formWithErrors) )
       },
       codeRequest => {
+        if (codeRequest.code == 504) {
+          Thread.sleep(10000L)
+        }
         new Status(codeRequest.code)(views.html.codeResponse(codeRequest.code, codeRequest.message))
       }
     )
   }
 
 }
-
 
