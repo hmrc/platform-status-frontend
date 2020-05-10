@@ -19,15 +19,16 @@ package uk.gov.hmrc.platformstatusfrontend.config
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import scala.concurrent.duration.Duration
 
 @Singleton
 class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig) {
 
-  private val assetsUrl         = config.get[String]("assets.url")
+  private val assetsUrl = config.get[String]("assets.url")
 
-  val assetsPrefix: String   = assetsUrl + config.get[String]("assets.version")
+  val assetsPrefix: String = assetsUrl + config.get[String]("assets.version")
   val analyticsToken: String = config.get[String](s"google-analytics.token")
-  val analyticsHost: String  = config.get[String](s"google-analytics.host")
+  val analyticsHost: String = config.get[String](s"google-analytics.host")
   val startupDelay: Option[Int] = config.getOptional[Int]("startup-delay")
 
   lazy val dbUrl = servicesConfig.getString("mongodb.uri")
@@ -38,4 +39,6 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
   lazy val proxyUsername: String = servicesConfig.getString("proxy.username")
   lazy val proxyPassword: String = servicesConfig.getString("proxy.password")
   lazy val proxyRequired: Boolean = servicesConfig.getBoolean("proxy.required")
+
+  lazy val badGatewayTimeout: Duration = servicesConfig.getDuration("bad-gateway.timeout")
 }
