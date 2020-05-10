@@ -38,4 +38,6 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
   lazy val proxyUsername: String = servicesConfig.getString("proxy.username")
   lazy val proxyPassword: String = servicesConfig.getString("proxy.password")
   lazy val proxyRequired: Boolean = servicesConfig.getBoolean("proxy.required")
+
+  lazy val gatewayTimeout: Long = servicesConfig.getInt("gateway.timeout")
 }
