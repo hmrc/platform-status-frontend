@@ -54,7 +54,7 @@ class CodeController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComp
       },
       codeRequest => {
         if (codeRequest.code == 504) {
-          Thread.sleep(10000L)
+          Thread.sleep(config.badGatewayTimeout.toMillis)
         }
         new Status(codeRequest.code)(views.html.codeResponse(codeRequest.code, codeRequest.message))
       }
