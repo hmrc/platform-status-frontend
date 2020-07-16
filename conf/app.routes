@@ -1,13 +1,19 @@
 # microservice specific routes
 
-GET        /             uk.gov.hmrc.platformstatusfrontend.controllers.StatusController.defaultLanding
-GET        /status             uk.gov.hmrc.platformstatusfrontend.controllers.StatusController.platformStatus
-GET        /noise             uk.gov.hmrc.platformstatusfrontend.controllers.NoiseController.noise
-POST       /noise             uk.gov.hmrc.platformstatusfrontend.controllers.NoiseController.createNoise
+GET       /                             uk.gov.hmrc.platformstatusfrontend.controllers.StatusController.defaultLanding
+GET       /status                       uk.gov.hmrc.platformstatusfrontend.controllers.StatusController.platformStatus
+GET       /noise                        uk.gov.hmrc.platformstatusfrontend.controllers.NoiseController.noise
+POST      /noise                        uk.gov.hmrc.platformstatusfrontend.controllers.NoiseController.createNoise
 
-GET         /kill             uk.gov.hmrc.platformstatusfrontend.controllers.KillController.kill
-POST        /kill             uk.gov.hmrc.platformstatusfrontend.controllers.KillController.meteOutDeath
-POST        /leak              uk.gov.hmrc.platformstatusfrontend.controllers.KillController.leakMemory
+GET       /kill                         uk.gov.hmrc.platformstatusfrontend.controllers.KillController.kill
+POST      /kill                         uk.gov.hmrc.platformstatusfrontend.controllers.KillController.meteOutDeath
+POST      /leak                         uk.gov.hmrc.platformstatusfrontend.controllers.KillController.leakMemory
 
-GET         /code             uk.gov.hmrc.platformstatusfrontend.controllers.CodeController.code
-POST        /code             uk.gov.hmrc.platformstatusfrontend.controllers.CodeController.respondWithCode
+GET       /code                         uk.gov.hmrc.platformstatusfrontend.controllers.CodeController.code
+POST      /code                         uk.gov.hmrc.platformstatusfrontend.controllers.CodeController.respondWithCode
+
+GET       /measure-header               uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.measureHeader
+POST      /measure-body                 uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.measureBody
+GET       /measure-random-body          uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.randomBodyOfSize(length: Int)
+GET       /measure-body-backend         uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.bodyOfSizeToBackend(length: Int)
+GET       /measure-header-backend       uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.headerOfSizeToBackend(length: Int, headerName: String)
