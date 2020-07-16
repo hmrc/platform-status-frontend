@@ -23,6 +23,7 @@ import play.api.libs.concurrent.Timeout
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.connectors.BackendConnector
+import uk.gov.hmrc.platformstatusfrontend.util.MeasureUtil.X_TEST_HEADER_NAME
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -42,7 +43,7 @@ class MeasureService @Inject()(backendConnector: BackendConnector, appConfig: Ap
   }
 
   def headerToBackend(content: String, headerName: String)(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[String] = {
-    backendConnector.measure("", Seq(headerName -> content, "Test-Header-Name" -> headerName)).recoverWith {
+    backendConnector.measure("", Seq(headerName -> content, X_TEST_HEADER_NAME -> headerName)).recoverWith {
       case ex: Exception => {
         val msg = s"headerToBackend call to backend service failed"
         logger.warn(msg, ex)

@@ -16,47 +16,15 @@
 
 package uk.gov.hmrc.platformstatusfrontend.filters
 
-import com.kenshoo.play.metrics.MetricsFilter
 import javax.inject.{Inject, Singleton}
-import play.api.Configuration
+import play.api.http.HttpFilters
 import play.api.mvc.EssentialFilter
-import play.filters.csrf.CSRFFilter
-import play.filters.headers.SecurityHeadersFilter
-import uk.gov.hmrc.play.bootstrap.filters.{FrontendFilters, _}
-import uk.gov.hmrc.play.bootstrap.filters.frontend.crypto.SessionCookieCryptoFilter
-import uk.gov.hmrc.play.bootstrap.filters.frontend.deviceid.DeviceIdFilter
-import uk.gov.hmrc.play.bootstrap.filters.frontend.{HeadersFilter, SessionTimeoutFilter}
+import uk.gov.hmrc.play.bootstrap.filters.FrontendFilters
 
 @Singleton
-class CustomFrontendFilters @Inject()(
-                                     configuration: Configuration,
-                                     loggingFilter: LoggingFilter,
-                                     headersFilter: HeadersFilter,
-                                     securityFilter: SecurityHeadersFilter,
-                                     frontendAuditFilter: AuditFilter,
-                                     metricsFilter: MetricsFilter,
-                                     deviceIdFilter: DeviceIdFilter,
-                                     csrfFilter: CSRFFilter,
-                                     sessionCookieCryptoFilter: SessionCookieCryptoFilter,
-                                     sessionTimeoutFilter: SessionTimeoutFilter,
-                                     cacheControlFilter: CacheControlFilter,
-                                     mdcFilter: MDCFilter,
-                                     headerSizeFilter: HeaderSizeFilter)
-  extends FrontendFilters(
-    configuration,
-    loggingFilter,
-    headersFilter,
-    securityFilter,
-    frontendAuditFilter,
-    metricsFilter,
-    deviceIdFilter,
-    csrfFilter,
-    sessionCookieCryptoFilter,
-    sessionTimeoutFilter,
-    cacheControlFilter,
-    mdcFilter) {
-
+class CustomFrontendFilters @Inject()(frontendFilters: FrontendFilters, headerSizeFilter: HeaderSizeFilter) extends HttpFilters {
   override val filters: Seq[EssentialFilter] = {
-    headerSizeFilter +: frontendFilters
+    // Add our custom filter to measure the byte size of the request headers, *before* any additional headers are added by bootstrap
+    headerSizeFilter +: frontendFilters.filters
   }
 }

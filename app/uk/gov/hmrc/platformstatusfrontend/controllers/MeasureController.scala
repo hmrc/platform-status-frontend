@@ -27,7 +27,10 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class MeasureController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, val measureService: MeasureService)(implicit executionContext: ExecutionContext)
+class MeasureController @Inject()(appConfig: AppConfig,
+                                  mcc: MessagesControllerComponents,
+                                  measureService: MeasureService
+                                 )(implicit executionContext: ExecutionContext)
 extends FrontendController(mcc){
 
   val logger: Logger = Logger(this.getClass)
@@ -39,7 +42,8 @@ extends FrontendController(mcc){
   }
 
   def measureHeader = Action.async { implicit request =>
-    val headerLength = request.headers.get("Header-Length").map(_.toInt).getOrElse(-1)
+    // This custom header was added to the request by our custom filter, so just pull out its value
+    val headerLength = request.headers.get(X_HEADER_LENGTH).map(_.toInt).getOrElse(-1)
     logger.info(s"Received message with header length: $headerLength bytes")
     Future.successful(Ok(s"Header received: $headerLength bytes"))
   }

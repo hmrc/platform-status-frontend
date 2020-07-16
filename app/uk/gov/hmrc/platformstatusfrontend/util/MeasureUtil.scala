@@ -22,6 +22,9 @@ import scala.util.Random
 
 object MeasureUtil {
 
+  val X_HEADER_LENGTH = "X-Header-Length"
+  val X_TEST_HEADER_NAME = "X-Test-Header-Name"
+
   def byteSize(s: String): Int = s.getBytes(StandardCharsets.UTF_8).length
 
   def generateStringOfSize(length: Int): String = {
