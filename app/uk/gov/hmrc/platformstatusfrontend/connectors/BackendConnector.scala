@@ -17,7 +17,6 @@
 package uk.gov.hmrc.platformstatusfrontend.connectors
 
 import javax.inject.{Inject, Singleton}
-import play.api.libs.json._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
 import uk.gov.hmrc.platformstatusfrontend.services.PlatformStatus
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -37,9 +36,12 @@ class BackendConnector @Inject()(
     override def read(method: String, url: String, response: HttpResponse): HttpResponse = response
   }
 
-  def iteration3Status()(implicit hc: HeaderCarrier) =
+  def iteration3Status()(implicit hc: HeaderCarrier): Future[PlatformStatus] =
     http.GET[PlatformStatus](s"$backendBaseUrl/status/iteration3")
 
-  def iteration5Status()(implicit hc: HeaderCarrier) =
+  def iteration5Status()(implicit hc: HeaderCarrier): Future[PlatformStatus] =
     http.GET[PlatformStatus](s"$backendBaseUrl/status/iteration5")
+
+  def measure(content: String, headers: Seq[(String, String)] = Seq.empty)(implicit hc: HeaderCarrier): Future[String] =
+    http.POSTString[HttpResponse](s"$backendBaseUrl/measure", content, headers)(HttpReads.readRaw, hc, ec).map(_.body)
 }
