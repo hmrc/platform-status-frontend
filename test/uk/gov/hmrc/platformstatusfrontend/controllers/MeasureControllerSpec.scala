@@ -39,6 +39,7 @@ import uk.gov.hmrc.platformstatusfrontend.util.Generators._
 import uk.gov.hmrc.platformstatusfrontend.util.MeasureUtil._
 import uk.gov.hmrc.play.bootstrap.config.{RunMode, ServicesConfig}
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
+import play.api.test.CSRFTokenHelper._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -99,62 +100,62 @@ class MeasureControllerSpec extends WordSpec with Matchers with GuiceOneAppPerSu
 
   "GET /measure-random-header" should {
     "return a response with a header of the specified name filled with random bytes to the specified length" in new Setup() {
-      forAll(Gen.choose(1, 1000000), nonEmptyString) { (length, headerName) =>
-        val result = controller.randomResponseHeaderOfSize(length, headerName)(FakeRequest())
+      forAll(Gen.choose(1, 1000000), nonEmptyString) { (bytes, headerName) =>
+        val result = controller.randomResponseHeaderOfSize()(FakeRequest(GET, s"/?bytes=$bytes&headerName=$headerName").withCSRFToken)
 
         status(result) shouldBe Status.OK
-        headers(result).get(headerName).map(byteSize) shouldBe Some(length)
-        contentAsString(result) shouldBe s"Response header $headerName filled with $length random bytes"
+        headers(result).get(headerName).map(byteSize) shouldBe Some(bytes)
+        contentAsString(result) shouldBe s"Response header $headerName filled with $bytes random bytes"
       }
     }
   }
 
   "GET /measure-random-body" should {
     "return a response with a body filled with random bytes to the specified length" in new Setup() {
-      forAll(Gen.choose(1, 1000000)){ length =>
-        val result = controller.randomBodyOfSize(length)(FakeRequest())
+      forAll(Gen.choose(1, 1000000)){ bytes =>
+        val result = controller.randomResponseBodyOfSize()(FakeRequest(GET, s"/?bytes=$bytes&headerName=").withCSRFToken)
 
         status(result) shouldBe Status.OK
 
-        contentAsBytes(result).length shouldBe length
+        contentAsBytes(result).length shouldBe bytes
       }
     }
   }
 
   "GET /measure-header-backend" should {
     "call the backend with a random byte filled header of the specified name and size" in new Setup() {
-      forAll(Gen.choose(1, 1000000), nonEmptyString) { (length, headerName) =>
+      forAll(Gen.choose(1, 1000000), nonEmptyString) { (bytes, headerName) =>
         reset(backendConnector) //Required to reset so mock verify works when called repeatedly from scalacheck
 
         val captor = ArgCaptor[Seq[(String, String)]]
 
         when(backendConnector.measure(any, captor)(any)).thenReturn(Future(s"response from backend"))
 
-        val result = controller.headerOfSizeToBackend(length, headerName)(FakeRequest())
+        val result = controller.headerOfSizeToBackend()(FakeRequest(GET, s"/?bytes=$bytes&headerName=$headerName").withCSRFToken)
 
         verify(backendConnector, times(1)).measure(any, any)(any)
 
         status(result) shouldBe Status.OK
-        captor.value.toMap.get(headerName).map(byteSize) shouldBe Some(length)
+        captor.value.toMap.get(headerName).map(byteSize) shouldBe Some(bytes)
       }
     }
   }
 
   "GET /measure-body-backend" should {
     "call the backend with a random byte filled body of the specified size" in new Setup() {
-      forAll(Gen.choose(1, 1000000)) { length =>
+      forAll(Gen.choose(1, 1000000)) { bytes =>
         reset(backendConnector)
 
         val captor = ArgCaptor[String]
 
         when(backendConnector.measure(captor.capture, any)(any)).thenReturn(Future(s"response from backend"))
 
-        val result = controller.bodyOfSizeToBackend(length)(FakeRequest())
+        val result = controller.bodyOfSizeToBackend()(FakeRequest(GET, s"/?bytes=$bytes&headerName=").withCSRFToken)
 
         verify(backendConnector, times(1)).measure(any, any)(any)
 
         status(result) shouldBe Status.OK
-        byteSize(captor.value) shouldBe length
+        byteSize(captor.value) shouldBe bytes
       }
     }
   }
