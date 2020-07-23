@@ -32,7 +32,7 @@ class HeaderSizeFilter @Inject()(implicit val mat: Materializer, ec: ExecutionCo
   def apply(nextFilter: RequestHeader => Future[Result])(requestHeader: RequestHeader): Future[Result] = {
     val allHeaders = requestHeader.headers.headers
 
-    logger.info(s"Calculating byte size of ${allHeaders.size} received request headers: ${allHeaders.mkString(",")}")
+    logger.info(s"Calculating byte size of ${allHeaders.size} received request headers: ${allHeaders.map(_._1).mkString(",")}")
 
     // Reconstructing the headers as they would be in the HTTP spec for the purpose of calculating the byte size
     // N.B. Would be nice to just access the raw request bytes and measure the size up to the first blank line (after headers),
