@@ -33,7 +33,7 @@ class MeasureService @Inject()(backendConnector: BackendConnector, appConfig: Ap
   val logger = Logger(this.getClass)
 
   def bodyToBackend(content: String)(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[String] = {
-    backendConnector.measure(content).recoverWith {
+    backendConnector.measure(content, Seq.empty).recoverWith {
       case ex: Exception => {
         val msg = s"bodyToBackend call to backend service failed"
         logger.warn(msg, ex)
