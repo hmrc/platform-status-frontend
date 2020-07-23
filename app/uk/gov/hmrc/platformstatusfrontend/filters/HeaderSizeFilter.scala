@@ -18,6 +18,7 @@ package uk.gov.hmrc.platformstatusfrontend.filters
 
 import akka.stream.Materializer
 import javax.inject.Inject
+import play.api.Logger
 import play.api.mvc._
 import uk.gov.hmrc.platformstatusfrontend.util.MeasureUtil.byteSize
 import uk.gov.hmrc.platformstatusfrontend.util.MeasureUtil.X_HEADER_LENGTH
@@ -26,12 +27,17 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class HeaderSizeFilter @Inject()(implicit val mat: Materializer, ec: ExecutionContext) extends Filter {
 
+  val logger: Logger = Logger(this.getClass)
+
   def apply(nextFilter: RequestHeader => Future[Result])(requestHeader: RequestHeader): Future[Result] = {
+    val allHeaders = requestHeader.headers.headers
+
+    logger.info(s"Calculating byte size of ${allHeaders.size} received request headers: ${allHeaders.mkString(",")}")
 
     // Reconstructing the headers as they would be in the HTTP spec for the purpose of calculating the byte size
     // N.B. Would be nice to just access the raw request bytes and measure the size up to the first blank line (after headers),
     // but doesn't look possible to access the raw request bytes (not just the raw *body* bytes).
-    val headers = requestHeader.headers.headers.map{ case (k,v) => s"$k: $v"}.mkString("\r\n")
+    val headers = allHeaders.map{ case (k,v) => s"$k: $v"}.mkString("\r\n")
 
     // Add a custom header to the request just for convenience that we can pull out later
     val headerLength = X_HEADER_LENGTH -> byteSize(headers).toString

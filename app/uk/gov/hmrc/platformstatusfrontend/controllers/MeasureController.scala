@@ -35,17 +35,23 @@ extends FrontendController(mcc){
 
   val logger: Logger = Logger(this.getClass)
 
-  def measureBody = Action.async { implicit request =>
-    val bodyLength = request.headers.get(CONTENT_LENGTH).map(_.toInt).getOrElse(-1)
-    logger.info(s"Received message with body length: $bodyLength bytes")
-    Future.successful(Ok(s"Body received: $bodyLength bytes"))
+  def measureHeader = Action.async { implicit request =>
+    // This custom header was added to the request by our custom filters, so just pull out its value
+    val headerLength = request.headers.get(X_HEADER_LENGTH).map(s => s"$s bytes").getOrElse(s"? Unknown, was not able to extract injected $X_HEADER_LENGTH header")
+    logger.info(s"Received message with header length: $headerLength")
+    Future.successful(Ok(s"Total size of all headers received: $headerLength"))
   }
 
-  def measureHeader = Action.async { implicit request =>
-    // This custom header was added to the request by our custom filter, so just pull out its value
-    val headerLength = request.headers.get(X_HEADER_LENGTH).map(_.toInt).getOrElse(-1)
-    logger.info(s"Received message with header length: $headerLength bytes")
-    Future.successful(Ok(s"Header received: $headerLength bytes"))
+  def measureBody = Action.async { implicit request =>
+    val bodyLength = request.headers.get(CONTENT_LENGTH).map(s => s"$s bytes").getOrElse(s"? Unknown, $CONTENT_LENGTH header was not found")
+    logger.info(s"Received message with body length: $bodyLength")
+    Future.successful(Ok(s"Body length received: $bodyLength"))
+  }
+
+  def randomResponseHeaderOfSize(size: Int, headerName: String) = Action.async { implicit request =>
+    val generated = generateStringOfSize(size)
+    logger.info(s"Generated random content for header '$headerName' of $size bytes to send in response")
+    Future.successful(Ok(s"Response header $headerName filled with $size random bytes").withHeaders(headerName -> generated))
   }
 
   def randomBodyOfSize(size: Int) = Action.async { implicit request =>
@@ -54,16 +60,16 @@ extends FrontendController(mcc){
     Future.successful(Ok(s"$generated"))
   }
 
-  def bodyOfSizeToBackend(size: Int) = Action.async { implicit request =>
-    val generated = generateStringOfSize(size)
-    logger.info(s"Generated random body of $size bytes to send to backend")
-    measureService.bodyToBackend(generated).map(Ok(_))
-  }
-
   def headerOfSizeToBackend(size: Int, headerName: String) = Action.async { implicit request =>
     val generated = generateStringOfSize(size)
     logger.info(s"Generated random content for header '$headerName' of $size bytes to send to backend")
     measureService.headerToBackend(generated, headerName).map(Ok(_))
+  }
+
+  def bodyOfSizeToBackend(size: Int) = Action.async { implicit request =>
+    val generated = generateStringOfSize(size)
+    logger.info(s"Generated random body of $size bytes to send to backend")
+    measureService.bodyToBackend(generated).map(Ok(_))
   }
 
 }

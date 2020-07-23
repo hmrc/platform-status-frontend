@@ -14,6 +14,7 @@ POST      /code                         uk.gov.hmrc.platformstatusfrontend.contr
 
 GET       /measure-header               uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.measureHeader
 POST      /measure-body                 uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.measureBody
+GET       /measure-random-header        uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.randomResponseHeaderOfSize(length: Int, headerName)
 GET       /measure-random-body          uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.randomBodyOfSize(length: Int)
-GET       /measure-body-backend         uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.bodyOfSizeToBackend(length: Int)
 GET       /measure-header-backend       uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.headerOfSizeToBackend(length: Int, headerName: String)
+GET       /measure-body-backend         uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.bodyOfSizeToBackend(length: Int)
