@@ -9,6 +9,8 @@ GET       /kill                         uk.gov.hmrc.platformstatusfrontend.contr
 POST      /kill                         uk.gov.hmrc.platformstatusfrontend.controllers.KillController.meteOutDeath
 POST      /leak                         uk.gov.hmrc.platformstatusfrontend.controllers.KillController.leakMemory
 
+GET       /garbage                      uk.gov.hmrc.platformstatusfrontend.controllers.GarbageController.garbage
+
 GET       /code                         uk.gov.hmrc.platformstatusfrontend.controllers.CodeController.code
 POST      /code                         uk.gov.hmrc.platformstatusfrontend.controllers.CodeController.respondWithCode
 
