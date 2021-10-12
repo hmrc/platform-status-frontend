@@ -20,8 +20,8 @@
 @import views.html.layouts.GovUkTemplate
 @this(
         hmrcGovUkTemplate: GovUkTemplate,
-        main_content: MainContent,
-        main_content_header: MainContentHeader,
+        mainContentTemplate: MainContent,
+        mainContentHeaderTemplate: MainContentHeader,
         uiFooter: Footer,
         uiFooterLinks: FooterLinks,
         uiHead: Head,
@@ -79,13 +79,13 @@
 
 @mainContentHeader = {
     @if(contentHeader.isDefined) {
-        @main_content_header(contentHeader = contentHeader.get)
+        @mainContentHeaderTemplate(contentHeader = contentHeader.get)
     }
 }
 
 
 @content = {
-    @main_content(
+    @mainContentTemplate(
       article = mainContent,
       mainClass = mainClass,
       mainDataAttributes = mainDataAttributes,

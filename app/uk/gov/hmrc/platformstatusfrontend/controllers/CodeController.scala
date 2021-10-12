@@ -23,7 +23,7 @@ import play.api.data.Forms._
 import play.api.mvc._
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.services.{MemoryHog, StatusChecker}
-import uk.gov.hmrc.platformstatusfrontend.views.html.{code, codeResponse}
+import uk.gov.hmrc.platformstatusfrontend.views.html.{Code, CodeResponse}
 
 import scala.concurrent.Future
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -31,7 +31,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 case class CodeRequest(code: Int = 200, message: String = "a profound message")
 
 @Singleton
-class CodeController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, memoryHog: MemoryHog, codeView: code, codeResponseView: codeResponse) extends FrontendController(mcc) {
+class CodeController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, memoryHog: MemoryHog, codeView: Code, codeResponseView: CodeResponse) extends FrontendController(mcc) {
 
   val codeForm: Form[CodeRequest] = Form(
     mapping(

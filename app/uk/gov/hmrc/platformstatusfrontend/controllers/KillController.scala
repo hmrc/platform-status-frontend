@@ -23,7 +23,7 @@ import play.api.data._
 import play.api.mvc._
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.services.MemoryHog
-import uk.gov.hmrc.platformstatusfrontend.views.html.kill
+import uk.gov.hmrc.platformstatusfrontend.views.html.Kill
 
 import scala.concurrent.Future
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -31,7 +31,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 case class LeakRequest(mb: Int = 10, sleep: Int = 100)
 
 @Singleton
-class KillController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, memoryHog: MemoryHog, killView: kill) extends FrontendController(mcc) {
+class KillController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, memoryHog: MemoryHog, killView: Kill) extends FrontendController(mcc) {
 
   val leakForm: Form[LeakRequest] = Form(
     mapping(
@@ -49,7 +49,7 @@ class KillController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComp
 
   def meteOutDeath = Action { implicit request =>
     System.exit(0)
-    Redirect(routes.KillController.kill()).flashing("success" -> "If you see this then the container did not die.")
+    Redirect(routes.KillController.kill).flashing("success" -> "If you see this then the container did not die.")
   }
 
   def leakMemory = Action { implicit request =>
@@ -59,7 +59,7 @@ class KillController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComp
       },
       killRequest => {
         memoryHog.eatMemory(killRequest.mb, killRequest.sleep)
-        Redirect(routes.KillController.kill()).flashing("success" -> "If you see this then the container did not die.")
+        Redirect(routes.KillController.kill).flashing("success" -> "If you see this then the container did not die.")
       }
     )
   }

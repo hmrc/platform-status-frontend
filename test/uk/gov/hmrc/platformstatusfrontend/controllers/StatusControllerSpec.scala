@@ -33,7 +33,7 @@ import play.api.libs.concurrent.DefaultFutures
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.services.{PlatformStatus, StatusChecker}
-import uk.gov.hmrc.platformstatusfrontend.views.html.status
+import uk.gov.hmrc.platformstatusfrontend.views.html.{Status => StatusView}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 
@@ -66,7 +66,7 @@ class StatusControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPer
     when(statusChecker.iteration4Status()(any[ExecutionContext], any[Futures]  ) ) thenReturn Future(dummyStatus.copy(name = "it4"))
     when(statusChecker.iteration5Status()(any[HeaderCarrier], any[ExecutionContext]  )) thenReturn Future(dummyStatus.copy(name = "it5"))
 
-    val statusView: status = app.injector.instanceOf[status]
+    val statusView: StatusView = app.injector.instanceOf[StatusView]
 
     val controller = new StatusController(appConfig, stubMessagesControllerComponents(), statusChecker, statusView)
   }

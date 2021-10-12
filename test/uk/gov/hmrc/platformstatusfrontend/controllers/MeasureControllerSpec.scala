@@ -38,7 +38,7 @@ import uk.gov.hmrc.platformstatusfrontend.connectors.BackendConnector
 import uk.gov.hmrc.platformstatusfrontend.services.MeasureService
 import uk.gov.hmrc.platformstatusfrontend.util.Generators._
 import uk.gov.hmrc.platformstatusfrontend.util.MeasureUtil._
-import uk.gov.hmrc.platformstatusfrontend.views.html.measure
+import uk.gov.hmrc.platformstatusfrontend.views.html.Measure
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import play.api.test.CSRFTokenHelper._
@@ -68,7 +68,7 @@ class MeasureControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPe
     val backendConnector: BackendConnector = mock[BackendConnector]
     val measureService: MeasureService = new MeasureService(backendConnector, appConfig)
 
-    val measureView: measure = app.injector.instanceOf[measure]
+    val measureView: Measure = app.injector.instanceOf[Measure]
 
     val controller = new MeasureController(appConfig, stubMessagesControllerComponents(), measureService, measureView)
   }

@@ -24,7 +24,7 @@ import play.api.mvc._
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.services.MeasureService
 import uk.gov.hmrc.platformstatusfrontend.util.MeasureUtil._
-import uk.gov.hmrc.platformstatusfrontend.views.html.measure
+import uk.gov.hmrc.platformstatusfrontend.views.html.Measure
 
 import scala.concurrent.{ExecutionContext, Future}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -35,7 +35,7 @@ case class MeasureRequest(headerName: String = "", bytes: Int = 0)
 class MeasureController @Inject()(appConfig: AppConfig,
                                   mcc: MessagesControllerComponents,
                                   measureService: MeasureService,
-                                  measureView: measure
+                                  measureView: Measure
                                  )(implicit executionContext: ExecutionContext)
 extends FrontendController(mcc){
 

@@ -23,7 +23,7 @@ import play.api.data.Forms._
 import play.api.mvc._
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.services.StatusChecker
-import uk.gov.hmrc.platformstatusfrontend.views.html.noise
+import uk.gov.hmrc.platformstatusfrontend.views.html.Noise
 
 import scala.concurrent.Future
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -32,7 +32,7 @@ case class NoiseRequest(level: String = "INFO", message: String = "###platform-s
 
 
 @Singleton
-class NoiseController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, val statusChecker: StatusChecker, noiseView: noise)
+class NoiseController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, val statusChecker: StatusChecker, noiseView: Noise)
   extends FrontendController(mcc) {
 
   implicit val config: AppConfig = appConfig
@@ -57,7 +57,7 @@ class NoiseController @Inject()(appConfig: AppConfig, mcc: MessagesControllerCom
       },
       noiseRequest => {
         makeSomeNoise(noiseRequest)
-        Redirect(routes.NoiseController.noise()).flashing("success" -> "Log messages written.")
+        Redirect(routes.NoiseController.noise).flashing("success" -> "Log messages written.")
       }
     )
   }

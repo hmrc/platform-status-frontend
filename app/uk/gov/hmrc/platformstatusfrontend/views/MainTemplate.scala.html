@@ -15,11 +15,11 @@
  *@
 
 @import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
-@import uk.gov.hmrc.platformstatusfrontend.views.html.govuk_wrapper
+@import uk.gov.hmrc.platformstatusfrontend.views.html.GovukWrapper
 @import uk.gov.hmrc.play.views.html.layouts.{Article, Sidebar}
 @this(
         article: Article,
-        govuk_wrapper: govuk_wrapper,
+        govukWrapper: GovukWrapper,
         uiSidebar: Sidebar
 )
 @(title: String,
@@ -39,7 +39,7 @@
 }
 
 
-@govuk_wrapper(appConfig = appConfig,
+@govukWrapper(appConfig = appConfig,
                title = title,
                mainClass = mainClass,
                bodyClasses = bodyClasses,

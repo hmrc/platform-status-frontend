@@ -15,18 +15,12 @@
  *@
 
 @import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
-@import uk.gov.hmrc.platformstatusfrontend.views.html.govuk_wrapper
+@import uk.gov.hmrc.platformstatusfrontend.views.html.MainTemplate
 @this(
-        govuk_wrapper: govuk_wrapper
+        mainTemplate: MainTemplate
 )
-@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@contentHeader = {
-  <h1>@heading</h1>
+@mainTemplate(title = "Hello from platform-status-frontend", bodyClasses = None) {
+    <h1>Hello from platform-status-frontend !</h1>
 }
-
-@mainContent = {
-  <p>@message</p>
-}
-
-@govuk_wrapper(appConfig = appConfig, title = pageTitle, contentHeader = Some(contentHeader), mainContent = mainContent)
