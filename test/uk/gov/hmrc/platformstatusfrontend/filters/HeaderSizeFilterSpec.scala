@@ -18,11 +18,12 @@ package uk.gov.hmrc.platformstatusfrontend.filters
 
 import akka.stream.Materializer
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.mvc.Results.Ok
-import play.api.mvc.{Action, Headers}
+import play.api.mvc.{DefaultActionBuilder, Headers}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.platformstatusfrontend.util.Generators._
@@ -30,13 +31,14 @@ import uk.gov.hmrc.platformstatusfrontend.util.MeasureUtil
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class HeaderSizeFilterSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with
+class HeaderSizeFilterSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with
   ScalaCheckDrivenPropertyChecks with ScalaFutures {
 
   private implicit lazy val materializer: Materializer = app.materializer
 
   val filter = new HeaderSizeFilter()
-  val action = Action { request =>
+  val act = app.injector.instanceOf[DefaultActionBuilder]
+  val action = act { request =>
     Ok("").withHeaders(request.headers.headers : _*)
   }
 

@@ -16,18 +16,18 @@
 
 package uk.gov.hmrc.platformstatusfrontend.guice
 
-import org.mockito.Mockito._
+import org.mockito.scalatest.MockitoSugar
 import org.scalatest.concurrent.TimeLimits
 import org.scalatest.exceptions.TestFailedDueToTimeoutException
-import org.scalatestplus.mockito.MockitoSugar
+import org.scalatest.matchers.should.Matchers
 import org.scalatest.time.Span
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.wordspec.AnyWordSpec
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 
 import scala.concurrent.duration._
 
 
-class SlowStartModuleSpec extends WordSpec with Matchers with MockitoSugar with TimeLimits {
+class SlowStartModuleSpec extends AnyWordSpec with Matchers with MockitoSugar with TimeLimits {
 
   private trait Setup {
     val testTimeoutDuration: Span = 100 milliseconds

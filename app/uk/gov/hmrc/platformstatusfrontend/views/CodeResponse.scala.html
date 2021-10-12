@@ -15,20 +15,17 @@
  *@
 
 @import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
-@import java.lang.management.GarbageCollectorMXBean
+@import uk.gov.hmrc.platformstatusfrontend.views.html.MainTemplate
 
-@(gbeans: List[GarbageCollectorMXBean])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@this(
+        mainTemplate: MainTemplate
+)
+@(code: Int, message: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig, requestHeader: RequestHeader, flash: Flash)
 
-@main_template(title = "Garbage", bodyClasses = None) {
-    <h1>Garbage, garbage everywhere.</h1>
+@mainTemplate(title = "Generated response codes") {
 
+ <p>A <i><b>@code</b></i> response was returned with the message <i><b>@message</b></i></p>
 
-    <p>
-        <ul>
-          @for(gc <- gbeans) {
-              <li><b>@gc.getName</b> has garbage collected @gc.getCollectionCount times.</li>
-          }
-        </ul>
-    </p>
-
+    <p><a href="@uk.gov.hmrc.platformstatusfrontend.controllers.routes.CodeController.code">generate another response code</a></p>
+    <p><a href="@uk.gov.hmrc.platformstatusfrontend.controllers.routes.StatusController.platformStatus">frontpage</a></p>
 }

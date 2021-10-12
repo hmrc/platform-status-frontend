@@ -24,17 +24,18 @@ import play.api.mvc._
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.services.MeasureService
 import uk.gov.hmrc.platformstatusfrontend.util.MeasureUtil._
-import uk.gov.hmrc.platformstatusfrontend.views
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.platformstatusfrontend.views.html.Measure
 
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 case class MeasureRequest(headerName: String = "", bytes: Int = 0)
 
 @Singleton
 class MeasureController @Inject()(appConfig: AppConfig,
                                   mcc: MessagesControllerComponents,
-                                  measureService: MeasureService
+                                  measureService: MeasureService,
+                                  measureView: Measure
                                  )(implicit executionContext: ExecutionContext)
 extends FrontendController(mcc){
 
@@ -50,7 +51,7 @@ extends FrontendController(mcc){
   implicit val config: AppConfig = appConfig
 
   def measure = Action.async { implicit request =>
-    Future.successful( Ok(views.html.measure(measureForm.fill(MeasureRequest()))))
+    Future.successful( Ok(measureView(measureForm.fill(MeasureRequest()))))
   }
 
   def measureHeader = Action.async { implicit request =>
@@ -69,7 +70,7 @@ extends FrontendController(mcc){
   def randomResponseHeaderOfSize() = Action.async { implicit request =>
     measureForm.bindFromRequest.fold(
       formWithErrors => {
-        Future.successful(BadRequest(views.html.measure(formWithErrors)))
+        Future.successful(BadRequest(measureView(formWithErrors)))
       },
       measureRequest => {
         val generated = generateStringOfSize(measureRequest.bytes)
@@ -83,7 +84,7 @@ extends FrontendController(mcc){
   def randomResponseBodyOfSize() = Action.async { implicit request =>
     measureForm.bindFromRequest.fold(
       formWithErrors => {
-        Future.successful(BadRequest(views.html.measure(formWithErrors)))
+        Future.successful(BadRequest(measureView(formWithErrors)))
       },
       measureRequest => {
         val generated = generateStringOfSize(measureRequest.bytes)
@@ -96,7 +97,7 @@ extends FrontendController(mcc){
   def headerOfSizeToBackend() = Action.async { implicit request =>
     measureForm.bindFromRequest.fold(
       formWithErrors => {
-        Future.successful(BadRequest(views.html.measure(formWithErrors)))
+        Future.successful(BadRequest(measureView(formWithErrors)))
       },
       measureRequest => {
         val generated = generateStringOfSize(measureRequest.bytes)
@@ -109,7 +110,7 @@ extends FrontendController(mcc){
   def bodyOfSizeToBackend() = Action.async { implicit request =>
     measureForm.bindFromRequest.fold(
       formWithErrors => {
-        Future.successful(BadRequest(views.html.measure(formWithErrors)))
+        Future.successful(BadRequest(measureView(formWithErrors)))
       },
       measureRequest => {
         val generated = generateStringOfSize(measureRequest.bytes)

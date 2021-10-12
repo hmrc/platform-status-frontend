@@ -19,7 +19,6 @@ package uk.gov.hmrc.platformstatusfrontend.services
 import com.google.inject.Inject
 import javax.inject.Singleton
 import play.api.Logger
-import play.api.libs.concurrent.Timeout
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.connectors.BackendConnector
@@ -28,7 +27,7 @@ import uk.gov.hmrc.platformstatusfrontend.util.MeasureUtil.X_TEST_HEADER_NAME
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class MeasureService @Inject()(backendConnector: BackendConnector, appConfig: AppConfig) extends Timeout {
+class MeasureService @Inject()(backendConnector: BackendConnector, appConfig: AppConfig) {
 
   val logger = Logger(this.getClass)
 

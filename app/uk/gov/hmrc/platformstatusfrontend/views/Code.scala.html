@@ -15,16 +15,19 @@
  *@
 
 @import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
-@import uk.gov.hmrc.platformstatusfrontend.services.PlatformStatus
+@import uk.gov.hmrc.platformstatusfrontend.views.html.MainTemplate
 @import uk.gov.hmrc.platformstatusfrontend.controllers.CodeRequest
 
 @import views.html.helper.CSRF
+@this(
+        mainTemplate: MainTemplate
+)
 @(codeForm: Form[CodeRequest])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, requestHeader: RequestHeader, flash: Flash)
 
-@main_template(title = "Generate specific response codes") {
+@mainTemplate(title = "Generate specific response codes") {
     <h1>@flash.get("success").getOrElse("Player 1, choose your response code...")</h1>
 
-    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.CodeController.respondWithCode()){
+    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.CodeController.respondWithCode){
         @CSRF.formField
         @helper.select(codeForm("code"), Seq(
             "200" -> "200 - OK",
@@ -61,5 +64,5 @@
 
         <input type="submit" value="Submit">
     }
-    <p><a href="@uk.gov.hmrc.platformstatusfrontend.controllers.routes.StatusController.platformStatus()">frontpage</a></p>
+    <p><a href="@uk.gov.hmrc.platformstatusfrontend.controllers.routes.StatusController.platformStatus">frontpage</a></p>
 }

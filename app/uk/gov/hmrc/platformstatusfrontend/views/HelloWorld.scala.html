@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,25 +12,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package uk.gov.hmrc.platformstatusfrontend.services
+@import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
+@import uk.gov.hmrc.platformstatusfrontend.views.html.MainTemplate
+@this(
+        mainTemplate: MainTemplate
+)
+@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.matchers.should.Matchers
-
-class MemoryHogTest extends AnyWordSpec with Matchers {
-
-  "MemoryHog" should {
-    "eat memory" in {
-      try {
-        val memHog = new MemoryHog()
-        memHog.eatMemory(50, 25)
-      } catch {
-        case _: OutOfMemoryError =>
-        case ex => throw ex
-      }
-    }
-  }
-
+@mainTemplate(title = "Hello from platform-status-frontend", bodyClasses = None) {
+    <h1>Hello from platform-status-frontend !</h1>
 }

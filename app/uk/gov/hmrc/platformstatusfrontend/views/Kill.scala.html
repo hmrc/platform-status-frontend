@@ -15,14 +15,16 @@
  *@
 
 @import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
-@import uk.gov.hmrc.platformstatusfrontend.services.PlatformStatus
-@import uk.gov.hmrc.platformstatusfrontend.controllers.NoiseRequest
 @import uk.gov.hmrc.platformstatusfrontend.controllers.LeakRequest
+@import uk.gov.hmrc.platformstatusfrontend.views.html.MainTemplate
 
 @import views.html.helper.CSRF
+@this(
+        mainTemplate: MainTemplate
+)
 @(leakForm: Form[LeakRequest])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, requestHeader: RequestHeader, flash: Flash)
 
-@main_template(title = "Hello from platform-status-frontend") {
+@mainTemplate(title = "Hello from platform-status-frontend") {
     <h1>@flash.get("success").getOrElse("!!! Here be dragons !!! ")</h1>
 
     <hr/>
@@ -58,5 +60,5 @@
         <input type="submit" value="Leak memory">
     }
     <hr/>
-    <p><a href="@uk.gov.hmrc.platformstatusfrontend.controllers.routes.StatusController.platformStatus()">frontpage</a></p>
+    <p><a href="@uk.gov.hmrc.platformstatusfrontend.controllers.routes.StatusController.platformStatus">frontpage</a></p>
 }

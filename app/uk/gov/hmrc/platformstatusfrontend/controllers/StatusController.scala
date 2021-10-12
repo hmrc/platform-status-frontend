@@ -21,21 +21,21 @@ import play.api.Logger
 import play.api.mvc._
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.services.{PlatformStatus, StatusChecker}
-import uk.gov.hmrc.platformstatusfrontend.views
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import play.api.libs.concurrent.{Futures, Timeout}
+import uk.gov.hmrc.platformstatusfrontend.views.html.Status
+import play.api.libs.concurrent.Futures
 import scala.concurrent.duration._
 import play.api.libs.concurrent.Futures._
 import PlatformStatus._
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 @Singleton
-class StatusController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, val statusChecker: StatusChecker)(implicit executionContext: ExecutionContext, futures: Futures)
+class StatusController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, val statusChecker: StatusChecker, statusView: Status)(implicit executionContext: ExecutionContext, futures: Futures)
   extends FrontendController(mcc) {
 
   implicit val config: AppConfig = appConfig
 
-  def defaultLanding: Action[AnyContent] = Action.async { implicit request => Future.successful(Redirect(routes.StatusController.platformStatus())) }
+  def defaultLanding: Action[AnyContent] = Action.async { implicit request => Future.successful(Redirect(routes.StatusController.platformStatus)) }
 
   def platformStatus: Action[AnyContent] = Action.async { implicit request =>
 
@@ -56,7 +56,7 @@ class StatusController @Inject()(appConfig: AppConfig, mcc: MessagesControllerCo
         iter4,
         iter5
       )
-    } yield Ok(views.html.status(statusMap))
+    } yield Ok(statusView(statusMap))
   }
 
 }

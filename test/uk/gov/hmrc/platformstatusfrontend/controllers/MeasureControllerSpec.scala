@@ -21,8 +21,9 @@ import akka.stream.Materializer
 import org.mockito.captor.ArgCaptor
 import org.mockito.scalatest.MockitoSugar
 import org.scalacheck.Gen
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.http.Status
@@ -37,18 +38,19 @@ import uk.gov.hmrc.platformstatusfrontend.connectors.BackendConnector
 import uk.gov.hmrc.platformstatusfrontend.services.MeasureService
 import uk.gov.hmrc.platformstatusfrontend.util.Generators._
 import uk.gov.hmrc.platformstatusfrontend.util.MeasureUtil._
-import uk.gov.hmrc.play.bootstrap.config.{RunMode, ServicesConfig}
+import uk.gov.hmrc.platformstatusfrontend.views.html.Measure
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import play.api.test.CSRFTokenHelper._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class MeasureControllerSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with
+class MeasureControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with
   MockitoSugar with ScalaCheckDrivenPropertyChecks with ScalaFutures {
   private val env           = Environment.simple()
   private val configuration: Configuration = Configuration.load(env)
-  private val serviceConfig = new ServicesConfig(configuration, new RunMode(configuration, Mode.Dev))
+  private val serviceConfig = new ServicesConfig(configuration)
   private val appConfig     = new AppConfig(configuration, serviceConfig)
   private implicit lazy val materializer: Materializer = app.materializer
 
@@ -65,7 +67,10 @@ class MeasureControllerSpec extends WordSpec with Matchers with GuiceOneAppPerSu
 
     val backendConnector: BackendConnector = mock[BackendConnector]
     val measureService: MeasureService = new MeasureService(backendConnector, appConfig)
-    val controller = new MeasureController(appConfig, stubMessagesControllerComponents(), measureService)
+
+    val measureView: Measure = app.injector.instanceOf[Measure]
+
+    val controller = new MeasureController(appConfig, stubMessagesControllerComponents(), measureService, measureView)
   }
 
   "GET /measure-header" should {

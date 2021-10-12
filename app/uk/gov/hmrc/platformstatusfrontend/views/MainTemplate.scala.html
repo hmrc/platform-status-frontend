@@ -15,6 +15,13 @@
  *@
 
 @import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
+@import uk.gov.hmrc.platformstatusfrontend.views.html.GovukWrapper
+@import uk.gov.hmrc.play.views.html.layouts.{Article, Sidebar}
+@this(
+        article: Article,
+        govukWrapper: GovukWrapper,
+        uiSidebar: Sidebar
+)
 @(title: String,
   sidebarLinks: Option[Html] = None,
   contentHeader: Option[Html] = None,
@@ -22,25 +29,23 @@
   mainClass: Option[String] = None,
   scriptElem: Option[Html] = None)(mainContent: Html)(implicit request : Request[_], messages: Messages, appConfig: AppConfig)
 
-@import uk.gov.hmrc.play.views.html.layouts
-
 
 @serviceInfoContent = {}
 
 @sidebar = {
     @if(sidebarLinks.isDefined) {
-        @layouts.sidebar(sidebarLinks.get, Some("sidebar"))
+        @uiSidebar(sidebarLinks.get, Some("sidebar"))
     }
 }
 
 
-@govuk_wrapper(appConfig = appConfig,
+@govukWrapper(appConfig = appConfig,
                title = title,
                mainClass = mainClass,
                bodyClasses = bodyClasses,
                sidebar = sidebar,
                contentHeader = contentHeader,
-               mainContent = layouts.article(mainContent),
+               mainContent = article(mainContent),
                serviceInfoContent = serviceInfoContent,
                scriptElem = scriptElem
 )

@@ -7,21 +7,19 @@ object AppDependencies {
 
   val compile = Seq(
 
-    "uk.gov.hmrc"             %% "govuk-template"           % "5.36.0-play-26",
-    "uk.gov.hmrc"             %% "play-ui"                  % "7.40.0-play-26",
-    "uk.gov.hmrc"             %% "bootstrap-play-26"        % "0.42.0" exclude("uk.gov.hmrc", "auth-client_2.11"),
-    "org.mongodb.scala"       %% "mongo-scala-driver"       % "2.6.0"
+    "uk.gov.hmrc"             %% "govuk-template"              % "5.71.0-play-28",
+    "uk.gov.hmrc"             %% "play-ui"                     % "9.7.0-play-28",
+    "uk.gov.hmrc"             %% "bootstrap-frontend-play-28"  % "5.14.0",
+    "org.mongodb.scala"       %% "mongo-scala-driver"          % "2.6.0"
   )
 
   val test = Seq(
-    "uk.gov.hmrc"             %% "bootstrap-play-26"        % "0.42.0"              % Test classifier "tests",
-    "org.scalatest"           %% "scalatest"                % "3.0.8"               % Test,
-    "org.scalacheck"          %% "scalacheck"               % "1.14.3"              % Test,
-    "org.jsoup"               %  "jsoup"                    % "1.10.2"              % Test,
-    "com.typesafe.play"       %% "play-test"                % current               % Test,
-    "org.pegdown"             %  "pegdown"                  % "1.6.0"               % "test, it",
-    "org.mockito"             %% "mockito-scala-scalatest"  % "1.10.2"              % Test,
-    "org.scalatestplus.play"  %% "scalatestplus-play"       % "3.1.2"               % "test, it"
+    "uk.gov.hmrc"             %% "bootstrap-test-play-28"   % "5.14.0"              % Test,
+    "com.vladsch.flexmark"    %  "flexmark-profile-pegdown" % "0.62.2"              % Test,
+    "org.scalacheck"          %% "scalacheck"               % "1.15.0"              % Test,
+    "org.scalatestplus"       %% "scalacheck-1-15"          % "3.2.10.0"            % Test,
+    "org.jsoup"               %  "jsoup"                    % "1.14.3"              % Test,
+    "org.mockito"             %% "mockito-scala-scalatest"  % "1.16.42"             % Test,
   )
 
 }

@@ -17,25 +17,23 @@
 package uk.gov.hmrc.platformstatusfrontend.services
 
 import akka.actor.ActorSystem
+import org.mockito.scalatest.MockitoSugar
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{Matchers, WordSpec}
-import org.scalatest.mockito.MockitoSugar
-import play.api.libs.concurrent.{DefaultFutures, Futures}
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
-import uk.gov.hmrc.platformstatusfrontend.connectors.{BackendConnector, InternetConnector}
-import org.mockito.ArgumentMatchers._
+import org.scalatest.matchers.should.Matchers
 import org.scalatest.time.Span
-import PlatformStatus._
+import org.scalatest.wordspec.AnyWordSpec
+import play.api.libs.concurrent.{DefaultFutures, Futures}
+import play.api.libs.ws.WSResponse
+import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
+import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
+import uk.gov.hmrc.platformstatusfrontend.connectors.{BackendConnector, InternetConnector}
+import uk.gov.hmrc.platformstatusfrontend.services.PlatformStatus._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 import scala.concurrent.duration._
-import org.mockito.Mockito._
-import play.api.Configuration
-import play.api.libs.ws.WSResponse
-import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 
-class StatusCheckerSpec extends WordSpec with Matchers with MockitoSugar with ScalaFutures {
+class StatusCheckerSpec extends AnyWordSpec with Matchers with MockitoSugar with ScalaFutures {
 
   private val testTimeoutDuration: Span = 6 seconds // underlying method calls should timeout before this
 
@@ -82,6 +80,8 @@ class StatusCheckerSpec extends WordSpec with Matchers with MockitoSugar with Sc
   "iteration 4 outbound call via squid" should {
     "be happy when a response is received" in new Setup() {
       val fakeResponse = mock[WSResponse]
+      when(appConfig.proxyRequired) thenReturn false
+      when(fakeResponse.status) thenReturn 200
       when(internetConnector.callTheWeb(statusChecker.webTestEndpoint, false)) thenReturn Future(fakeResponse)
       whenReady(statusChecker.iteration4Status(), timeout(testTimeoutDuration)) {
         result => result shouldBe baseIteration4Status
@@ -89,6 +89,7 @@ class StatusCheckerSpec extends WordSpec with Matchers with MockitoSugar with Sc
     }
     "handle things when an error response is received" in new Setup() {
       val fakeResponse = mock[WSResponse]
+      when(appConfig.proxyRequired) thenReturn false
       when(internetConnector.callTheWeb(statusChecker.webTestEndpoint, false)) thenReturn Future.failed(new Exception("Borked"))
       whenReady(statusChecker.iteration4Status(), timeout(testTimeoutDuration)) {
         result => result shouldBe baseIteration4Status.copy(isWorking = false, reason = Some("Borked"))

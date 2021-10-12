@@ -23,7 +23,7 @@ import org.mongodb.scala._
 import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model.{ReplaceOptions, UpdateOptions}
 import play.api.Logger
-import play.api.libs.concurrent.{Futures, Timeout}
+import play.api.libs.concurrent.Futures
 import play.api.libs.concurrent.Futures._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.platformstatusfrontend.connectors.{BackendConnector, InternetConnector}
@@ -36,7 +36,7 @@ import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class StatusChecker @Inject()(backendConnector: BackendConnector, internetConnector: InternetConnector, appConfig: AppConfig) extends Timeout {
+class StatusChecker @Inject()(backendConnector: BackendConnector, internetConnector: InternetConnector, appConfig: AppConfig) {
 
   val logger = Logger(this.getClass)
 

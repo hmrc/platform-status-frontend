@@ -19,7 +19,7 @@ package uk.gov.hmrc.platformstatusfrontend.filters
 import javax.inject.{Inject, Singleton}
 import play.api.http.HttpFilters
 import play.api.mvc.EssentialFilter
-import uk.gov.hmrc.play.bootstrap.filters.FrontendFilters
+import uk.gov.hmrc.play.bootstrap.frontend.filters.FrontendFilters
 
 @Singleton
 class CustomFrontendFilters @Inject()(frontendFilters: FrontendFilters, headerSizeFilter: HeaderSizeFilter) extends HttpFilters {
