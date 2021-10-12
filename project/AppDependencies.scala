@@ -19,7 +19,6 @@ object AppDependencies {
     "org.scalacheck"          %% "scalacheck"               % "1.15.0"              % Test,
     "org.scalatestplus"       %% "scalacheck-1-15"          % "3.2.10.0"            % Test,
     "org.jsoup"               %  "jsoup"                    % "1.14.3"              % Test,
-    "com.typesafe.play"       %% "play-test"                % current               % Test,
     "org.mockito"             %% "mockito-scala-scalatest"  % "1.16.42"             % Test,
   )
 
