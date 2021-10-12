@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.platformstatusfrontend.services
 
-import org.scalatest.{FunSuite, Matchers, WordSpec}
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.matchers.should.Matchers
 
-class MemoryHogTest extends WordSpec with Matchers {
+class MemoryHogTest extends AnyWordSpec with Matchers {
 
   "MemoryHog" should {
     "eat memory" in {

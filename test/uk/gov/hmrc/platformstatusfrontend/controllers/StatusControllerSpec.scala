@@ -17,10 +17,11 @@
 package uk.gov.hmrc.platformstatusfrontend.controllers
 
 import akka.actor.ActorSystem
-import org.scalatest.mockito.MockitoSugar
 import org.mockito.Mockito._
 import org.mockito.ArgumentMatchers._
-import org.scalatest.{Matchers, WordSpec}
+import org.mockito.scalatest.MockitoSugar
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.Status
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -32,17 +33,18 @@ import play.api.libs.concurrent.DefaultFutures
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.services.{PlatformStatus, StatusChecker}
-import uk.gov.hmrc.play.bootstrap.config.{RunMode, ServicesConfig}
+import uk.gov.hmrc.platformstatusfrontend.views.html.status
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
-class StatusControllerSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with MockitoSugar {
+class StatusControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with MockitoSugar {
   private val fakeRequest = FakeRequest("GET", "/")
   private val env           = Environment.simple()
   private val configuration: Configuration = Configuration.load(env)
-  private val serviceConfig = new ServicesConfig(configuration, new RunMode(configuration, Mode.Dev))
+  private val serviceConfig = new ServicesConfig(configuration)
   private val appConfig     = new AppConfig(configuration, serviceConfig)
 
   override def fakeApplication: Application =
@@ -64,7 +66,9 @@ class StatusControllerSpec extends WordSpec with Matchers with GuiceOneAppPerSui
     when(statusChecker.iteration4Status()(any[ExecutionContext], any[Futures]  ) ) thenReturn Future(dummyStatus.copy(name = "it4"))
     when(statusChecker.iteration5Status()(any[HeaderCarrier], any[ExecutionContext]  )) thenReturn Future(dummyStatus.copy(name = "it5"))
 
-    val controller = new StatusController(appConfig, stubMessagesControllerComponents(), statusChecker)
+    val statusView: status = app.injector.instanceOf[status]
+
+    val controller = new StatusController(appConfig, stubMessagesControllerComponents(), statusChecker, statusView)
   }
 
   "GET /" should {

@@ -23,15 +23,15 @@ import play.api.data.Forms._
 import play.api.mvc._
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.services.{MemoryHog, StatusChecker}
-import uk.gov.hmrc.platformstatusfrontend.views
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.platformstatusfrontend.views.html.{code, codeResponse}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 case class CodeRequest(code: Int = 200, message: String = "a profound message")
 
 @Singleton
-class CodeController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, memoryHog: MemoryHog) extends FrontendController(mcc) {
+class CodeController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, memoryHog: MemoryHog, codeView: code, codeResponseView: codeResponse) extends FrontendController(mcc) {
 
   val codeForm: Form[CodeRequest] = Form(
     mapping(
@@ -44,19 +44,19 @@ class CodeController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComp
   val logger: Logger = Logger(this.getClass)
 
   def code = Action.async { implicit request =>
-    Future.successful( Ok(views.html.code( codeForm.fill(CodeRequest()))  ) )
+    Future.successful( Ok(codeView( codeForm.fill(CodeRequest()))  ) )
   }
 
   def respondWithCode = Action { implicit request =>
     codeForm.bindFromRequest.fold(
       formWithErrors => {
-        BadRequest( views.html.code(formWithErrors) )
+        BadRequest(codeView(formWithErrors) )
       },
       codeRequest => {
         if (codeRequest.code == 504) {
           Thread.sleep(config.badGatewayTimeout.toMillis)
         }
-        new Status(codeRequest.code)(views.html.codeResponse(codeRequest.code, codeRequest.message))
+        new Status(codeRequest.code)(codeResponseView(codeRequest.code, codeRequest.message))
       }
     )
   }

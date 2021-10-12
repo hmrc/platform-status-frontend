@@ -23,15 +23,15 @@ import play.api.data._
 import play.api.mvc._
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.services.MemoryHog
-import uk.gov.hmrc.platformstatusfrontend.views
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.platformstatusfrontend.views.html.kill
 
 import scala.concurrent.Future
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 case class LeakRequest(mb: Int = 10, sleep: Int = 100)
 
 @Singleton
-class KillController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, memoryHog: MemoryHog) extends FrontendController(mcc) {
+class KillController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, memoryHog: MemoryHog, killView: kill) extends FrontendController(mcc) {
 
   val leakForm: Form[LeakRequest] = Form(
     mapping(
@@ -44,7 +44,7 @@ class KillController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComp
   val logger: Logger = Logger(this.getClass)
 
   def kill = Action.async { implicit request =>
-    Future.successful( Ok(views.html.kill( leakForm.fill(LeakRequest()))  ) )
+    Future.successful( Ok(killView( leakForm.fill(LeakRequest()))  ) )
   }
 
   def meteOutDeath = Action { implicit request =>
@@ -55,7 +55,7 @@ class KillController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComp
   def leakMemory = Action { implicit request =>
     leakForm.bindFromRequest.fold(
       formWithErrors => {
-        BadRequest(views.html.kill(formWithErrors))
+        BadRequest(killView(formWithErrors))
       },
       killRequest => {
         memoryHog.eatMemory(killRequest.mb, killRequest.sleep)

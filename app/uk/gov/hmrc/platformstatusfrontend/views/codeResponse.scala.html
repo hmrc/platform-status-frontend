@@ -15,10 +15,11 @@
  *@
 
 @import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
-@import uk.gov.hmrc.platformstatusfrontend.services.PlatformStatus
-@import uk.gov.hmrc.platformstatusfrontend.controllers.CodeRequest
+@import uk.gov.hmrc.platformstatusfrontend.views.html.main_template
 
-@import views.html.helper.CSRF
+@this(
+        main_template: main_template
+)
 @(code: Int, message: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig, requestHeader: RequestHeader, flash: Flash)
 
 @main_template(title = "Generated response codes") {

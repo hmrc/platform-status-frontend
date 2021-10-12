@@ -21,19 +21,19 @@ import play.api.Logger
 import play.api.mvc._
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.services.{PlatformStatus, StatusChecker}
-import uk.gov.hmrc.platformstatusfrontend.views
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import play.api.libs.concurrent.{Futures, Timeout}
+import uk.gov.hmrc.platformstatusfrontend.views.html.garbage
+import play.api.libs.concurrent.{Futures}
 import scala.concurrent.duration._
 import play.api.libs.concurrent.Futures._
 import PlatformStatus._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.collection.JavaConverters._
 import scala.language.implicitConversions
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 
 @Singleton
-class GarbageController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, val statusChecker: StatusChecker)(implicit executionContext: ExecutionContext, futures: Futures)
+class GarbageController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, val statusChecker: StatusChecker, garbageView: garbage)(implicit executionContext: ExecutionContext, futures: Futures)
   extends FrontendController(mcc) {
 
   implicit val config: AppConfig = appConfig
@@ -54,7 +54,7 @@ class GarbageController @Inject()(appConfig: AppConfig, mcc: MessagesControllerC
 //    }
 
 
-    Ok(views.html.garbage(gBeans))
+    Ok(garbageView(gBeans))
   }
 
 }
