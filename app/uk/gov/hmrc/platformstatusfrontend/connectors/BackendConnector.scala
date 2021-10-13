@@ -17,10 +17,10 @@
 package uk.gov.hmrc.platformstatusfrontend.connectors
 
 import javax.inject.{Inject, Singleton}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
+import uk.gov.hmrc.platformstatusfrontend.models.GcInformation
 import uk.gov.hmrc.platformstatusfrontend.services.PlatformStatus
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,4 +44,7 @@ class BackendConnector @Inject()(
 
   def measure(content: String, headers: Seq[(String, String)] = Seq.empty)(implicit hc: HeaderCarrier): Future[String] =
     http.POSTString[HttpResponse](s"$backendBaseUrl/measure", content, headers)(HttpReads.readRaw, hc, ec).map(_.body)
+
+  def gcInformation()(implicit hc: HeaderCarrier): Future[GcInformation] =
+    http.GET[GcInformation](s"$backendBaseUrl/gcinfo")
 }

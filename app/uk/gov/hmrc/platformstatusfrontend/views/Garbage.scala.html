@@ -15,24 +15,39 @@
  *@
 
 @import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
+@import uk.gov.hmrc.platformstatusfrontend.models.{GcInformation, GcSummary}
 @import uk.gov.hmrc.platformstatusfrontend.views.html.MainTemplate
-@import java.lang.management.GarbageCollectorMXBean
+
+
 @this(
         mainTemplate: MainTemplate
 )
 
-@(gbeans: List[GarbageCollectorMXBean])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(gcSummary: GcSummary)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+
 
 @mainTemplate(title = "Garbage", bodyClasses = None) {
+
     <h1>Garbage, garbage everywhere.</h1>
+    @displayStatistics("Frontend", gcSummary.frontend)
+    @displayStatistics("Backend", gcSummary.backend)
+}
 
-
-    <p>
-        <ul>
-          @for(gc <- gbeans) {
-              <li><b>@gc.getName</b> has garbage collected @gc.getCollectionCount times.</li>
-          }
-        </ul>
-    </p>
-
+@displayStatistics(name: String, gcInfo: GcInformation) = {
+    <div style="text-indent: 40px">
+        <h2>@name</h2>
+        @if(gcInfo.coreCount <= 0) {
+            <p>Call to @name failed</p>
+        } else {
+            <ul style="list-style-position: inside;
+                list-style-type: none">
+                <li>Number of cores = @gcInfo.coreCount</li>
+            </ul>
+            <ul style="list-style-position: inside">
+            @for(gc <- gcInfo.gBeans) {
+                <li><b>@gc.name</b> has garbage collected @gc.collectionCount times.</li>
+            }
+            </ul>
+        }
+    </div>
 }

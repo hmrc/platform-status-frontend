@@ -16,45 +16,38 @@
 
 package uk.gov.hmrc.platformstatusfrontend.controllers
 
-import javax.inject.{Inject, Singleton}
-import play.api.Logger
+import play.api.libs.concurrent.Futures
 import play.api.mvc._
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
-import uk.gov.hmrc.platformstatusfrontend.services.{PlatformStatus, StatusChecker}
+import uk.gov.hmrc.platformstatusfrontend.models.{GcInformation, GcSummary}
+import uk.gov.hmrc.platformstatusfrontend.services.GarbageService
 import uk.gov.hmrc.platformstatusfrontend.views.html.Garbage
-import play.api.libs.concurrent.Futures
-import scala.concurrent.duration._
-import play.api.libs.concurrent.Futures._
-import PlatformStatus._
-import scala.concurrent.{ExecutionContext, Future}
-import scala.collection.JavaConverters._
-import scala.language.implicitConversions
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+
+import javax.inject.{Inject, Singleton}
+import scala.collection.JavaConverters._
+import scala.concurrent.{ExecutionContext, Future}
+import scala.language.implicitConversions
 
 
 @Singleton
-class GarbageController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, val statusChecker: StatusChecker, garbageView: Garbage)(implicit executionContext: ExecutionContext, futures: Futures)
+class GarbageController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, val garbageService: GarbageService, garbageView: Garbage)(implicit executionContext: ExecutionContext, futures: Futures)
   extends FrontendController(mcc) {
 
   implicit val config: AppConfig = appConfig
 
 
-  def garbage: Action[AnyContent] = Action { implicit request =>
+  def garbage: Action[AnyContent] = Action.async { implicit request =>
 
     val properties = System.getProperties.asScala
     for ((k,v) <- properties) println(s"key: $k, value: $v")
 
+    val gcSummaryFuture = for {
+      backend <- garbageService.getBackendGcInfo
+      frontend <- garbageService.getFrontendGcInfo
+    } yield GcSummary(frontend, backend)
 
-    import java.lang.management.ManagementFactory
-
-    import scala.collection.JavaConversions._
-    val gBeans = ManagementFactory.getGarbageCollectorMXBeans.toList
-//    ManagementFactory.getGarbageCollectorMXBeans.map { gc =>
-//      "GC name:"  + gc.getName + " has collected " + gc.getCollectionCount + " times."
-//    }
-
-
-    Ok(garbageView(gBeans))
+    gcSummaryFuture.map{gcSummary => Ok(garbageView(gcSummary))}
   }
 
 }
