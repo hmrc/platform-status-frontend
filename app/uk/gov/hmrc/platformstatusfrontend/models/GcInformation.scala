@@ -30,11 +30,11 @@ object GcInformation {
   implicit val formatter: OFormat[GcInformation] = Json.format[GcInformation]
 }
 
-case class GcBeanInfo(name: String, collectionCount: Long)
+case class GcBeanInfo(name: String, collectionCount: Long, collectionTime: Long)
 
 object GcBeanInfo {
   def apply(bean: GarbageCollectorMXBean): GcBeanInfo = {
-    new GcBeanInfo(bean.getName, bean.getCollectionCount)
+    new GcBeanInfo(bean.getName, bean.getCollectionCount, bean.getCollectionTime)
   }
   implicit val formatter: OFormat[GcBeanInfo] = Json.format[GcBeanInfo]
 }
