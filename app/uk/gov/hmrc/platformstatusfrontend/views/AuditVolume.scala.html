@@ -14,27 +14,31 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
-@import uk.gov.hmrc.platformstatusfrontend.controllers.NoiseRequest
 @import uk.gov.hmrc.platformstatusfrontend.views.html.MainTemplate
+@import uk.gov.hmrc.platformstatusfrontend.models.AuditVolumeRequest
+@import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 
 @import views.html.helper.CSRF
 @this(
         mainTemplate: MainTemplate
 )
-@(noiseForm: Form[NoiseRequest])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, requestHeader: RequestHeader, flash: Flash)
+@(auditVolumeForm: Form[AuditVolumeRequest])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, requestHeader: RequestHeader, flash: Flash)
 
 @mainTemplate(title = "Hello from platform-status-frontend") {
-    <h1>@flash.get("success").getOrElse("Generate some noise in ELK")</h1>
+    <h1>@flash.get("success").getOrElse("Audit Volume Test")</h1>
 
-    <p>Note: Choosing 'error' level will also result in exception being thrown</p>
-    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.NoiseController.createNoise){
+    <hr/>
+    <h3>Audit Volume Test</h3>
+    <p>
+        Fire off a specified number of audit requests asynchronously
+    </p>
+
+    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.AuditVolumeController.run){
         @CSRF.formField
-        @helper.select(noiseForm("level"), Seq("INFO" -> "INFO", "WARN" -> "WARN", "ERROR" -> "ERROR"))
-        @helper.inputText(noiseForm("message"), args = 'size -> 60)
-        @helper.inputText(noiseForm("amount"))
-
-        <input type="submit" value="Submit">
+        @helper.inputText(auditVolumeForm("auditType"), '_label -> "Audit Type to be used in Datastream messages")
+        @helper.inputText(auditVolumeForm("n"), '_label -> "Number of audit messages")
+        <input type="submit" value="Generate">
     }
+
     <p><a href="@uk.gov.hmrc.platformstatusfrontend.controllers.routes.StatusController.platformStatus">frontpage</a></p>
 }
