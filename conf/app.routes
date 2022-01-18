@@ -21,3 +21,6 @@ GET       /measure-random-header        uk.gov.hmrc.platformstatusfrontend.contr
 GET       /measure-random-body          uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.randomResponseBodyOfSize
 GET       /measure-header-backend       uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.headerOfSizeToBackend
 GET       /measure-body-backend         uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.bodyOfSizeToBackend
+
+GET       /audit-volume                 uk.gov.hmrc.platformstatusfrontend.controllers.AuditVolumeController.setup()
+POST      /audit-volume                 uk.gov.hmrc.platformstatusfrontend.controllers.AuditVolumeController.run()

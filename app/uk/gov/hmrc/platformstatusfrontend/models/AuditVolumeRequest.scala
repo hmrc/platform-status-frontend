@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.platformstatusfrontend.controllers
+package uk.gov.hmrc.platformstatusfrontend.models
 
-class LoadController {
-
-}
+case class AuditVolumeRequest(auditType: String = "auditVolumeTest", n: Int = 1000)
