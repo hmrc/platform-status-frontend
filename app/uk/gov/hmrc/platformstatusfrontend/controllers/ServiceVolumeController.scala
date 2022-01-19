@@ -18,32 +18,33 @@ package uk.gov.hmrc.platformstatusfrontend.controllers
 
 import play.api.data.Form
 import play.api.data.Forms.{mapping, number, text}
+import play.api.data.validation.Constraints._
 import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
-import uk.gov.hmrc.platformstatusfrontend.models.AuditVolumeRequest
-import uk.gov.hmrc.platformstatusfrontend.services.AuditVolumeService
+import uk.gov.hmrc.platformstatusfrontend.models.ServiceVolumeRequest
+import uk.gov.hmrc.platformstatusfrontend.services.ServiceVolumeService
+import uk.gov.hmrc.platformstatusfrontend.views.html.ServiceVolume
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.platformstatusfrontend.views.html.AuditVolume
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton
-class AuditVolumeController @Inject()(service: AuditVolumeService,
-                                      view: AuditVolume,
-                                      mcc: MessagesControllerComponents)
-                                     (implicit config: AppConfig)
+class ServiceVolumeController @Inject()(service: ServiceVolumeService,
+                                        view: ServiceVolume,
+                                        mcc: MessagesControllerComponents)
+                                       (implicit config: AppConfig)
   extends FrontendController(mcc) {
 
-  val form: Form[AuditVolumeRequest] = Form(
+  val form: Form[ServiceVolumeRequest] = Form(
     mapping(
-      "auditType" -> text,
+      "url" -> text.verifying(pattern("https?://[^%#@?]+".r)),
       "n" -> number
-    )(AuditVolumeRequest.apply)(AuditVolumeRequest.unapply)
+    )(ServiceVolumeRequest.apply)(ServiceVolumeRequest.unapply)
   )
 
   def setup() = Action.async { implicit request =>
-    Future.successful( Ok(view(form.fill(AuditVolumeRequest()))))
+    Future.successful( Ok(view(form.fill(ServiceVolumeRequest()))))
   }
 
   def run() = Action.async { implicit  request =>
@@ -52,7 +53,7 @@ class AuditVolumeController @Inject()(service: AuditVolumeService,
         Future.successful(BadRequest(view(formWithErrors)))
       },
       form => {
-        service.sendAuditMessages(form.auditType, form.n)
+        service.sendServiceCalls(form.url, form.n)
         Future.successful(Ok("Generated"))
       }
     )

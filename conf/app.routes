@@ -24,3 +24,6 @@ GET       /measure-body-backend         uk.gov.hmrc.platformstatusfrontend.contr
 
 GET       /audit-volume                 uk.gov.hmrc.platformstatusfrontend.controllers.AuditVolumeController.setup()
 POST      /audit-volume                 uk.gov.hmrc.platformstatusfrontend.controllers.AuditVolumeController.run()
+
+GET       /service-volume               uk.gov.hmrc.platformstatusfrontend.controllers.ServiceVolumeController.setup()
+POST      /service-volume               uk.gov.hmrc.platformstatusfrontend.controllers.ServiceVolumeController.run()
