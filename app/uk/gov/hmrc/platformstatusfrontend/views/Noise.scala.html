@@ -27,6 +27,8 @@
 @mainTemplate(title = "Hello from platform-status-frontend") {
     <h1>@flash.get("success").getOrElse("Generate some noise in ELK")</h1>
 
+    <p>Pipelines are cool</p>
+
     <p>Note: Choosing 'error' level will also result in exception being thrown</p>
     @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.NoiseController.createNoise){
         @CSRF.formField
