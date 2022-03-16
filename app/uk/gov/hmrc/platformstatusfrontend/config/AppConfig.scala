@@ -41,4 +41,6 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
   lazy val proxyRequired: Boolean = servicesConfig.getBoolean("proxy.required")
 
   lazy val badGatewayTimeout: Duration = servicesConfig.getDuration("bad-gateway.timeout")
+
+  lazy val experimentValue: String = config.get[String]("experiment.value")
 }
