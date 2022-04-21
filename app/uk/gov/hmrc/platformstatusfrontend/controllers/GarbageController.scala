@@ -16,28 +16,30 @@
 
 package uk.gov.hmrc.platformstatusfrontend.controllers
 
-import play.api.libs.concurrent.Futures
 import play.api.mvc._
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
-import uk.gov.hmrc.platformstatusfrontend.models.{GcInformation, GcSummary}
+import uk.gov.hmrc.platformstatusfrontend.models.GcSummary
 import uk.gov.hmrc.platformstatusfrontend.services.GarbageService
 import uk.gov.hmrc.platformstatusfrontend.views.html.Garbage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
 import scala.collection.JavaConverters._
-import scala.concurrent.{ExecutionContext, Future}
-import scala.language.implicitConversions
+import scala.concurrent.ExecutionContext
 
 
 @Singleton
-class GarbageController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, val garbageService: GarbageService, garbageView: Garbage)(implicit executionContext: ExecutionContext, futures: Futures)
+class GarbageController @Inject()(appConfig: AppConfig,
+                                  mcc: MessagesControllerComponents,
+                                  garbageService: GarbageService,
+                                  garbageView: Garbage)
+                                 (implicit executionContext: ExecutionContext)
   extends FrontendController(mcc) {
 
   implicit val config: AppConfig = appConfig
 
 
-  def garbage: Action[AnyContent] = Action.async { implicit request =>
+  def garbage: Action[Unit] = Action.async(parse.empty) { implicit request =>
 
     val properties = System.getProperties.asScala
     for ((k,v) <- properties) println(s"key: $k, value: $v")

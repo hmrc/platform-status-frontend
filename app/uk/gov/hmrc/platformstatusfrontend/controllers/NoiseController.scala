@@ -16,17 +16,16 @@
 
 package uk.gov.hmrc.platformstatusfrontend.controllers
 
-import javax.inject.{Inject, Singleton}
 import play.api.Logger
-import play.api.data._
 import play.api.data.Forms._
+import play.api.data._
 import play.api.mvc._
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.services.StatusChecker
 import uk.gov.hmrc.platformstatusfrontend.views.html.Noise
-
-import scala.concurrent.Future
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+
+import javax.inject.{Inject, Singleton}
 
 case class NoiseRequest(level: String = "INFO", message: String = "###platform-status-frontend###", amount: Int = 1)
 
@@ -46,11 +45,11 @@ class NoiseController @Inject()(appConfig: AppConfig, mcc: MessagesControllerCom
     )(NoiseRequest.apply)(NoiseRequest.unapply)
   )
 
-  def noise = Action.async { implicit request =>
-    Future.successful(Ok(noiseView(noiseForm.fill(NoiseRequest()))))
+  def noise = Action(parse.empty) { implicit request =>
+    Ok(noiseView(noiseForm.fill(NoiseRequest())))
   }
 
-  def createNoise = Action { implicit request =>
+  def createNoise = Action(parse.formUrlEncoded) { implicit request =>
     noiseForm.bindFromRequest.fold(
       formWithErrors => {
         BadRequest(noiseView(formWithErrors))

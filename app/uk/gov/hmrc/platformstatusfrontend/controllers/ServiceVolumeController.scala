@@ -27,7 +27,6 @@ import uk.gov.hmrc.platformstatusfrontend.views.html.ServiceVolume
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
 
 @Singleton
 class ServiceVolumeController @Inject()(service: ServiceVolumeService,
@@ -43,18 +42,18 @@ class ServiceVolumeController @Inject()(service: ServiceVolumeService,
     )(ServiceVolumeRequest.apply)(ServiceVolumeRequest.unapply)
   )
 
-  def setup() = Action.async { implicit request =>
-    Future.successful( Ok(view(form.fill(ServiceVolumeRequest()))))
+  def setup() = Action(parse.empty) { implicit request =>
+    Ok(view(form.fill(ServiceVolumeRequest())))
   }
 
-  def run() = Action.async { implicit  request =>
+  def run() = Action(parse.formUrlEncoded) { implicit  request =>
     form.bindFromRequest.fold(
       formWithErrors => {
-        Future.successful(BadRequest(view(formWithErrors)))
+        BadRequest(view(formWithErrors))
       },
       form => {
         service.sendServiceCalls(form.url, form.n)
-        Future.successful(Ok("Generated"))
+        Ok("Generated")
       }
     )
   }

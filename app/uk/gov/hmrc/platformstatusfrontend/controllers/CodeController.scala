@@ -16,17 +16,17 @@
 
 package uk.gov.hmrc.platformstatusfrontend.controllers
 
-import javax.inject.{Inject, Singleton}
 import play.api.Logger
-import play.api.data._
 import play.api.data.Forms._
+import play.api.data._
 import play.api.mvc._
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
-import uk.gov.hmrc.platformstatusfrontend.services.{MemoryHog, StatusChecker}
+import uk.gov.hmrc.platformstatusfrontend.services.MemoryHog
 import uk.gov.hmrc.platformstatusfrontend.views.html.{Code, CodeResponse}
-
-import scala.concurrent.Future
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.Future
 
 case class CodeRequest(code: Int = 200, message: String = "a profound message")
 
@@ -43,11 +43,11 @@ class CodeController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComp
   implicit val config: AppConfig = appConfig
   val logger: Logger = Logger(this.getClass)
 
-  def code = Action.async { implicit request =>
+  def code = Action.async(parse.empty) { implicit request =>
     Future.successful( Ok(codeView( codeForm.fill(CodeRequest()))  ) )
   }
 
-  def respondWithCode = Action { implicit request =>
+  def respondWithCode = Action(parse.formUrlEncoded) { implicit request =>
     codeForm.bindFromRequest.fold(
       formWithErrors => {
         BadRequest(codeView(formWithErrors) )

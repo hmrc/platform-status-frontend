@@ -16,18 +16,15 @@
 
 package uk.gov.hmrc.platformstatusfrontend.controllers
 
-import javax.inject.{Inject, Singleton}
-import play.api.Logger
+import play.api.libs.concurrent.Futures
 import play.api.mvc._
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
-import uk.gov.hmrc.platformstatusfrontend.services.{PlatformStatus, StatusChecker}
+import uk.gov.hmrc.platformstatusfrontend.services.StatusChecker
 import uk.gov.hmrc.platformstatusfrontend.views.html.Status
-import play.api.libs.concurrent.Futures
-import scala.concurrent.duration._
-import play.api.libs.concurrent.Futures._
-import PlatformStatus._
-import scala.concurrent.{ExecutionContext, Future}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class StatusController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, val statusChecker: StatusChecker, statusView: Status)(implicit executionContext: ExecutionContext, futures: Futures)
@@ -35,9 +32,11 @@ class StatusController @Inject()(appConfig: AppConfig, mcc: MessagesControllerCo
 
   implicit val config: AppConfig = appConfig
 
-  def defaultLanding: Action[AnyContent] = Action.async { implicit request => Future.successful(Redirect(routes.StatusController.platformStatus)) }
+  def defaultLanding: Action[Unit] = Action(parse.empty) { implicit request =>
+    Redirect(routes.StatusController.platformStatus)
+  }
 
-  def platformStatus: Action[AnyContent] = Action.async { implicit request =>
+  def platformStatus: Action[Unit] = Action.async(parse.empty) { implicit request =>
 
     val iteration2Future = statusChecker.iteration2Status()
     val iteration3Future = statusChecker.iteration3Status()

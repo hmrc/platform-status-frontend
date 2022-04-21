@@ -42,11 +42,11 @@ class AuditVolumeController @Inject()(service: AuditVolumeService,
     )(AuditVolumeRequest.apply)(AuditVolumeRequest.unapply)
   )
 
-  def setup() = Action.async { implicit request =>
-    Future.successful( Ok(view(form.fill(AuditVolumeRequest()))))
+  def setup() = Action(parse.empty) { implicit request =>
+    Ok(view(form.fill(AuditVolumeRequest())))
   }
 
-  def run() = Action.async { implicit  request =>
+  def run() = Action.async(parse.formUrlEncoded) { implicit  request =>
     form.bindFromRequest.fold(
       formWithErrors => {
         Future.successful(BadRequest(view(formWithErrors)))
