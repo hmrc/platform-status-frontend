@@ -16,15 +16,15 @@
 
 package uk.gov.hmrc.platformstatusfrontend.filters
 
-import javax.inject.{Inject, Singleton}
-import play.api.http.HttpFilters
+import play.api.http.{EnabledFilters, HttpFilters}
 import play.api.mvc.EssentialFilter
-import uk.gov.hmrc.play.bootstrap.frontend.filters.FrontendFilters
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
-class CustomFrontendFilters @Inject()(frontendFilters: FrontendFilters, headerSizeFilter: HeaderSizeFilter) extends HttpFilters {
+class CustomFrontendFilters @Inject()(enabledFilters: EnabledFilters, headerSizeFilter: HeaderSizeFilter) extends HttpFilters {
   override val filters: Seq[EssentialFilter] = {
     // Add our custom filter to measure the byte size of the request headers, *before* any additional headers are added by bootstrap
-    headerSizeFilter +: frontendFilters.filters
+    headerSizeFilter +: enabledFilters.filters
   }
 }
