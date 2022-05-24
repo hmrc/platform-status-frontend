@@ -21,6 +21,10 @@ import uk.gov.hmrc.platformstatusfrontend.util.MeasureUtil.{X_HEADER_LENGTH, byt
 
 import javax.inject.Inject
 
+// We're still investigating the why, but have found that the MDCFilter only applies the data correctly when the first filter in the enabled list is
+// an EssentialFilter.  By default, the first filter for frontend services is the SecurityHeadersFilter.
+// In this instance we want the HeaderSizeFilter to be the first, therefore we must ensure that it is an EssentialFilter.  When we get to the bottom
+// of the issue, we should be able to revert the HeaderSizeFilter back to extend the Filter wrapper and still see the MDC data in the logs.
 class HeaderSizeFilter @Inject() extends EssentialFilter {
 
   override def apply(nextFilter: EssentialAction): EssentialAction = { requestHeader =>
