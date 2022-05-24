@@ -16,23 +16,19 @@
 
 package uk.gov.hmrc.platformstatusfrontend.filters
 
-import akka.stream.Materializer
-import javax.inject.Inject
-import play.api.Logger
 import play.api.mvc._
-import uk.gov.hmrc.platformstatusfrontend.util.MeasureUtil.byteSize
-import uk.gov.hmrc.platformstatusfrontend.util.MeasureUtil.X_HEADER_LENGTH
+import uk.gov.hmrc.platformstatusfrontend.util.MeasureUtil.{X_HEADER_LENGTH, byteSize}
 
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.Inject
 
-class HeaderSizeFilter @Inject()(implicit val mat: Materializer, ec: ExecutionContext) extends Filter {
+// We're still investigating the why, but have found that the MDCFilter only applies the data correctly when the first filter in the enabled list is
+// an EssentialFilter.  By default, the first filter for frontend services is the SecurityHeadersFilter.
+// In this instance we want the HeaderSizeFilter to be the first, therefore we must ensure that it is an EssentialFilter.  When we get to the bottom
+// of the issue, we should be able to revert the HeaderSizeFilter back to extend the Filter wrapper and still see the MDC data in the logs.
+class HeaderSizeFilter @Inject() extends EssentialFilter {
 
-  val logger: Logger = Logger(this.getClass)
-
-  def apply(nextFilter: RequestHeader => Future[Result])(requestHeader: RequestHeader): Future[Result] = {
+  override def apply(nextFilter: EssentialAction): EssentialAction = { requestHeader =>
     val allHeaders = requestHeader.headers.headers
-
-//    logger.info(s"Calculating byte size of ${allHeaders.size} received request headers: ${allHeaders.map(_._1).mkString(",")}")
 
     // Reconstructing the headers as they would be in the HTTP spec for the purpose of calculating the byte size
     // N.B. Would be nice to just access the raw request bytes and measure the size up to the first blank line (after headers),
