@@ -17,12 +17,12 @@
 @import uk.gov.hmrc.platformstatusfrontend.models.{GcInformation, GcSummary}
 
 @this(
-  mainTemplate: MainTemplate
+  layout: Layout
 )
 
 @(gcSummary: GcSummary)(implicit request: Request[_], messages: Messages)
 
-@mainTemplate(title = "Garbage", bodyClasses = None) {
+@layout(pageTitle = Some("Garbage")) {
 
     <h1>Garbage, garbage everywhere.</h1>
     @displayStatistics("Frontend", gcSummary.frontend)

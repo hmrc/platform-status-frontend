@@ -15,11 +15,10 @@
  *@
 
 @import uk.gov.hmrc.platformstatusfrontend.controllers.MeasureRequest
-@import uk.gov.hmrc.platformstatusfrontend.views.html.MainTemplate
 @import views.html.helper.CSRF
 
 @this(
-  mainTemplate: MainTemplate
+  layout: Layout
 )
 
 @(
@@ -30,7 +29,7 @@
   flash   : Flash
 )
 
-@mainTemplate(title = "Hello from platform-status-frontend") {
+@layout(pageTitle = Some("Hello from platform-status-frontend")) {
     <h1>@flash.get("success").getOrElse("Measure Request/Response headers and bodies")</h1>
 
     <hr/>

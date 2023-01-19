@@ -14,23 +14,29 @@
  * limitations under the License.
  *@
 
-@this(
-  layout: Layout
-)
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcStandardFooter
 
+@this(
+  govukLayout       : GovukLayout,
+  head              : Head,
+  hmrcStandardFooter: HmrcStandardFooter,
+  scripts           : Scripts
+)
 @(
-  code   : Int,
-  message: String
+  pageTitle   : Option[String] = None,
+  headBlock   : Option[Html]   = None,
+  bodyEndBlock: Option[Html]   = None
+)(contentBlock: Html
 )(implicit
   request : Request[_],
-  messages: Messages,
-  flash   : Flash
+  messages: Messages
 )
 
-@layout(pageTitle = Some("Generated response codes")) {
-
-  <p>A <i><b>@code</b></i> response was returned with the message <i><b>@message</b></i></p>
-
-  <p><a href="@uk.gov.hmrc.platformstatusfrontend.controllers.routes.CodeController.code">generate another response code</a></p>
-  <p><a href="@uk.gov.hmrc.platformstatusfrontend.controllers.routes.StatusController.platformStatus">frontpage</a></p>
-}
+@govukLayout(
+  pageTitle          = pageTitle,
+  headBlock          = Some(head(headBlock)),
+  beforeContentBlock = None,
+  footerBlock        = Some(hmrcStandardFooter()),
+  scriptsBlock       = Some(scripts()),
+  bodyEndBlock       = bodyEndBlock
+)(contentBlock)

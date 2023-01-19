@@ -5,14 +5,14 @@ import sbt._
 
 object AppDependencies {
 
-  val bootstrapVersion = "5.24.0"
+  val bootstrapVersion = "7.12.0"
 
   val compile = Seq(
 
-    "uk.gov.hmrc"             %% "govuk-template"              % "5.75.0-play-28",
-    "uk.gov.hmrc"             %% "play-ui"                     % "9.8.0-play-28",
+//    "uk.gov.hmrc"             %% "govuk-template"              % "5.75.0-play-28",
+    "uk.gov.hmrc"             %% "play-frontend-hmrc"          % "6.2.0-play-28",
     "uk.gov.hmrc"             %% "bootstrap-frontend-play-28"  % bootstrapVersion,
-    "org.mongodb.scala"       %% "mongo-scala-driver"          % "2.6.0",
+    "org.mongodb.scala"       %% "mongo-scala-driver"          % "4.8.2",
     "org.typelevel"           %% "cats-core"                   % "2.6.1"
   )
 

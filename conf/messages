@@ -1,0 +1,2 @@
+service.name = platform-status-frontend
+service.homePageUrl = /platform-status

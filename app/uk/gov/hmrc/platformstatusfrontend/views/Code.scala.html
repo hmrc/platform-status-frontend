@@ -14,12 +14,11 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.platformstatusfrontend.views.html.MainTemplate
 @import uk.gov.hmrc.platformstatusfrontend.controllers.CodeRequest
 @import views.html.helper.CSRF
 
 @this(
-  mainTemplate: MainTemplate
+  layout: Layout
 )
 
 @(
@@ -30,7 +29,7 @@
   flash        : Flash
 )
 
-@mainTemplate(title = "Generate specific response codes") {
+@layout(pageTitle = Some("Generate specific response codes")) {
     <h1>@flash.get("success").getOrElse("Player 1, choose your response code...")</h1>
 
     @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.CodeController.respondWithCode){

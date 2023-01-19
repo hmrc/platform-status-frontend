@@ -14,23 +14,10 @@
  * limitations under the License.
  *@
 
-@this(
-  layout: Layout
-)
+@this()
 
-@(
-  code   : Int,
-  message: String
-)(implicit
-  request : Request[_],
-  messages: Messages,
-  flash   : Flash
-)
-
-@layout(pageTitle = Some("Generated response codes")) {
-
-  <p>A <i><b>@code</b></i> response was returned with the message <i><b>@message</b></i></p>
-
-  <p><a href="@uk.gov.hmrc.platformstatusfrontend.controllers.routes.CodeController.code">generate another response code</a></p>
-  <p><a href="@uk.gov.hmrc.platformstatusfrontend.controllers.routes.StatusController.platformStatus">frontpage</a></p>
-}
+@(headBlock: Option[Html] = None)
+@headBlock
+<!--[if lte IE 8]><script src='@controllers.routes.Assets.versioned("javascripts/html5shiv.min.js")'></script><![endif]-->
+<!--[if lte IE 8]><link href='@controllers.routes.Assets.versioned("stylesheets/application-ie-8.css")' rel="stylesheet" type="text/css" /><![endif]-->
+<!--[if gt IE 8]><!--><link href='@controllers.routes.Assets.versioned("stylesheets/application.css")' media="all" rel="stylesheet" type="text/css" /><!--<![endif]-->

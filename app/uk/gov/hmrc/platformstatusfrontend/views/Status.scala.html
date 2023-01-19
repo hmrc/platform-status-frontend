@@ -16,16 +16,15 @@
 
 @import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 @import uk.gov.hmrc.platformstatusfrontend.services.PlatformStatus
-@import uk.gov.hmrc.platformstatusfrontend.views.html.MainTemplate
 
 @this(
-  mainTemplate: MainTemplate,
+  layout   : Layout,
   appConfig: AppConfig
 )
 
 @(statusList: List[PlatformStatus])(implicit request: Request[_], messages: Messages)
 
-@mainTemplate(title = "Platform Status") {
+@layout(pageTitle = Some("Platform Status")) {
     <h1>Platform Status - what's up and what's not</h1>
     <table>
     @for(status <- statusList) {
