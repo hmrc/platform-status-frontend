@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,11 @@ object MeasureUtil {
   val X_HEADER_LENGTH = "X-Header-Length"
   val X_TEST_HEADER_NAME = "X-Test-Header-Name"
 
-  def byteSize(s: String): Int = s.getBytes(StandardCharsets.UTF_8).length
+  def byteSize(s: String): Int =
+    s.getBytes(StandardCharsets.UTF_8).length
 
   def generateStringOfSize(length: Int): String = {
     def r: Char = Random.alphanumeric.filter(_.isLetter).head
     (1 to length).map(_ => r).mkString
   }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,26 @@
 package uk.gov.hmrc.platformstatusfrontend.controllers
 
 import javax.inject.{Inject, Singleton}
-import play.api.Logger
 import play.api.data.Forms._
 import play.api.data._
 import play.api.mvc._
-import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.services.MemoryHog
 import uk.gov.hmrc.platformstatusfrontend.views.html.Kill
 
 import scala.concurrent.Future
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
-case class LeakRequest(mb: Int = 10, sleep: Int = 100)
+case class LeakRequest(
+  mb   : Int = 10,
+  sleep: Int = 100
+)
 
 @Singleton
-class KillController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, memoryHog: MemoryHog, killView: Kill) extends FrontendController(mcc) {
+class KillController @Inject()(
+  mcc      : MessagesControllerComponents,
+  memoryHog: MemoryHog,
+  killView : Kill
+) extends FrontendController(mcc) {
 
   val leakForm: Form[LeakRequest] = Form(
     mapping(
@@ -40,30 +45,23 @@ class KillController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComp
     )(LeakRequest.apply)(LeakRequest.unapply)
   )
 
-  implicit val config: AppConfig = appConfig
-  val logger: Logger = Logger(this.getClass)
-
   def kill = Action.async { implicit request =>
     Future.successful( Ok(killView( leakForm.fill(LeakRequest()))  ) )
   }
 
-  def meteOutDeath = Action { implicit request =>
+  def meteOutDeath = Action {
     System.exit(0)
     Redirect(routes.KillController.kill).flashing("success" -> "If you see this then the container did not die.")
   }
 
   def leakMemory = Action { implicit request =>
-    leakForm.bindFromRequest.fold(
-      formWithErrors => {
-        BadRequest(killView(formWithErrors))
-      },
-      killRequest => {
-        memoryHog.eatMemory(killRequest.mb, killRequest.sleep)
-        Redirect(routes.KillController.kill).flashing("success" -> "If you see this then the container did not die.")
-      }
-    )
+    leakForm.bindFromRequest()
+      .fold(
+        formWithErrors => BadRequest(killView(formWithErrors))
+      , killRequest => {
+          memoryHog.eatMemory(killRequest.mb, killRequest.sleep)
+          Redirect(routes.KillController.kill).flashing("success" -> "If you see this then the container did not die.")
+        }
+      )
   }
-
 }
-
-

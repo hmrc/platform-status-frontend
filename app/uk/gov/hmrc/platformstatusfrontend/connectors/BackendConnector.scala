@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,15 +26,15 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class BackendConnector @Inject()(
-                                 http          : HttpClient,
-                                 servicesConfig: ServicesConfig
-                               )(implicit val ec: ExecutionContext) {
+  http          : HttpClient,
+  servicesConfig: ServicesConfig
+)(implicit
+   ec: ExecutionContext
+) {
+  import HttpReads.Implicits._
 
-  private val backendBaseUrl: String = s"${servicesConfig.baseUrl("platform-status-backend")}/platform-status-backend"
-
-  private implicit val httpReads: HttpReads[HttpResponse] = new HttpReads[HttpResponse] {
-    override def read(method: String, url: String, response: HttpResponse): HttpResponse = response
-  }
+  private val backendBaseUrl: String =
+    s"${servicesConfig.baseUrl("platform-status-backend")}/platform-status-backend"
 
   def iteration3Status()(implicit hc: HeaderCarrier): Future[PlatformStatus] =
     http.GET[PlatformStatus](s"$backendBaseUrl/status/iteration3")
@@ -43,7 +43,7 @@ class BackendConnector @Inject()(
     http.GET[PlatformStatus](s"$backendBaseUrl/status/iteration5")
 
   def measure(content: String, headers: Seq[(String, String)] = Seq.empty)(implicit hc: HeaderCarrier): Future[String] =
-    http.POSTString[HttpResponse](s"$backendBaseUrl/measure", content, headers)(HttpReads.readRaw, hc, ec).map(_.body)
+    http.POSTString[HttpResponse](s"$backendBaseUrl/measure", content, headers).map(_.body)
 
   def gcInformation()(implicit hc: HeaderCarrier): Future[GcInformation] =
     http.GET[GcInformation](s"$backendBaseUrl/gcinfo")

@@ -1,5 +1,5 @@
 @*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,8 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
-@import uk.gov.hmrc.platformstatusfrontend.views.html.MainTemplate
-@this(
-        mainTemplate: MainTemplate
-)
-@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@this()
 
-@mainTemplate(title = "Hello from platform-status-frontend", bodyClasses = None) {
-    <h1>Hello from platform-status-frontend !</h1>
-}
+@()
+<script src='@controllers.routes.Assets.versioned("lib/govuk-frontend/govuk/all.js")'></script>
+<script src='@controllers.routes.Assets.versioned("javascripts/init.js")'></script>

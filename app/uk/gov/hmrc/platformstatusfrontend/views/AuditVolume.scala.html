@@ -1,5 +1,5 @@
 @*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,22 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.platformstatusfrontend.views.html.MainTemplate
 @import uk.gov.hmrc.platformstatusfrontend.models.AuditVolumeRequest
-@import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
-
 @import views.html.helper.CSRF
-@this(
-        mainTemplate: MainTemplate
-)
-@(auditVolumeForm: Form[AuditVolumeRequest])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, requestHeader: RequestHeader, flash: Flash)
 
-@mainTemplate(title = "Hello from platform-status-frontend") {
+@this(
+  layout: Layout
+)
+
+@(
+  auditVolumeForm: Form[AuditVolumeRequest]
+)(implicit
+  request: Request[_],
+  messages: Messages,
+  flash: Flash
+)
+
+@layout(pageTitle = Some("Hello from platform-status-frontend")) {
     <h1>@flash.get("success").getOrElse("Audit Volume Test")</h1>
 
     <hr/>
@@ -33,7 +38,7 @@
         Fire off a specified number of audit requests asynchronously
     </p>
 
-    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.AuditVolumeController.run){
+    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.AuditVolumeController.run()){
         @CSRF.formField
         @helper.inputText(auditVolumeForm("auditType"), '_label -> "Audit Type to be used in Datastream messages")
         @helper.inputText(auditVolumeForm("n"), '_label -> "Number of audit messages")

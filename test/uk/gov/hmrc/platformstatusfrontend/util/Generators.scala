@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,16 @@ import org.scalacheck.Gen.{alphaChar, chooseNum, listOfN}
 
 object Generators {
 
-  val strGen: Int => Gen[String] = (n: Int) => listOfN(n, alphaChar).map(_.mkString)
-  val nonEmptyString: Gen[String] = chooseNum(1, 15).flatMap(n => strGen(n))
+  val strGen: Int => Gen[String] =
+    (n: Int) => listOfN(n, alphaChar).map(_.mkString)
 
-  val headersGen: Gen[Seq[(String, String)]] = for {
-    numHeaders <- chooseNum(0, 100)
-    h <- listOfN(numHeaders, nonEmptyString)
-    v <- listOfN(numHeaders, nonEmptyString)
-  } yield h zip v
+  val nonEmptyString: Gen[String] =
+    chooseNum(1, 15).flatMap(n => strGen(n))
 
+  val headersGen: Gen[Seq[(String, String)]] =
+    for {
+      numHeaders <- chooseNum(0, 100)
+      h          <- listOfN(numHeaders, nonEmptyString)
+      v          <- listOfN(numHeaders, nonEmptyString)
+    } yield h.zip(v)
 }

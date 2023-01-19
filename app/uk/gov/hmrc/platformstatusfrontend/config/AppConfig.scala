@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,18 +26,18 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
 
   private val assetsUrl = config.get[String]("assets.url")
 
-  val assetsPrefix: String = assetsUrl + config.get[String]("assets.version")
-  val analyticsToken: String = config.get[String](s"google-analytics.token")
-  val analyticsHost: String = config.get[String](s"google-analytics.host")
-  val startupDelay: Option[Int] = config.getOptional[Int]("startup-delay")
+  val assetsPrefix  : String      = assetsUrl + config.get[String]("assets.version")
+  val analyticsToken: String      = config.get[String](s"google-analytics.token")
+  val analyticsHost : String      = config.get[String](s"google-analytics.host")
+  val startupDelay  : Option[Int] = config.getOptional[Int]("startup-delay")
 
-  lazy val dbUrl = servicesConfig.getString("mongodb.uri")
+  lazy val dbUrl                  = servicesConfig.getString("mongodb.uri")
 
-  lazy val proxyProtocol: String = servicesConfig.getString("proxy.protocol")
-  lazy val proxyHost: String = servicesConfig.getString("proxy.host")
-  lazy val proxyPort: Integer = servicesConfig.getInt("proxy.port")
-  lazy val proxyUsername: String = servicesConfig.getString("proxy.username")
-  lazy val proxyPassword: String = servicesConfig.getString("proxy.password")
+  lazy val proxyProtocol: String  = servicesConfig.getString("proxy.protocol")
+  lazy val proxyHost    : String  = servicesConfig.getString("proxy.host")
+  lazy val proxyPort    : Integer = servicesConfig.getInt("proxy.port")
+  lazy val proxyUsername: String  = servicesConfig.getString("proxy.username")
+  lazy val proxyPassword: String  = servicesConfig.getString("proxy.password")
   lazy val proxyRequired: Boolean = servicesConfig.getBoolean("proxy.required")
 
   lazy val badGatewayTimeout: Duration = servicesConfig.getDuration("bad-gateway.timeout")

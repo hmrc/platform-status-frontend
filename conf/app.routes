@@ -1,5 +1,6 @@
 # microservice specific routes
 
+GET       /assets/*file                 controllers.Assets.versioned(path = "/public", file: Asset)
 GET       /                             uk.gov.hmrc.platformstatusfrontend.controllers.StatusController.defaultLanding
 GET       /status                       uk.gov.hmrc.platformstatusfrontend.controllers.StatusController.platformStatus
 GET       /noise                        uk.gov.hmrc.platformstatusfrontend.controllers.NoiseController.noise
@@ -17,10 +18,10 @@ POST      /code                         uk.gov.hmrc.platformstatusfrontend.contr
 GET       /measure                      uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.measure
 GET       /measure-header               uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.measureHeader
 POST      /measure-body                 uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.measureBody
-GET       /measure-random-header        uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.randomResponseHeaderOfSize
-GET       /measure-random-body          uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.randomResponseBodyOfSize
-GET       /measure-header-backend       uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.headerOfSizeToBackend
-GET       /measure-body-backend         uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.bodyOfSizeToBackend
+GET       /measure-random-header        uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.randomResponseHeaderOfSize()
+GET       /measure-random-body          uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.randomResponseBodyOfSize()
+GET       /measure-header-backend       uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.headerOfSizeToBackend()
+GET       /measure-body-backend         uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.bodyOfSizeToBackend()
 
 GET       /audit-volume                 uk.gov.hmrc.platformstatusfrontend.controllers.AuditVolumeController.setup()
 POST      /audit-volume                 uk.gov.hmrc.platformstatusfrontend.controllers.AuditVolumeController.run()

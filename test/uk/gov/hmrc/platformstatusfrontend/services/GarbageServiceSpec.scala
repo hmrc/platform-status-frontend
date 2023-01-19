@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,31 +21,36 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.connectors.BackendConnector
 import uk.gov.hmrc.platformstatusfrontend.models.{GcBeanInfo, GcInformation}
 
 import scala.concurrent.Future
 
-class GarbageServiceSpec extends AsyncWordSpec with Matchers with MockitoSugar with BeforeAndAfterEach {
+class GarbageServiceSpec
+  extends AsyncWordSpec
+     with Matchers
+     with MockitoSugar
+     with BeforeAndAfterEach {
 
-    implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
+    implicit val hc: HeaderCarrier = HeaderCarrier()
+
     val backendConnectorMock = mock[BackendConnector]
-    val appConfig = mock[AppConfig]
-    val garbageService = new GarbageService(backendConnectorMock, appConfig)
+    val garbageService       = new GarbageService(backendConnectorMock)
 
-  override def beforeEach = {
+  override def beforeEach(): Unit = {
     reset(backendConnectorMock)
   }
 
   "getBackendGcInfo" should {
     "return Gc Info" in {
-      when(backendConnectorMock.gcInformation()(any)) thenReturn Future.successful(GcInformation(1, Seq[GcBeanInfo]()))
+      when(backendConnectorMock.gcInformation()(any))
+        .thenReturn(Future.successful(GcInformation(1, Seq[GcBeanInfo]())))
       val result = garbageService.getBackendGcInfo
       result map { info => info.coreCount shouldBe 1}
     }
     "return core count -1 when backend call fails" in {
-      when(backendConnectorMock.gcInformation()(any)) thenReturn Future.failed(new Exception(""))
+      when(backendConnectorMock.gcInformation()(any))
+        .thenReturn(Future.failed(new Exception("")))
       val result = garbageService.getBackendGcInfo
       result map { info => info.coreCount shouldBe -1}
     }
@@ -53,7 +58,7 @@ class GarbageServiceSpec extends AsyncWordSpec with Matchers with MockitoSugar w
   "getFrontendGcInfo" should {
     "Return a coreCount > 0" in {
       val result = garbageService.getFrontendGcInfo
-      result map { info => info.coreCount should be > 0}
+      result.map(info => info.coreCount should be > 0)
     }
   }
 }

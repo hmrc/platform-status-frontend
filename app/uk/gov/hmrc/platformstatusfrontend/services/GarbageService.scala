@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,32 +19,29 @@ package uk.gov.hmrc.platformstatusfrontend.services
 import com.google.inject.Inject
 import play.api.Logger
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.connectors.BackendConnector
 import uk.gov.hmrc.platformstatusfrontend.models.GcInformation
 
 import java.lang.management.GarbageCollectorMXBean
 import javax.inject.Singleton
-import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
+import scala.jdk.CollectionConverters._
 
 @Singleton
-class GarbageService @Inject()(backendConnector: BackendConnector, appConfig: AppConfig) {
+class GarbageService @Inject()(backendConnector: BackendConnector)(implicit ec: ExecutionContext) {
 
   private val logger = Logger(this.getClass)
 
-  def getBackendGcInfo(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[GcInformation] = {
-    backendConnector.gcInformation.recoverWith {
-      case ex: Exception => {
-        val msg = s"bodyToBackend call to backend service failed"
-        logger.warn(msg, ex)
-        Future(GcInformation(-1, Seq[GarbageCollectorMXBean]()))
+  def getBackendGcInfo(implicit hc: HeaderCarrier): Future[GcInformation] =
+    backendConnector.gcInformation()
+      .recoverWith {
+        case ex: Exception =>
+          val msg = s"bodyToBackend call to backend service failed"
+          logger.warn(msg, ex)
+          Future.successful(GcInformation(-1, Seq[GarbageCollectorMXBean]()))
       }
-    }
-  }
 
   def getFrontendGcInfo: Future[GcInformation] = {
-
     import java.lang.management.ManagementFactory
 
     val gBeans = ManagementFactory.getGarbageCollectorMXBeans.asScala.toList
