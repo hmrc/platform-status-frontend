@@ -60,11 +60,16 @@ class StatusControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPer
 
     val statusChecker = mock[StatusChecker]
     val dummyStatus = PlatformStatus("name", true, "description", Some("No reason"))
-    when(statusChecker.iteration1Status()) thenReturn dummyStatus.copy(name = "it1")
-    when(statusChecker.iteration2Status() (any[ExecutionContext], any[Futures]) ) thenReturn Future(dummyStatus.copy(name = "it2"))
-    when(statusChecker.iteration3Status()(any[HeaderCarrier], any[ExecutionContext]  )) thenReturn Future(dummyStatus.copy(name = "it3"))
-    when(statusChecker.iteration4Status()(any[ExecutionContext], any[Futures]  ) ) thenReturn Future(dummyStatus.copy(name = "it4"))
-    when(statusChecker.iteration5Status()(any[HeaderCarrier], any[ExecutionContext]  )) thenReturn Future(dummyStatus.copy(name = "it5"))
+    when(statusChecker.iteration1Status())
+      .thenReturn(Future.successful(dummyStatus.copy(name = "it1")))
+    when(statusChecker.iteration2Status())
+      .thenReturn(Future.successful(dummyStatus.copy(name = "it2")))
+    when(statusChecker.iteration3Status()(any[HeaderCarrier]))
+      .thenReturn(Future.successful(dummyStatus.copy(name = "it3")))
+    when(statusChecker.iteration4Status())
+      .thenReturn(Future.successful(dummyStatus.copy(name = "it4")))
+    when(statusChecker.iteration5Status()(any[HeaderCarrier]))
+      .thenReturn(Future.successful(dummyStatus.copy(name = "it5")))
 
     val statusView: StatusView = app.injector.instanceOf[StatusView]
 
@@ -73,7 +78,6 @@ class StatusControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPer
 
   "GET /" should {
     "return 200" in new Setup() {
-
       val result = controller.platformStatus(fakeRequest)
       status(result) shouldBe Status.OK
     }
@@ -83,6 +87,5 @@ class StatusControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPer
       contentType(result) shouldBe Some("text/html")
       charset(result)     shouldBe Some("utf-8")
     }
-
   }
 }

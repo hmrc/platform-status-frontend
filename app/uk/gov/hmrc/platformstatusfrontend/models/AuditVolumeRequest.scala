@@ -16,4 +16,7 @@
 
 package uk.gov.hmrc.platformstatusfrontend.models
 
-case class AuditVolumeRequest(auditType: String = "auditVolumeTest", n: Int = 1000)
+case class AuditVolumeRequest(
+  auditType: String = "auditVolumeTest",
+  n        : Int    = 1000
+)

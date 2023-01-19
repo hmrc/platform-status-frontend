@@ -35,7 +35,7 @@ import scala.concurrent.duration._
 
 class StatusCheckerSpec extends AnyWordSpec with Matchers with MockitoSugar with ScalaFutures {
 
-  private val testTimeoutDuration: Span = 6 seconds // underlying method calls should timeout before this
+  private val testTimeoutDuration: Span = 6.seconds // underlying method calls should timeout before this
 
   private trait Setup {
     implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
@@ -55,6 +55,7 @@ class StatusCheckerSpec extends AnyWordSpec with Matchers with MockitoSugar with
           r.isWorking shouldBe true
       }
     }
+
     "fail to connect to Mongo" in new Setup() {
       when(appConfig.dbUrl) thenReturn ("mongodb://not_there:27017")
       whenReady(statusChecker.iteration2Status(), timeout(testTimeoutDuration)) {
@@ -63,6 +64,7 @@ class StatusCheckerSpec extends AnyWordSpec with Matchers with MockitoSugar with
       }
     }
   }
+
   "iteration 3 status check" should {
     "be happy when backend responds with a good result" in new Setup() {
       when(backendConnectorMock.iteration3Status()) thenReturn Future(baseIteration3Status)
@@ -70,6 +72,7 @@ class StatusCheckerSpec extends AnyWordSpec with Matchers with MockitoSugar with
         result => result shouldBe baseIteration3Status
       }
     }
+
     "not blow up when backend responds with a bad result" in new Setup() {
       when(backendConnectorMock.iteration3Status()) thenReturn Future.failed(Upstream5xxResponse("Borked", 500, 500))
       whenReady(statusChecker.iteration3Status(), timeout(testTimeoutDuration) ){
@@ -77,6 +80,7 @@ class StatusCheckerSpec extends AnyWordSpec with Matchers with MockitoSugar with
       }
     }
   }
+
   "iteration 4 outbound call via squid" should {
     "be happy when a response is received" in new Setup() {
       val fakeResponse = mock[WSResponse]
@@ -87,6 +91,7 @@ class StatusCheckerSpec extends AnyWordSpec with Matchers with MockitoSugar with
         result => result shouldBe baseIteration4Status
       }
     }
+
     "handle things when an error response is received" in new Setup() {
       val fakeResponse = mock[WSResponse]
       when(appConfig.proxyRequired) thenReturn false
@@ -96,6 +101,7 @@ class StatusCheckerSpec extends AnyWordSpec with Matchers with MockitoSugar with
       }
     }
   }
+
   "iteration 5 status check" should {
     "be happy when backend responds with a good result" in new Setup() {
       when(backendConnectorMock.iteration5Status()) thenReturn Future(baseIteration5Status)
@@ -103,6 +109,7 @@ class StatusCheckerSpec extends AnyWordSpec with Matchers with MockitoSugar with
         result => result shouldBe baseIteration5Status
       }
     }
+
     "not blow up when backend responds with a bad result" in new Setup() {
       when(backendConnectorMock.iteration5Status()) thenReturn Future.failed(Upstream5xxResponse("Borked", 500, 500))
       whenReady(statusChecker.iteration5Status(), timeout(testTimeoutDuration) ){
@@ -110,5 +117,4 @@ class StatusCheckerSpec extends AnyWordSpec with Matchers with MockitoSugar with
       }
     }
   }
-
 }

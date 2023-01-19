@@ -16,13 +16,19 @@
 
 @import uk.gov.hmrc.platformstatusfrontend.views.html.MainTemplate
 @import uk.gov.hmrc.platformstatusfrontend.models.AuditVolumeRequest
-@import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
-
 @import views.html.helper.CSRF
+
 @this(
-        mainTemplate: MainTemplate
+  mainTemplate: MainTemplate
 )
-@(auditVolumeForm: Form[AuditVolumeRequest])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, requestHeader: RequestHeader, flash: Flash)
+
+@(
+  auditVolumeForm: Form[AuditVolumeRequest]
+)(implicit
+  request: Request[_],
+  messages: Messages,
+  flash: Flash
+)
 
 @mainTemplate(title = "Hello from platform-status-frontend") {
     <h1>@flash.get("success").getOrElse("Audit Volume Test")</h1>

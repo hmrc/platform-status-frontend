@@ -48,10 +48,6 @@ import scala.concurrent.Future
 
 class MeasureControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with
   MockitoSugar with ScalaCheckDrivenPropertyChecks with ScalaFutures {
-  private val env           = Environment.simple()
-  private val configuration: Configuration = Configuration.load(env)
-  private val serviceConfig = new ServicesConfig(configuration)
-  private val appConfig     = new AppConfig(configuration, serviceConfig)
   private implicit lazy val materializer: Materializer = app.materializer
 
   override def fakeApplication: Application =
@@ -66,11 +62,11 @@ class MeasureControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPe
     implicit val futures: Futures = new DefaultFutures(ActorSystem.create)
 
     val backendConnector: BackendConnector = mock[BackendConnector]
-    val measureService: MeasureService = new MeasureService(backendConnector, appConfig)
+    val measureService: MeasureService = new MeasureService(backendConnector)
 
     val measureView: Measure = app.injector.instanceOf[Measure]
 
-    val controller = new MeasureController(appConfig, stubMessagesControllerComponents(), measureService, measureView)
+    val controller = new MeasureController(stubMessagesControllerComponents(), measureService, measureView)
   }
 
   "GET /measure-header" should {
@@ -80,6 +76,7 @@ class MeasureControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPe
       status(result) shouldBe Status.OK
       contentAsString(result) shouldBe "Total size of all headers received: ? Unknown, was not able to extract injected X-Header-Length header"
     }
+
     "return length of headers present on request, as calculated by the HeaderSizeFilter" in new Setup() {
       val result = controller.measureHeader()(FakeRequest().withHeaders(X_HEADER_LENGTH -> "100"))
 
@@ -95,6 +92,7 @@ class MeasureControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPe
       status(result) shouldBe Status.OK
       contentAsString(result) shouldBe "Body length received: ? Unknown, Content-Length header was not found"
     }
+
     "return length of body present on request, as defined by the Content-Length header" in new Setup() {
       val result = controller.measureBody()(FakeRequest(POST, "/").withHeaders(CONTENT_LENGTH -> "100"))
 

@@ -42,10 +42,6 @@ import scala.concurrent.Future
 
 class GarbageControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach {
   private val fakeRequest = FakeRequest("GET", "/")
-  private val env           = Environment.simple()
-  private val configuration: Configuration = Configuration.load(env)
-  private val serviceConfig = new ServicesConfig(configuration)
-  private val appConfig     = new AppConfig(configuration, serviceConfig)
 
   override def fakeApplication: Application =
     new GuiceApplicationBuilder()
@@ -65,12 +61,11 @@ class GarbageControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPe
 
     private val garbageView = app.injector.instanceOf[GarbageView]
 
-    val controller = new GarbageController(appConfig, stubMessagesControllerComponents(), garbageService, garbageView)
+    val controller = new GarbageController(stubMessagesControllerComponents(), garbageService, garbageView)
   }
 
   "GET /" should {
     "return 200" in new Setup() {
-
       val result = controller.garbage(fakeRequest)
       status(result) shouldBe Status.OK
     }

@@ -14,12 +14,20 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 @import uk.gov.hmrc.platformstatusfrontend.views.html.GovukWrapper
+
 @this(
-        govukWrapper: GovukWrapper
+  govukWrapper: GovukWrapper
 )
-@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+
+@(
+  pageTitle: String,
+  heading  : String,
+  message  : String
+)(implicit
+  request : Request[_],
+  messages: Messages
+)
 
 @contentHeader = {
   <h1>@heading</h1>
@@ -29,4 +37,8 @@
   <p>@message</p>
 }
 
-@govukWrapper(appConfig = appConfig, title = pageTitle, contentHeader = Some(contentHeader), mainContent = mainContent)
+@govukWrapper(
+  title         = pageTitle,
+  contentHeader = Some(contentHeader),
+  mainContent   = mainContent
+)

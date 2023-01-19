@@ -14,17 +14,13 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 @import uk.gov.hmrc.platformstatusfrontend.models.{GcInformation, GcSummary}
-@import uk.gov.hmrc.platformstatusfrontend.views.html.MainTemplate
-
 
 @this(
-        mainTemplate: MainTemplate
+  mainTemplate: MainTemplate
 )
 
-@(gcSummary: GcSummary)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
-
+@(gcSummary: GcSummary)(implicit request: Request[_], messages: Messages)
 
 @mainTemplate(title = "Garbage", bodyClasses = None) {
 

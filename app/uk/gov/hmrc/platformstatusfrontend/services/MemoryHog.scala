@@ -19,17 +19,13 @@ package uk.gov.hmrc.platformstatusfrontend.services
 import javax.inject.Singleton
 import play.api.Logger
 
-import scala.concurrent.Future
-import scala.util.Random
-
 @Singleton
 class MemoryHog (){
+  private val logger = Logger(this.getClass)
 
-  val logger = Logger(this.getClass)
-  val megabyte = 1024 * 1024
+  private val megabyte = 1024 * 1024
 
   def eatMemory(mbs: Int, sleep: Int) = {
-
     var bigArray = Array[Array[Byte]]()
 
     while (true) {

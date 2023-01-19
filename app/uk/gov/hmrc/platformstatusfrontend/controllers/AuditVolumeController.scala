@@ -26,35 +26,37 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.platformstatusfrontend.views.html.AuditVolume
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
 
 @Singleton
-class AuditVolumeController @Inject()(service: AuditVolumeService,
-                                      view: AuditVolume,
-                                      mcc: MessagesControllerComponents)
-                                     (implicit config: AppConfig)
-  extends FrontendController(mcc) {
+class AuditVolumeController @Inject()(
+  service: AuditVolumeService,
+  view   : AuditVolume,
+  mcc    : MessagesControllerComponents
+) extends FrontendController(mcc) {
 
-  val form: Form[AuditVolumeRequest] = Form(
-    mapping(
-      "auditType" -> text,
-      "n" -> number
-    )(AuditVolumeRequest.apply)(AuditVolumeRequest.unapply)
-  )
-
-  def setup() = Action.async { implicit request =>
-    Future.successful( Ok(view(form.fill(AuditVolumeRequest()))))
-  }
-
-  def run() = Action.async { implicit  request =>
-    form.bindFromRequest.fold(
-      formWithErrors => {
-        Future.successful(BadRequest(view(formWithErrors)))
-      },
-      form => {
-        service.sendAuditMessages(form.auditType, form.n)
-        Future.successful(Ok("Generated"))
-      }
+  val form: Form[AuditVolumeRequest] =
+    Form(
+      mapping(
+        "auditType" -> text,
+        "n" -> number
+      )(AuditVolumeRequest.apply)(AuditVolumeRequest.unapply)
     )
-  }
+
+  def setup() =
+    Action { implicit request =>
+      Ok(view(form.fill(AuditVolumeRequest())))
+    }
+
+  def run() =
+    Action { implicit request =>
+      form.bindFromRequest.fold(
+        formWithErrors =>
+          BadRequest(view(formWithErrors))
+        ,
+        form => {
+          service.sendAuditMessages(form.auditType, form.n)
+          Ok("Generated")
+        }
+      )
+    }
 }

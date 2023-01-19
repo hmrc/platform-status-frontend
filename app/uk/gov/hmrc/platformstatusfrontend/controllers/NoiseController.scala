@@ -28,51 +28,54 @@ import uk.gov.hmrc.platformstatusfrontend.views.html.Noise
 import scala.concurrent.Future
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
-case class NoiseRequest(level: String = "INFO", message: String = "###platform-status-frontend###", amount: Int = 1)
+case class NoiseRequest(
+  level  : String = "INFO",
+  message: String = "###platform-status-frontend###",
+  amount : Int = 1
+)
 
 
 @Singleton
-class NoiseController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, val statusChecker: StatusChecker, noiseView: Noise)
-  extends FrontendController(mcc) {
+class NoiseController @Inject()(
+  mcc          : MessagesControllerComponents,
+  statusChecker: StatusChecker,
+  noiseView    : Noise
+) extends FrontendController(mcc) {
 
-  implicit val config: AppConfig = appConfig
-  val logger: Logger = Logger(this.getClass)
+  private val logger: Logger = Logger(this.getClass)
 
-  val noiseForm: Form[NoiseRequest] = Form(
-    mapping(
-      "level" -> text,
-      "message" -> text,
-      "amount"  -> number
-    )(NoiseRequest.apply)(NoiseRequest.unapply)
-  )
-
-  def noise = Action.async { implicit request =>
-    Future.successful(Ok(noiseView(noiseForm.fill(NoiseRequest()))))
-  }
-
-  def createNoise = Action { implicit request =>
-    noiseForm.bindFromRequest.fold(
-      formWithErrors => {
-        BadRequest(noiseView(formWithErrors))
-      },
-      noiseRequest => {
-        makeSomeNoise(noiseRequest)
-        Redirect(routes.NoiseController.noise).flashing("success" -> "Log messages written.")
-      }
+  val noiseForm: Form[NoiseRequest] =
+    Form(
+      mapping(
+        "level" -> text,
+        "message" -> text,
+        "amount"  -> number
+      )(NoiseRequest.apply)(NoiseRequest.unapply)
     )
-  }
 
-  private def makeSomeNoise(request: NoiseRequest) = {
-    for(i <- 1 to request.amount) {
+  def noise =
+    Action { implicit request =>
+      Ok(noiseView(noiseForm.fill(NoiseRequest())))
+    }
+
+  def createNoise =
+    Action { implicit request =>
+      noiseForm.bindFromRequest
+        .fold(
+          formWithErrors => BadRequest(noiseView(formWithErrors))
+        , noiseRequest => {
+            makeSomeNoise(noiseRequest)
+            Redirect(routes.NoiseController.noise).flashing("success" -> "Log messages written.")
+          }
+        )
+    }
+
+  private def makeSomeNoise(request: NoiseRequest) =
+    for(i <- 1 to request.amount)
       request.level match {
         case "ERROR" => logger.error(s"$i: " + request.message, new RuntimeException(request.message))
-        case "WARN" => logger.warn(s"$i: " + request.message)
-        case "INFO" => logger.info(s"$i: " + request.message)
-        case _ => logger.warn("Unrecognized log level")
+        case "WARN"  => logger.warn(s"$i: " + request.message)
+        case "INFO"  => logger.info(s"$i: " + request.message)
+        case _       => logger.warn("Unrecognized log level")
       }
-    }
-  }
-
 }
-
-

@@ -14,15 +14,22 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 @import uk.gov.hmrc.platformstatusfrontend.controllers.LeakRequest
 @import uk.gov.hmrc.platformstatusfrontend.views.html.MainTemplate
 
 @import views.html.helper.CSRF
+
 @this(
-        mainTemplate: MainTemplate
+  mainTemplate: MainTemplate
 )
-@(leakForm: Form[LeakRequest])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, requestHeader: RequestHeader, flash: Flash)
+
+@(
+  leakForm: Form[LeakRequest]
+)(implicit
+  request : Request[_],
+  messages: Messages,
+  flash   : Flash
+)
 
 @mainTemplate(title = "Hello from platform-status-frontend") {
     <h1>@flash.get("success").getOrElse("!!! Here be dragons !!! ")</h1>

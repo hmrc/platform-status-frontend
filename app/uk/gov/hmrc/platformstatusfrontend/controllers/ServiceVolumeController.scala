@@ -30,32 +30,34 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton
-class ServiceVolumeController @Inject()(service: ServiceVolumeService,
-                                        view: ServiceVolume,
-                                        mcc: MessagesControllerComponents)
-                                       (implicit config: AppConfig)
-  extends FrontendController(mcc) {
+class ServiceVolumeController @Inject()(
+  service: ServiceVolumeService,
+  view: ServiceVolume,
+  mcc: MessagesControllerComponents
+) extends FrontendController(mcc) {
 
-  val form: Form[ServiceVolumeRequest] = Form(
-    mapping(
-      "url" -> text.verifying(pattern("https?://[^%#@?]+".r)),
-      "n" -> number
-    )(ServiceVolumeRequest.apply)(ServiceVolumeRequest.unapply)
-  )
-
-  def setup() = Action.async { implicit request =>
-    Future.successful( Ok(view(form.fill(ServiceVolumeRequest()))))
-  }
-
-  def run() = Action.async { implicit  request =>
-    form.bindFromRequest.fold(
-      formWithErrors => {
-        Future.successful(BadRequest(view(formWithErrors)))
-      },
-      form => {
-        service.sendServiceCalls(form.url, form.n)
-        Future.successful(Ok("Generated"))
-      }
+  val form: Form[ServiceVolumeRequest] =
+    Form(
+      mapping(
+        "url" -> text.verifying(pattern("https?://[^%#@?]+".r)),
+        "n"   -> number
+      )(ServiceVolumeRequest.apply)(ServiceVolumeRequest.unapply)
     )
-  }
+
+  def setup() =
+    Action { implicit request =>
+      Ok(view(form.fill(ServiceVolumeRequest())))
+    }
+
+  def run() =
+    Action { implicit request =>
+      form.bindFromRequest
+        .fold(
+          formWithErrors => BadRequest(view(formWithErrors))
+        , form => {
+            service.sendServiceCalls(form.url, form.n)
+            Ok("Generated")
+          }
+        )
+    }
 }

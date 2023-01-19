@@ -31,25 +31,24 @@ import scala.language.implicitConversions
 
 
 @Singleton
-class GarbageController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, val garbageService: GarbageService, garbageView: Garbage)(implicit executionContext: ExecutionContext, futures: Futures)
-  extends FrontendController(mcc) {
+class GarbageController @Inject()(
+  mcc           : MessagesControllerComponents,
+  garbageService: GarbageService,
+  garbageView   : Garbage
+)(implicit
+  ec: ExecutionContext
+) extends FrontendController(mcc) {
 
-  implicit val config: AppConfig = appConfig
+  def garbage: Action[AnyContent] =
+    Action.async { implicit request =>
+      val properties = System.getProperties.asScala
+      for ((k,v) <- properties) println(s"key: $k, value: $v")
 
+      val gcSummaryFuture = for {
+        backend  <- garbageService.getBackendGcInfo
+        frontend <- garbageService.getFrontendGcInfo
+      } yield GcSummary(frontend, backend)
 
-  def garbage: Action[AnyContent] = Action.async { implicit request =>
-
-    val properties = System.getProperties.asScala
-    for ((k,v) <- properties) println(s"key: $k, value: $v")
-
-    val gcSummaryFuture = for {
-      backend <- garbageService.getBackendGcInfo
-      frontend <- garbageService.getFrontendGcInfo
-    } yield GcSummary(frontend, backend)
-
-    gcSummaryFuture.map{gcSummary => Ok(garbageView(gcSummary))}
-  }
-
+      gcSummaryFuture.map(gcSummary => Ok(garbageView(gcSummary)))
+    }
 }
-
-

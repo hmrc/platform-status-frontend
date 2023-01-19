@@ -29,22 +29,20 @@ import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class GarbageService @Inject()(backendConnector: BackendConnector, appConfig: AppConfig) {
+class GarbageService @Inject()(backendConnector: BackendConnector) {
 
   private val logger = Logger(this.getClass)
 
-  def getBackendGcInfo(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[GcInformation] = {
-    backendConnector.gcInformation.recoverWith {
-      case ex: Exception => {
-        val msg = s"bodyToBackend call to backend service failed"
-        logger.warn(msg, ex)
-        Future(GcInformation(-1, Seq[GarbageCollectorMXBean]()))
+  def getBackendGcInfo(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[GcInformation] =
+    backendConnector.gcInformation
+      .recoverWith {
+        case ex: Exception =>
+          val msg = s"bodyToBackend call to backend service failed"
+          logger.warn(msg, ex)
+          Future(GcInformation(-1, Seq[GarbageCollectorMXBean]()))
       }
-    }
-  }
 
   def getFrontendGcInfo: Future[GcInformation] = {
-
     import java.lang.management.ManagementFactory
 
     val gBeans = ManagementFactory.getGarbageCollectorMXBeans.asScala.toList

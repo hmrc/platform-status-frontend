@@ -20,23 +20,36 @@ import play.api.libs.json.{Json, OFormat}
 
 import java.lang.management.GarbageCollectorMXBean
 
-case class GcInformation(coreCount: Int, gBeans: Seq[GcBeanInfo])
+case class GcInformation(
+  coreCount: Int,
+  gBeans   : Seq[GcBeanInfo]
+)
 
 
 object GcInformation {
-  def apply(coreCount: Int, beans: Iterable[GarbageCollectorMXBean]): GcInformation = {
+  def apply(
+    coreCount: Int,
+    beans    : Iterable[GarbageCollectorMXBean]
+  ): GcInformation =
     new GcInformation(coreCount, beans.map(GcBeanInfo(_)).toSeq)
-  }
+
   implicit val formatter: OFormat[GcInformation] = Json.format[GcInformation]
 }
 
-case class GcBeanInfo(name: String, collectionCount: Long, collectionTime: Long)
+case class GcBeanInfo(
+  name           : String,
+  collectionCount: Long,
+  collectionTime : Long
+)
 
 object GcBeanInfo {
-  def apply(bean: GarbageCollectorMXBean): GcBeanInfo = {
+  def apply(bean: GarbageCollectorMXBean): GcBeanInfo =
     new GcBeanInfo(bean.getName, bean.getCollectionCount, bean.getCollectionTime)
-  }
+
   implicit val formatter: OFormat[GcBeanInfo] = Json.format[GcBeanInfo]
 }
 
-case class GcSummary(frontend: GcInformation, backend: GcInformation)
+case class GcSummary(
+  frontend: GcInformation,
+  backend : GcInformation
+)

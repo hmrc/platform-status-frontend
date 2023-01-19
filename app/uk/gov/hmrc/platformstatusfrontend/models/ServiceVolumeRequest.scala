@@ -16,4 +16,7 @@
 
 package uk.gov.hmrc.platformstatusfrontend.models
 
-case class ServiceVolumeRequest(url: String = "", n: Int = 1000)
+case class ServiceVolumeRequest(
+  url: String = "",
+  n  : Int    = 1000
+)

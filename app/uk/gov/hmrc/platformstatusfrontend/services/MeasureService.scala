@@ -20,35 +20,31 @@ import com.google.inject.Inject
 import javax.inject.Singleton
 import play.api.Logger
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.connectors.BackendConnector
 import uk.gov.hmrc.platformstatusfrontend.util.MeasureUtil.X_TEST_HEADER_NAME
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class MeasureService @Inject()(backendConnector: BackendConnector, appConfig: AppConfig) {
+class MeasureService @Inject()(backendConnector: BackendConnector) {
 
-  val logger = Logger(this.getClass)
+  private val logger = Logger(this.getClass)
 
-  def bodyToBackend(content: String)(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[String] = {
-    backendConnector.measure(content, Seq.empty).recoverWith {
-      case ex: Exception => {
-        val msg = s"bodyToBackend call to backend service failed"
-        logger.warn(msg, ex)
-        Future(s"$msg: ${ex.getMessage}")
+  def bodyToBackend(content: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String] =
+    backendConnector.measure(content, Seq.empty)
+      .recoverWith {
+        case ex: Exception =>
+          val msg = s"bodyToBackend call to backend service failed"
+          logger.warn(msg, ex)
+          Future.successful(s"$msg: ${ex.getMessage}")
       }
-    }
-  }
 
-  def headerToBackend(content: String, headerName: String)(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[String] = {
-    backendConnector.measure("", Seq(headerName -> content, X_TEST_HEADER_NAME -> headerName)).recoverWith {
-      case ex: Exception => {
-        val msg = s"headerToBackend call to backend service failed"
-        logger.warn(msg, ex)
-        Future(s"$msg: ${ex.getMessage}")
+  def headerToBackend(content: String, headerName: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String] =
+    backendConnector.measure("", Seq(headerName -> content, X_TEST_HEADER_NAME -> headerName))
+      .recoverWith {
+        case ex: Exception =>
+          val msg = s"headerToBackend call to backend service failed"
+          logger.warn(msg, ex)
+          Future.successful(s"$msg: ${ex.getMessage}")
       }
-    }
-  }
-
 }

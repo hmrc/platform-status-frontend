@@ -27,38 +27,43 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
 
-case class CodeRequest(code: Int = 200, message: String = "a profound message")
+case class CodeRequest(
+  code   : Int    = 200,
+  message: String = "a profound message"
+)
 
 @Singleton
-class CodeController @Inject()(appConfig: AppConfig, mcc: MessagesControllerComponents, memoryHog: MemoryHog, codeView: Code, codeResponseView: CodeResponse) extends FrontendController(mcc) {
+class CodeController @Inject()(
+  appConfig       : AppConfig,
+  mcc             : MessagesControllerComponents,
+  memoryHog       : MemoryHog,
+  codeView        : Code,
+  codeResponseView: CodeResponse
+) extends FrontendController(mcc) {
 
-  val codeForm: Form[CodeRequest] = Form(
-    mapping(
-      "code" -> number,
-      "message"  -> text
-    )(CodeRequest.apply)(CodeRequest.unapply)
-  )
-
-  implicit val config: AppConfig = appConfig
-  val logger: Logger = Logger(this.getClass)
-
-  def code = Action(parse.empty) { implicit request =>
-    Ok(codeView( codeForm.fill(CodeRequest()))  )
-  }
-
-  def respondWithCode = Action(parse.formUrlEncoded) { implicit request =>
-    codeForm.bindFromRequest.fold(
-      formWithErrors => {
-        BadRequest(codeView(formWithErrors) )
-      },
-      codeRequest => {
-        if (codeRequest.code == 504) {
-          Thread.sleep(config.badGatewayTimeout.toMillis)
-        }
-        new Status(codeRequest.code)(codeResponseView(codeRequest.code, codeRequest.message))
-      }
+  val codeForm: Form[CodeRequest] =
+    Form(
+      mapping(
+        "code" -> number,
+        "message"  -> text
+      )(CodeRequest.apply)(CodeRequest.unapply)
     )
-  }
 
+  def code =
+    Action(parse.empty) { implicit request =>
+      Ok(codeView(codeForm.fill(CodeRequest())))
+    }
+
+  def respondWithCode =
+    Action(parse.formUrlEncoded) { implicit request =>
+      codeForm.bindFromRequest.fold(
+        formWithErrors =>
+          BadRequest(codeView(formWithErrors) )
+      , codeRequest => {
+          if (codeRequest.code == 504)
+            Thread.sleep(appConfig.badGatewayTimeout.toMillis)
+          new Status(codeRequest.code)(codeResponseView(codeRequest.code, codeRequest.message))
+        }
+      )
+    }
 }
-
