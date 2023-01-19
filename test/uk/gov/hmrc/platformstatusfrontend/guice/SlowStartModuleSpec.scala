@@ -27,17 +27,21 @@ import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import scala.concurrent.duration._
 
 
-class SlowStartModuleSpec extends AnyWordSpec with Matchers with MockitoSugar with TimeLimits {
+class SlowStartModuleSpec
+  extends AnyWordSpec
+     with Matchers
+     with MockitoSugar
+     with TimeLimits {
 
   private trait Setup {
-    val testTimeoutDuration: Span = 100 milliseconds
+    val testTimeoutDuration: Span = 100.milliseconds
 
     val appConfig = mock[AppConfig]
   }
 
   "DefaultSlowStarter" should {
     "wait n time before startup" in new Setup() {
-      when(appConfig.startupDelay) thenReturn (Some(5000))
+      when(appConfig.startupDelay).thenReturn(Some(5000))
 
       intercept[TestFailedDueToTimeoutException] {
         failAfter(testTimeoutDuration) {

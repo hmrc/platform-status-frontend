@@ -23,13 +23,17 @@ import org.scalatest.wordspec.AnyWordSpec
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import uk.gov.hmrc.platformstatusfrontend.connectors.GenericConnector
 
-class ServiceVolumeServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with BeforeAndAfterEach {
+class ServiceVolumeServiceSpec
+  extends AnyWordSpec
+     with Matchers
+     with MockitoSugar
+     with BeforeAndAfterEach {
 
   val connector = mock[GenericConnector]
   val fixture = new ServiceVolumeService(connector)
   implicit val hc = HeaderCarrier()
 
-  override def beforeEach = {
+  override def beforeEach(): Unit = {
     reset(connector)
   }
 

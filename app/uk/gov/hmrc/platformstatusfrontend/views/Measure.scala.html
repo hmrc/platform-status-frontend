@@ -38,7 +38,7 @@
         Create a response that has a header added with the given name, filled with random bytes up to the given size
     </p>
 
-    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.MeasureController.randomResponseHeaderOfSize){
+    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.MeasureController.randomResponseHeaderOfSize()){
         @CSRF.formField
         @helper.inputText(measureForm("headerName"), '_label -> "Header name to create")
         @helper.inputText(measureForm("bytes"), '_label -> "Number of bytes")
@@ -52,7 +52,7 @@
         Create a response that has a body filled with random bytes up to the given size
     </p>
 
-    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.MeasureController.randomResponseBodyOfSize){
+    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.MeasureController.randomResponseBodyOfSize()){
         @CSRF.formField
         @helper.inputText(measureForm("bytes"), '_label -> "Number of bytes")
 
@@ -69,7 +69,7 @@
         and send it to the backend
     </p>
 
-    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.MeasureController.headerOfSizeToBackend){
+    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.MeasureController.headerOfSizeToBackend()){
         @CSRF.formField
         @helper.inputText(measureForm("headerName"), '_label -> "Header name to create")
         @helper.inputText(measureForm("bytes"), '_label -> "Number of bytes")
@@ -82,7 +82,7 @@
         Create a request that has a body filled with random bytes up to the given size, and send it to the backend
     </p>
 
-    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.MeasureController.bodyOfSizeToBackend){
+    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.MeasureController.bodyOfSizeToBackend()){
         @CSRF.formField
         @defining(measureForm("headerName")) { headerName =>
             <input type="hidden" name="@headerName.name" value="">

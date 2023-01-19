@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.platformstatusfrontend.controllers
 
-import play.api.Logger
 import play.api.data.Forms._
 import play.api.data._
 import play.api.mvc._
@@ -56,14 +55,14 @@ class CodeController @Inject()(
 
   def respondWithCode =
     Action(parse.formUrlEncoded) { implicit request =>
-      codeForm.bindFromRequest.fold(
-        formWithErrors =>
-          BadRequest(codeView(formWithErrors) )
-      , codeRequest => {
-          if (codeRequest.code == 504)
-            Thread.sleep(appConfig.badGatewayTimeout.toMillis)
-          new Status(codeRequest.code)(codeResponseView(codeRequest.code, codeRequest.message))
-        }
-      )
+      codeForm.bindFromRequest()
+        .fold(
+          formWithErrors => BadRequest(codeView(formWithErrors) )
+        , codeRequest => {
+            if (codeRequest.code == 504)
+              Thread.sleep(appConfig.badGatewayTimeout.toMillis)
+            new Status(codeRequest.code)(codeResponseView(codeRequest.code, codeRequest.message))
+          }
+        )
     }
 }

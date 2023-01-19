@@ -16,20 +16,15 @@
 
 package uk.gov.hmrc.platformstatusfrontend.controllers
 
-import akka.actor.ActorSystem
-import org.mockito.Mockito._
-import org.mockito.ArgumentMatchers._
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.Status
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.concurrent.Futures
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.api.{Configuration, Environment, _}
-import play.api.libs.concurrent.DefaultFutures
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.services.{PlatformStatus, StatusChecker}
@@ -38,16 +33,21 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class StatusControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with MockitoSugar {
+class StatusControllerSpec
+  extends AnyWordSpec
+     with Matchers
+     with GuiceOneAppPerSuite
+     with MockitoSugar {
+
   private val fakeRequest = FakeRequest("GET", "/")
   private val env           = Environment.simple()
   private val configuration: Configuration = Configuration.load(env)
   private val serviceConfig = new ServicesConfig(configuration)
   private val appConfig     = new AppConfig(configuration, serviceConfig)
 
-  override def fakeApplication: Application =
+  override def fakeApplication(): Application =
     new GuiceApplicationBuilder()
       .configure(
         "metrics.jvm" -> false
@@ -55,8 +55,7 @@ class StatusControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPer
       .build()
 
   private trait Setup {
-    implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
-    implicit val futures: Futures = new DefaultFutures(ActorSystem.create)
+    implicit val hc: HeaderCarrier = HeaderCarrier()
 
     val statusChecker = mock[StatusChecker]
     val dummyStatus = PlatformStatus("name", true, "description", Some("No reason"))

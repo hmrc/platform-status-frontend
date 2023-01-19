@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.platformstatusfrontend.controllers
 
-import akka.actor.ActorSystem
 import akka.stream.Materializer
 import org.mockito.captor.ArgCaptor
 import org.mockito.scalatest.MockitoSugar
@@ -28,29 +27,32 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.http.Status
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.concurrent.{DefaultFutures, Futures}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.api.{Configuration, Environment, _}
+import play.api. _
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.connectors.BackendConnector
 import uk.gov.hmrc.platformstatusfrontend.services.MeasureService
 import uk.gov.hmrc.platformstatusfrontend.util.Generators._
 import uk.gov.hmrc.platformstatusfrontend.util.MeasureUtil._
 import uk.gov.hmrc.platformstatusfrontend.views.html.Measure
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import play.api.test.CSRFTokenHelper._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class MeasureControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with
-  MockitoSugar with ScalaCheckDrivenPropertyChecks with ScalaFutures {
+class MeasureControllerSpec
+   extends AnyWordSpec
+      with Matchers
+      with GuiceOneAppPerSuite
+      with MockitoSugar
+      with ScalaCheckDrivenPropertyChecks
+      with ScalaFutures {
+
   private implicit lazy val materializer: Materializer = app.materializer
 
-  override def fakeApplication: Application =
+  override def fakeApplication(): Application =
     new GuiceApplicationBuilder()
       .configure(
         "metrics.jvm" -> false
@@ -58,8 +60,7 @@ class MeasureControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPe
       .build()
 
   private trait Setup {
-    implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
-    implicit val futures: Futures = new DefaultFutures(ActorSystem.create)
+    implicit val hc: HeaderCarrier = HeaderCarrier()
 
     val backendConnector: BackendConnector = mock[BackendConnector]
     val measureService: MeasureService = new MeasureService(backendConnector)
@@ -132,7 +133,7 @@ class MeasureControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPe
 
         val captor = ArgCaptor[Seq[(String, String)]]
 
-        when(backendConnector.measure(any, captor)(any)).thenReturn(Future(s"response from backend"))
+        when(backendConnector.measure(any, captor)(any)).thenReturn(Future.successful(s"response from backend"))
 
         val result = controller.headerOfSizeToBackend()(FakeRequest(GET, s"/?bytes=$bytes&headerName=$headerName").withCSRFToken)
 
@@ -151,7 +152,7 @@ class MeasureControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPe
 
         val captor = ArgCaptor[String]
 
-        when(backendConnector.measure(captor.capture, any)(any)).thenReturn(Future(s"response from backend"))
+        when(backendConnector.measure(captor.capture, any)(any)).thenReturn(Future.successful(s"response from backend"))
 
         val result = controller.bodyOfSizeToBackend()(FakeRequest(GET, s"/?bytes=$bytes&headerName=").withCSRFToken)
 

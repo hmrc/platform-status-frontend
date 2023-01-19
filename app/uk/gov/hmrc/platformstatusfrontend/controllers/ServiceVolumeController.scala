@@ -20,14 +20,12 @@ import play.api.data.Form
 import play.api.data.Forms.{mapping, number, text}
 import play.api.data.validation.Constraints._
 import play.api.mvc.MessagesControllerComponents
-import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.models.ServiceVolumeRequest
 import uk.gov.hmrc.platformstatusfrontend.services.ServiceVolumeService
 import uk.gov.hmrc.platformstatusfrontend.views.html.ServiceVolume
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
 
 @Singleton
 class ServiceVolumeController @Inject()(
@@ -51,7 +49,7 @@ class ServiceVolumeController @Inject()(
 
   def run() =
     Action { implicit request =>
-      form.bindFromRequest
+      form.bindFromRequest()
         .fold(
           formWithErrors => BadRequest(view(formWithErrors))
         , form => {

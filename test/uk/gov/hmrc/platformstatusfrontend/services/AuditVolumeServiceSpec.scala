@@ -25,13 +25,17 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class AuditVolumeServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with BeforeAndAfterEach {
+class AuditVolumeServiceSpec
+  extends AnyWordSpec
+     with Matchers
+     with MockitoSugar
+     with BeforeAndAfterEach {
 
   val auditConnector = mock[AuditConnector]
   val fixture = new AuditVolumeService(auditConnector)
   implicit val hc = HeaderCarrier()
 
-  override def beforeEach = {
+  override def beforeEach(): Unit = {
     reset(auditConnector)
   }
 

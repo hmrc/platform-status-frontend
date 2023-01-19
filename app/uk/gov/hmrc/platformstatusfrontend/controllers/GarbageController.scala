@@ -16,18 +16,15 @@
 
 package uk.gov.hmrc.platformstatusfrontend.controllers
 
-import play.api.libs.concurrent.Futures
 import play.api.mvc._
-import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
-import uk.gov.hmrc.platformstatusfrontend.models.{GcInformation, GcSummary}
+import uk.gov.hmrc.platformstatusfrontend.models.GcSummary
 import uk.gov.hmrc.platformstatusfrontend.services.GarbageService
 import uk.gov.hmrc.platformstatusfrontend.views.html.Garbage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
-import scala.collection.JavaConverters._
-import scala.concurrent.{ExecutionContext, Future}
-import scala.language.implicitConversions
+import scala.concurrent.ExecutionContext
+import scala.jdk.CollectionConverters._
 
 
 @Singleton

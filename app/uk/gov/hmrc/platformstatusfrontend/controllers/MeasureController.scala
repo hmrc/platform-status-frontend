@@ -21,7 +21,6 @@ import play.api.Logger
 import play.api.data.Form
 import play.api.data.Forms.{mapping, _}
 import play.api.mvc._
-import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.services.MeasureService
 import uk.gov.hmrc.platformstatusfrontend.util.MeasureUtil._
 import uk.gov.hmrc.platformstatusfrontend.views.html.Measure
@@ -73,7 +72,7 @@ class MeasureController @Inject()(
 
   def randomResponseHeaderOfSize() =
     Action { implicit request =>
-      measureForm.bindFromRequest
+      measureForm.bindFromRequest()
         .fold(
           formWithErrors => BadRequest(measureView(formWithErrors))
         , measureRequest => {
@@ -87,7 +86,7 @@ class MeasureController @Inject()(
 
   def randomResponseBodyOfSize() =
     Action { implicit request =>
-      measureForm.bindFromRequest
+      measureForm.bindFromRequest()
         .fold(
           formWithErrors => BadRequest(measureView(formWithErrors))
         , measureRequest => {
@@ -100,7 +99,7 @@ class MeasureController @Inject()(
 
   def headerOfSizeToBackend() =
     Action.async { implicit request =>
-      measureForm.bindFromRequest
+      measureForm.bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(measureView(formWithErrors)))
         , measureRequest => {
@@ -112,7 +111,7 @@ class MeasureController @Inject()(
     }
 
   def bodyOfSizeToBackend() = Action.async { implicit request =>
-    measureForm.bindFromRequest
+    measureForm.bindFromRequest()
       .fold(
         formWithErrors => Future.successful(BadRequest(measureView(formWithErrors)))
       , measureRequest => {

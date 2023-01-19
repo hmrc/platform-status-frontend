@@ -28,7 +28,6 @@ class MemoryHogTest extends AnyWordSpec with Matchers {
         memHog.eatMemory(50, 25)
       } catch {
         case _: OutOfMemoryError =>
-        case ex => throw ex
       }
     }
   }

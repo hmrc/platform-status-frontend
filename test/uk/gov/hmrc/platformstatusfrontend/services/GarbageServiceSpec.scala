@@ -21,7 +21,6 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.connectors.BackendConnector
 import uk.gov.hmrc.platformstatusfrontend.models.{GcBeanInfo, GcInformation}
 
@@ -32,12 +31,13 @@ class GarbageServiceSpec
      with Matchers
      with MockitoSugar
      with BeforeAndAfterEach {
-    implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
+
+    implicit val hc: HeaderCarrier = HeaderCarrier()
 
     val backendConnectorMock = mock[BackendConnector]
     val garbageService       = new GarbageService(backendConnectorMock)
 
-  override def beforeEach = {
+  override def beforeEach(): Unit = {
     reset(backendConnectorMock)
   }
 

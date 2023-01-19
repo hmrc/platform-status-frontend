@@ -17,11 +17,9 @@
 package uk.gov.hmrc.platformstatusfrontend.controllers
 
 import javax.inject.{Inject, Singleton}
-import play.api.Logger
 import play.api.data.Forms._
 import play.api.data._
 import play.api.mvc._
-import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.services.MemoryHog
 import uk.gov.hmrc.platformstatusfrontend.views.html.Kill
 
@@ -47,19 +45,17 @@ class KillController @Inject()(
     )(LeakRequest.apply)(LeakRequest.unapply)
   )
 
-  private val logger: Logger = Logger(this.getClass)
-
   def kill = Action.async { implicit request =>
     Future.successful( Ok(killView( leakForm.fill(LeakRequest()))  ) )
   }
 
-  def meteOutDeath = Action { implicit request =>
+  def meteOutDeath = Action {
     System.exit(0)
     Redirect(routes.KillController.kill).flashing("success" -> "If you see this then the container did not die.")
   }
 
   def leakMemory = Action { implicit request =>
-    leakForm.bindFromRequest
+    leakForm.bindFromRequest()
       .fold(
         formWithErrors => BadRequest(killView(formWithErrors))
       , killRequest => {

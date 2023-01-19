@@ -29,10 +29,12 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.platformstatusfrontend.util.Generators._
 import uk.gov.hmrc.platformstatusfrontend.util.MeasureUtil
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
-class HeaderSizeFilterSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with
-  ScalaCheckDrivenPropertyChecks with ScalaFutures {
+class HeaderSizeFilterSpec
+   extends AnyWordSpec
+      with Matchers
+      with GuiceOneAppPerSuite
+      with ScalaCheckDrivenPropertyChecks
+      with ScalaFutures {
 
   private implicit lazy val materializer: Materializer = app.materializer
 

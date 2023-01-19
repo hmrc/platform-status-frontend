@@ -21,11 +21,8 @@ import play.api.Logger
 import play.api.data._
 import play.api.data.Forms._
 import play.api.mvc._
-import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.services.StatusChecker
 import uk.gov.hmrc.platformstatusfrontend.views.html.Noise
-
-import scala.concurrent.Future
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 case class NoiseRequest(
@@ -60,7 +57,7 @@ class NoiseController @Inject()(
 
   def createNoise =
     Action { implicit request =>
-      noiseForm.bindFromRequest
+      noiseForm.bindFromRequest()
         .fold(
           formWithErrors => BadRequest(noiseView(formWithErrors))
         , noiseRequest => {
