@@ -24,9 +24,6 @@ import scala.concurrent.duration.Duration
 @Singleton
 class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig) {
 
-  private val assetsUrl = config.get[String]("assets.url")
-
-  val assetsPrefix  : String      = assetsUrl + config.get[String]("assets.version")
   val analyticsToken: String      = config.get[String](s"google-analytics.token")
   val analyticsHost : String      = config.get[String](s"google-analytics.host")
   val startupDelay  : Option[Int] = config.getOptional[Int]("startup-delay")

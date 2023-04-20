@@ -25,6 +25,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 import scala.jdk.CollectionConverters._
+import play.api.Logger
 
 
 @Singleton
@@ -36,10 +37,12 @@ class GarbageController @Inject()(
   ec: ExecutionContext
 ) extends FrontendController(mcc) {
 
+  private val logger = Logger(this.getClass)
+
   def garbage: Action[AnyContent] =
     Action.async { implicit request =>
       val properties = System.getProperties.asScala
-      for ((k,v) <- properties) println(s"key: $k, value: $v")
+      for ((k,v) <- properties) logger.debug(s"key: $k, value: $v")
 
       val gcSummaryFuture = for {
         backend  <- garbageService.getBackendGcInfo

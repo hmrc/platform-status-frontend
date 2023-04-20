@@ -10,7 +10,6 @@ lazy val microservice = Project("platform-status-frontend", file("."))
     scalacOptions       += "-Wconf:cat=unused-imports&src=html/.*:s",
     scalacOptions       += "-Wconf:src=routes/.*:s"
   )
-  .settings(publishingSettings: _*)
   .configs(IntegrationTest)
   .settings(integrationTestSettings(): _*)
   .settings(resolvers += Resolver.jcenterRepo)
