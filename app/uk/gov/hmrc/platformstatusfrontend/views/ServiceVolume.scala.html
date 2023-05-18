@@ -34,8 +34,8 @@
 
     @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.ServiceVolumeController.run()){
         @CSRF.formField
-        @helper.inputText(form("url"), args = 'size -> 100, '_label -> "Service name")
-        @helper.inputText(form("n"), '_label -> "Number of calls")
+        @helper.inputText(form("url"), args = Symbol("size") -> 100, Symbol("_label") -> "Service name")
+        @helper.inputText(form("n"), Symbol("_label") -> "Number of calls")
 
         <input type="submit" value="Submit">
     }

@@ -40,8 +40,8 @@
 
     @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.AuditVolumeController.run()){
         @CSRF.formField
-        @helper.inputText(auditVolumeForm("auditType"), '_label -> "Audit Type to be used in Datastream messages")
-        @helper.inputText(auditVolumeForm("n"), '_label -> "Number of audit messages")
+        @helper.inputText(auditVolumeForm("auditType"), Symbol("_label") -> "Audit Type to be used in Datastream messages")
+        @helper.inputText(auditVolumeForm("n"), Symbol("_label") -> "Number of audit messages")
         <input type="submit" value="Generate">
     }
 

@@ -65,7 +65,7 @@
             "503" -> "503 - Service Unavailable",
             "504" -> "504 - Gateway Timeout",
             "505" -> "505 - HTTP Version Not Supported"))
-        @helper.inputText(codeForm("message"), args = 'size -> 60)
+        @helper.inputText(codeForm("message"), args = Symbol("size") -> 60)
 
         <input type="submit" value="Submit">
     }
