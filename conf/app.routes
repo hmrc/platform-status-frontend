@@ -30,3 +30,5 @@ POST      /audit-volume                 uk.gov.hmrc.platformstatusfrontend.contr
 
 GET       /service-volume               uk.gov.hmrc.platformstatusfrontend.controllers.ServiceVolumeController.setup()
 POST      /service-volume               uk.gov.hmrc.platformstatusfrontend.controllers.ServiceVolumeController.run()
+
+GET       /denied                       uk.gov.hmrc.platformstatusfrontend.controllers.AccessDeniedController.deny()

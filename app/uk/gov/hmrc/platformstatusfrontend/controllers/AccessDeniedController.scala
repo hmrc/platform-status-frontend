@@ -26,7 +26,7 @@ class AccessDeniedController @Inject() (
   mcc   :MessagesControllerComponents
   ) extends FrontendController(mcc) {
 
-  def denied() = Action.async {
+  def deny() = Action.async {
     Future.successful(Forbidden)
   }
 }

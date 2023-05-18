@@ -16,8 +16,8 @@ val bootstrapVersion = "7.15.0"
   )
 
   val test = Seq(
-    "uk.gov.hmrc"             %% "bootstrap-test-play-28"   % bootstrapVersion      % Test,
-    "org.scalatestplus"       %% "scalacheck-1-14"          % "3.1.1.0"             % Test,
+    "uk.gov.hmrc"             %% "bootstrap-test-play-28"   % bootstrapVersion      % "test, it",
+    "org.scalatestplus"       %% "scalacheck-1-14"          % "3.1.1.0"             % "test, it",
     "org.jsoup"               %  "jsoup"                    % "1.14.3"              % Test,
     "org.mockito"             %% "mockito-scala-scalatest"  % "1.16.42"             % Test,
   )
