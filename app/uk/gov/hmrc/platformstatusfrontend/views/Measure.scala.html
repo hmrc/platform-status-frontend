@@ -40,8 +40,8 @@
 
     @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.MeasureController.randomResponseHeaderOfSize()){
         @CSRF.formField
-        @helper.inputText(measureForm("headerName"), '_label -> "Header name to create")
-        @helper.inputText(measureForm("bytes"), '_label -> "Number of bytes")
+        @helper.inputText(measureForm("headerName"), Symbol("_label") -> "Header name to create")
+        @helper.inputText(measureForm("bytes"), Symbol("_label") -> "Number of bytes")
         <input type="submit" value="Generate">
     }
     <hr/>
@@ -54,7 +54,7 @@
 
     @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.MeasureController.randomResponseBodyOfSize()){
         @CSRF.formField
-        @helper.inputText(measureForm("bytes"), '_label -> "Number of bytes")
+        @helper.inputText(measureForm("bytes"), Symbol("_label") -> "Number of bytes")
 
         @defining(measureForm("headerName")) { headerName =>
             <input type="hidden" name="@headerName.name" value="">
@@ -71,8 +71,8 @@
 
     @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.MeasureController.headerOfSizeToBackend()){
         @CSRF.formField
-        @helper.inputText(measureForm("headerName"), '_label -> "Header name to create")
-        @helper.inputText(measureForm("bytes"), '_label -> "Number of bytes")
+        @helper.inputText(measureForm("headerName"), Symbol("_label") -> "Header name to create")
+        @helper.inputText(measureForm("bytes"), Symbol("_label") -> "Number of bytes")
         <input type="submit" value="Generate">
     }
     <hr/>
@@ -87,7 +87,7 @@
         @defining(measureForm("headerName")) { headerName =>
             <input type="hidden" name="@headerName.name" value="">
         }
-        @helper.inputText(measureForm("bytes"), '_label -> "Number of bytes")
+        @helper.inputText(measureForm("bytes"), Symbol("_label") -> "Number of bytes")
         <input type="submit" value="Generate">
     }
     <hr/>

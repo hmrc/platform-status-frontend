@@ -66,7 +66,7 @@ class StatusChecker @Inject()(
   private def checkMongoConnection(dbUrl: String): Future[PlatformStatus] = {
     val mongoClient: MongoClient               = MongoClient(dbUrl)
     val database   : MongoDatabase             = mongoClient.getDatabase("platform-status-frontend")
-    val collection : MongoCollection[Document] = database.getCollection("status");
+    val collection : MongoCollection[Document] = database.getCollection("status")
     val doc        : Document                  = Document("_id" -> 0, "name" -> "MongoDB")
 
     for {

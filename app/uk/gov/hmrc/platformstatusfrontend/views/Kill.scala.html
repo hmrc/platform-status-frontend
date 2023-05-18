@@ -60,8 +60,8 @@
 
     @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.KillController.leakMemory){
         @CSRF.formField
-        @helper.inputText(leakForm("mb"), '_label -> "Megabytes to eat in each iteration.")
-        @helper.inputText(leakForm("sleep"), '_label -> "Milliseconds to sleep between each iteration.")
+        @helper.inputText(leakForm("mb"), Symbol("_label") -> "Megabytes to eat in each iteration.")
+        @helper.inputText(leakForm("sleep"), Symbol("_label") -> "Milliseconds to sleep between each iteration.")
         <input type="submit" value="Leak memory">
     }
     <hr/>
