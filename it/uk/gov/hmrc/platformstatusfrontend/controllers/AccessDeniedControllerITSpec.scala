@@ -29,11 +29,14 @@ class AccessDeniedControllerITSpec extends AnyWordSpec with Matchers with GuiceO
 
   private val serviceUrl: String = s"http://localhost:$port/platform-status"
   private val TRUE_CLIENT_IP_HEADER = "True-Client-Ip"
+  private lazy val ALLOWED_IP_ADDRESS = "10.0.0.1"
 
   private  lazy val wsClient: WSClient = app.injector.instanceOf[WSClient]
 
   private lazy val config: Map[String, String] = Map(
-    "bootstrap.filters.allowlist.enabled" -> "true")
+    "bootstrap.filters.allowlist.enabled" -> "true",
+    "bootstrap.filters.allowlist.ips" -> ALLOWED_IP_ADDRESS
+    )
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()
     .configure(config)
@@ -54,7 +57,7 @@ class AccessDeniedControllerITSpec extends AnyWordSpec with Matchers with GuiceO
       "return a 200 OK" in {
         lazy val result: WSResponse = {
           await(wsClient.url(serviceUrl).withFollowRedirects(true).withHttpHeaders(
-            Seq(TRUE_CLIENT_IP_HEADER -> "127.0.0.1"): _*).get())
+            Seq(TRUE_CLIENT_IP_HEADER -> ALLOWED_IP_ADDRESS): _*).get())
         }
         result.status shouldBe OK
       }
