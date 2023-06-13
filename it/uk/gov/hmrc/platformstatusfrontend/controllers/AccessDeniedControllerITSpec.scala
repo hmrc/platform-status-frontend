@@ -28,14 +28,14 @@ import play.api.test.Helpers.{await, defaultAwaitTimeout}
 class AccessDeniedControllerITSpec extends AnyWordSpec with Matchers with GuiceOneServerPerSuite {
 
   private val serviceUrl: String = s"http://localhost:$port/platform-status"
-  private val TRUE_CLIENT_IP_HEADER = "True-Client-Ip"
-  private lazy val ALLOWED_IP_ADDRESS = "10.0.0.1"
+  private val trueClientIpHeader = "True-Client-Ip"
+  private lazy val allowedIpAddresses = Seq("10.0.0.1")
 
   private  lazy val wsClient: WSClient = app.injector.instanceOf[WSClient]
 
-  private lazy val config: Map[String, String] = Map(
+  private lazy val config: Map[String, Any] = Map(
     "bootstrap.filters.allowlist.enabled" -> "true",
-    "bootstrap.filters.allowlist.ips" -> ALLOWED_IP_ADDRESS
+    "bootstrap.filters.allowlist.ips" -> allowedIpAddresses
     )
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()
@@ -44,20 +44,20 @@ class AccessDeniedControllerITSpec extends AnyWordSpec with Matchers with GuiceO
 
 
   "With the Allowlist filter enabled" when {
-    s"a request is made with an ip in the $TRUE_CLIENT_IP_HEADER which is not on the allowlist it" should {
+    s"a request is made with an ip in the $trueClientIpHeader which is not on the allowlist it" should {
       "return 403 Forbidden" in {
         lazy val result: WSResponse = {
           await(wsClient.url(serviceUrl).withFollowRedirects(true).withHttpHeaders(
-            Seq(TRUE_CLIENT_IP_HEADER -> "192.168.2.1"): _*).get())
+            Seq(trueClientIpHeader -> "192.168.2.1"): _*).get())
         }
         result.status shouldBe FORBIDDEN
       }
     }
-    s"a request is made with an ip in the $TRUE_CLIENT_IP_HEADER which is on the allowlist it" should {
+    s"a request is made with an ip in the $trueClientIpHeader which is on the allowlist it" should {
       "return a 200 OK" in {
         lazy val result: WSResponse = {
           await(wsClient.url(serviceUrl).withFollowRedirects(true).withHttpHeaders(
-            Seq(TRUE_CLIENT_IP_HEADER -> ALLOWED_IP_ADDRESS): _*).get())
+            Seq(trueClientIpHeader -> allowedIpAddresses.mkString): _*).get())
         }
         result.status shouldBe OK
       }
