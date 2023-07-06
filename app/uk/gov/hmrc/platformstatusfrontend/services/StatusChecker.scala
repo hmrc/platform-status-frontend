@@ -88,7 +88,7 @@ class StatusChecker @Inject()(
     for {
       wsResult <- internetConnector
                     .callTheWeb(webTestEndpoint, appConfig.proxyRequired)
-                    .withTimeout(FiniteDuration(appConfig.proxyTimeout.toSeconds, SECONDS))
+                    .withTimeout(appConfig.proxyTimeout)
                     .recoverWith {
                       case ex: Exception =>
                         logger.warn("Unable to call out via squid proxy")

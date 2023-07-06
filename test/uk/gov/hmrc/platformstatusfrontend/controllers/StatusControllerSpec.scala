@@ -17,19 +17,18 @@
 package uk.gov.hmrc.platformstatusfrontend.controllers
 
 import org.mockito.scalatest.MockitoSugar
-import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.Status
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.api.{Configuration, Environment, _}
+import play.api._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.services.{PlatformStatus, StatusChecker}
 import uk.gov.hmrc.platformstatusfrontend.views.html.{Status => StatusView}
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -44,15 +43,8 @@ class StatusControllerSpec
   private val fakeRequest = FakeRequest("GET", "/")
   private val env           = Environment.simple()
   private val configuration: Configuration = Configuration.load(env)
-  private val serviceConfig = new ServicesConfig(configuration)
-  private val appConfig     = new AppConfig(configuration, serviceConfig)
+  private val appConfig     = new AppConfig(configuration)
 
-  override def fakeApplication(): Application =
-    new GuiceApplicationBuilder()
-      .configure(
-        "metrics.jvm" -> false
-      )
-      .build()
 
   private trait Setup {
     implicit val hc: HeaderCarrier = HeaderCarrier()
