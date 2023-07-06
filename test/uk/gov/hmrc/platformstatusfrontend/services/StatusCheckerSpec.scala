@@ -89,6 +89,7 @@ class StatusCheckerSpec
     "be happy when a response is received" in new Setup() {
       val fakeResponse = mock[WSResponse]
       when(appConfig.proxyRequired).thenReturn(false)
+      when(appConfig.proxyTimeout).thenReturn(Duration(2, SECONDS))
       when(fakeResponse.status).thenReturn(200)
       when(internetConnector.callTheWeb(statusChecker.webTestEndpoint, false)).thenReturn(Future.successful(fakeResponse))
       whenReady(statusChecker.iteration4Status(), timeout(testTimeoutDuration)) {
@@ -98,6 +99,7 @@ class StatusCheckerSpec
 
     "handle things when an error response is received" in new Setup() {
       when(appConfig.proxyRequired).thenReturn(false)
+      when(appConfig.proxyTimeout).thenReturn(Duration(2, SECONDS))
       when(internetConnector.callTheWeb(statusChecker.webTestEndpoint, false)).thenReturn(Future.failed(new Exception("Borked")))
       whenReady(statusChecker.iteration4Status(), timeout(testTimeoutDuration)) {
         result => result shouldBe baseIteration4Status.copy(isWorking = false, reason = Some("Borked"))

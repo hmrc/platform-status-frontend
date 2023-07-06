@@ -17,21 +17,20 @@
 package uk.gov.hmrc.platformstatusfrontend.services
 
 import com.google.inject.Inject
-import javax.inject.Singleton
 import org.mongodb.scala._
 import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model.ReplaceOptions
 import play.api.Logger
 import play.api.libs.concurrent.Futures
 import play.api.libs.concurrent.Futures._
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.platformstatusfrontend.connectors.{BackendConnector, InternetConnector}
-
-import scala.concurrent.duration._
-import PlatformStatus._
 import play.api.libs.ws.WSResponse
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
+import uk.gov.hmrc.platformstatusfrontend.connectors.{BackendConnector, InternetConnector}
+import uk.gov.hmrc.platformstatusfrontend.services.PlatformStatus._
 
+import javax.inject.Singleton
+import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -89,7 +88,7 @@ class StatusChecker @Inject()(
     for {
       wsResult <- internetConnector
                     .callTheWeb(webTestEndpoint, appConfig.proxyRequired)
-                    .withTimeout(2.seconds)
+                    .withTimeout(appConfig.proxyTimeout)
                     .recoverWith {
                       case ex: Exception =>
                         logger.warn("Unable to call out via squid proxy")
