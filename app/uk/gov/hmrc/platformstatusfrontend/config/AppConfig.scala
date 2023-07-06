@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.platformstatusfrontend.config
 
-import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.duration.Duration
 
 @Singleton
@@ -30,12 +31,13 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
 
   lazy val dbUrl                  = servicesConfig.getString("mongodb.uri")
 
-  lazy val proxyProtocol: String  = servicesConfig.getString("proxy.protocol")
-  lazy val proxyHost    : String  = servicesConfig.getString("proxy.host")
-  lazy val proxyPort    : Integer = servicesConfig.getInt("proxy.port")
-  lazy val proxyUsername: String  = servicesConfig.getString("proxy.username")
-  lazy val proxyPassword: String  = servicesConfig.getString("proxy.password")
-  lazy val proxyRequired: Boolean = servicesConfig.getBoolean("proxy.required")
+  lazy val proxyProtocol: String   = servicesConfig.getString("proxy.protocol")
+  lazy val proxyHost    : String   = servicesConfig.getString("proxy.host")
+  lazy val proxyPort    : Integer  = servicesConfig.getInt("proxy.port")
+  lazy val proxyTimeout : Duration = servicesConfig.getDuration("proxy.timeout")
+  lazy val proxyUsername: String   = servicesConfig.getString("proxy.username")
+  lazy val proxyPassword: String   = servicesConfig.getString("proxy.password")
+  lazy val proxyRequired: Boolean  = servicesConfig.getBoolean("proxy.required")
 
   lazy val badGatewayTimeout: Duration = servicesConfig.getDuration("bad-gateway.timeout")
 
