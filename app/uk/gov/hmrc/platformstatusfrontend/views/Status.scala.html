@@ -28,10 +28,14 @@
     <h1>Platform Status - what's up and what's not</h1>
     <table>
     @for(status <- statusList) {
-        @if(status.isWorking) {
-            <tr style="background-color: #88ff96"><td>@status.name</td><td>@status.description</td><td>Ticketyboo</td></tr>
+        @if(status.enabled) {
+            @if(status.isWorking) {
+                <tr style="background-color: #88ff96"><td>@status.name</td><td>@status.description</td><td>Ticketyboo</td></tr>
+            } else {
+                <tr style="background-color: #dc6a75"><td>@status.name</td><td>@status.description</td><td>@status.reason</td></tr>
+            }
         } else {
-            <tr style="background-color: #dc6a75"><td>@status.name</td><td>@status.description</td><td>@status.reason</td></tr>
+            <tr style="background-color: #9a9a9a"><td>@status.name</td><td>@status.description</td><td>N/A</td></tr>
         }
     }
     </table>
