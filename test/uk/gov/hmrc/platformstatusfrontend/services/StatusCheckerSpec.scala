@@ -53,6 +53,7 @@ class StatusCheckerSpec
   "iteration 2 status checker" should {
     "connect to Mongo" in new Setup() {
       when(appConfig.dbUrl).thenReturn("mongodb://localhost:27017")
+      when(appConfig.iteration2Enabled).thenReturn(true)
       whenReady(statusChecker.iteration2Status(), timeout(testTimeoutDuration)) {
         r =>
           r shouldBe baseIteration2Status
@@ -62,6 +63,7 @@ class StatusCheckerSpec
 
     "fail to connect to Mongo" in new Setup() {
       when(appConfig.dbUrl).thenReturn("mongodb://not_there:27017")
+      when(appConfig.iteration2Enabled).thenReturn(true)
       whenReady(statusChecker.iteration2Status(), timeout(testTimeoutDuration)) {
         r => r shouldBe baseIteration2Status.copy(isWorking = false, reason = Some("Timeout after 2 seconds"))
           r.isWorking shouldBe false
@@ -72,6 +74,7 @@ class StatusCheckerSpec
   "iteration 3 status check" should {
     "be happy when backend responds with a good result" in new Setup() {
       when(backendConnectorMock.iteration3Status()).thenReturn(Future.successful(baseIteration3Status))
+      when(appConfig.iteration3Enabled).thenReturn(true)
       whenReady(statusChecker.iteration3Status(), timeout(testTimeoutDuration) ){
         result => result shouldBe baseIteration3Status
       }
@@ -79,6 +82,7 @@ class StatusCheckerSpec
 
     "not blow up when backend responds with a bad result" in new Setup() {
       when(backendConnectorMock.iteration3Status()).thenReturn(Future.failed(UpstreamErrorResponse("Borked", 500, 500)))
+      when(appConfig.iteration3Enabled).thenReturn(true)
       whenReady(statusChecker.iteration3Status(), timeout(testTimeoutDuration) ){
         result => result shouldBe baseIteration3Status.copy(isWorking = false, reason = Some("Borked"))
       }
@@ -90,6 +94,7 @@ class StatusCheckerSpec
       val fakeResponse = mock[WSResponse]
       when(appConfig.proxyRequired).thenReturn(false)
       when(appConfig.proxyTimeout).thenReturn(Duration(2, SECONDS))
+      when(appConfig.iteration4Enabled).thenReturn(true)
       when(fakeResponse.status).thenReturn(200)
       when(internetConnector.callTheWeb(statusChecker.webTestEndpoint, false)).thenReturn(Future.successful(fakeResponse))
       whenReady(statusChecker.iteration4Status(), timeout(testTimeoutDuration)) {
@@ -100,6 +105,7 @@ class StatusCheckerSpec
     "handle things when an error response is received" in new Setup() {
       when(appConfig.proxyRequired).thenReturn(false)
       when(appConfig.proxyTimeout).thenReturn(Duration(2, SECONDS))
+      when(appConfig.iteration4Enabled).thenReturn(true)
       when(internetConnector.callTheWeb(statusChecker.webTestEndpoint, false)).thenReturn(Future.failed(new Exception("Borked")))
       whenReady(statusChecker.iteration4Status(), timeout(testTimeoutDuration)) {
         result => result shouldBe baseIteration4Status.copy(isWorking = false, reason = Some("Borked"))
@@ -110,6 +116,7 @@ class StatusCheckerSpec
   "iteration 5 status check" should {
     "be happy when backend responds with a good result" in new Setup() {
       when(backendConnectorMock.iteration5Status()).thenReturn(Future.successful(baseIteration5Status))
+      when(appConfig.iteration5Enabled).thenReturn(true)
       whenReady(statusChecker.iteration5Status(), timeout(testTimeoutDuration) ){
         result => result shouldBe baseIteration5Status
       }
@@ -117,6 +124,7 @@ class StatusCheckerSpec
 
     "not blow up when backend responds with a bad result" in new Setup() {
       when(backendConnectorMock.iteration5Status()).thenReturn(Future.failed(UpstreamErrorResponse("Borked", 500, 500)))
+      when(appConfig.iteration5Enabled).thenReturn(true)
       whenReady(statusChecker.iteration5Status(), timeout(testTimeoutDuration) ){
         result => result shouldBe baseIteration5Status.copy(isWorking = false, reason = Some("Borked"))
       }

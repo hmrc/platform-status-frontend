@@ -42,25 +42,30 @@ class StatusChecker @Inject()(
   ec     : ExecutionContext,
   futures: Futures
 ) {
-  val logger = Logger(this.getClass)
+  val logger: Logger = Logger(this.getClass)
 
   val webTestEndpoint = "https://www.gov.uk/bank-holidays.json"
 
   def iteration1Status(): Future[PlatformStatus] =
-    Future.successful(baseIteration1Status)
+    if(appConfig.iteration1Enabled)
+      Future.successful(baseIteration1Status)
+    else
+      Future.successful(baseIteration1Status.copy(enabled = false))
 
   def iteration2Status(): Future[PlatformStatus] =
-    try {
-      checkMongoConnection(appConfig.dbUrl)
-        .withTimeout(2.seconds)
-        .recoverWith {
-          case ex: Exception =>
-            logger.warn("Failed to connect to Mongo")
-            genericError(baseIteration2Status, ex)
-        }
-    } catch {
-      case ex: Exception => genericError(baseIteration2Status, ex)
-    }
+    if(appConfig.iteration2Enabled) {
+      try {
+        checkMongoConnection(appConfig.dbUrl)
+          .withTimeout(2.seconds)
+          .recoverWith {
+            case ex: Exception =>
+              logger.warn("Failed to connect to Mongo")
+              genericError(baseIteration2Status, ex)
+          }
+      } catch {
+        case ex: Exception => genericError(baseIteration2Status, ex)
+      }
+    } else Future.successful(baseIteration2Status.copy(enabled = false))
 
   private def checkMongoConnection(dbUrl: String): Future[PlatformStatus] = {
     val mongoClient: MongoClient               = MongoClient(dbUrl)
@@ -77,37 +82,44 @@ class StatusChecker @Inject()(
     } yield result
   }
 
-  def iteration3Status()(implicit hc: HeaderCarrier): Future[PlatformStatus] =
-    backendConnector.iteration3Status().recoverWith {
-      case ex: Exception =>
-        logger.warn("iteration3Status call to backend service failed.")
-        genericError(baseIteration3Status, ex)
-    }
+  def iteration3Status()(implicit hc: HeaderCarrier): Future[PlatformStatus] = {
+    if(appConfig.iteration3Enabled) {
+      backendConnector.iteration3Status().recoverWith {
+        case ex: Exception =>
+          logger.warn("iteration3Status call to backend service failed.")
+          genericError(baseIteration3Status, ex)
+      }
+    } else Future.successful(baseIteration3Status.copy(enabled = false))
+  }
 
   def iteration4Status(): Future[PlatformStatus] =
-    for {
-      wsResult <- internetConnector
-                    .callTheWeb(webTestEndpoint, appConfig.proxyRequired)
-                    .withTimeout(appConfig.proxyTimeout)
-                    .recoverWith {
-                      case ex: Exception =>
-                        logger.warn("Unable to call out via squid proxy")
-                        genericError(baseIteration4Status, ex)
-                    }
-    } yield
-      wsResult match {
-        case r: WSResponse if r.status < 300 => baseIteration4Status
-        case e: PlatformStatus               => e
-        case _                               => throw new IllegalStateException("That shouldn't happen")
-      }
+    if(appConfig.iteration4Enabled) {
+      for {
+        wsResult <- internetConnector
+          .callTheWeb(webTestEndpoint, appConfig.proxyRequired)
+          .withTimeout(appConfig.proxyTimeout)
+          .recoverWith {
+            case ex: Exception =>
+              logger.warn("Unable to call out via squid proxy")
+              genericError(baseIteration4Status, ex)
+          }
+      } yield
+        wsResult match {
+          case r: WSResponse if r.status < 300 => baseIteration4Status
+          case e: PlatformStatus => e
+          case _ => throw new IllegalStateException("That shouldn't happen")
+        }
+    } else Future.successful(baseIteration4Status.copy(enabled = false))
 
   def iteration5Status()(implicit hc: HeaderCarrier): Future[PlatformStatus] =
-    backendConnector.iteration5Status()
-      .recoverWith {
-        case ex: Exception =>
-          logger.warn("iteration5Status call to backend service failed.")
-          genericError(baseIteration5Status, ex)
-      }
+    if(appConfig.iteration5Enabled) {
+      backendConnector.iteration5Status()
+        .recoverWith {
+          case ex: Exception =>
+            logger.warn("iteration5Status call to backend service failed.")
+            genericError(baseIteration5Status, ex)
+        }
+    } else Future.successful(baseIteration5Status.copy(enabled = false))
 
   private def genericError(status: PlatformStatus, ex: Exception): Future[PlatformStatus] =
     Future.successful(status.copy(isWorking = false, reason = Some(ex.getMessage)))

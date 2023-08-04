@@ -50,7 +50,7 @@ class StatusControllerSpec
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
     val statusChecker = mock[StatusChecker]
-    val dummyStatus = PlatformStatus("name", true, "description", Some("No reason"))
+    val dummyStatus = PlatformStatus(enabled = true, "name", isWorking = true, "description", Some("No reason"))
     when(statusChecker.iteration1Status())
       .thenReturn(Future.successful(dummyStatus.copy(name = "it1")))
     when(statusChecker.iteration2Status())

@@ -41,4 +41,10 @@ class AppConfig @Inject()(config: Configuration) {
   lazy val badGatewayTimeout: Duration = config.get[Duration]("bad-gateway.timeout")
 
   lazy val experimentValue: String = config.get[String]("experiment.value")
+
+  lazy val iteration1Enabled: Boolean = config.get[Boolean]("checks.iteration1.enabled")
+  lazy val iteration2Enabled: Boolean = config.get[Boolean]("checks.iteration2.enabled")
+  lazy val iteration3Enabled: Boolean = config.get[Boolean]("checks.iteration3.enabled")
+  lazy val iteration4Enabled: Boolean = config.get[Boolean]("checks.iteration4.enabled")
+  lazy val iteration5Enabled: Boolean = config.get[Boolean]("checks.iteration5.enabled")
 }
