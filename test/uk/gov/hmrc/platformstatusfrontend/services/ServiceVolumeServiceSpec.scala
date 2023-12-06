@@ -31,7 +31,7 @@ class ServiceVolumeServiceSpec
 
   val connector = mock[GenericConnector]
   val fixture = new ServiceVolumeService(connector)
-  implicit val hc = HeaderCarrier()
+  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   override def beforeEach(): Unit = {
     reset(connector)
