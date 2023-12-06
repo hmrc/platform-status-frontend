@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.platformstatusfrontend.services
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
