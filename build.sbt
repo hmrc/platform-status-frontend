@@ -6,7 +6,7 @@ lazy val microservice = Project("platform-status-frontend", file("."))
   .settings(
     majorVersion        := 0,
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
-    scalaVersion        := "2.13.10",
+    scalaVersion        := "2.13.12",
     scalacOptions       += "-Wconf:cat=unused-imports&src=html/.*:s",
     scalacOptions       += "-Wconf:src=routes/.*:s"
   )

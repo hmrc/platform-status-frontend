@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.platformstatusfrontend.controllers
 
-import akka.stream.Materializer
+import org.apache.pekko.stream.Materializer
 import org.mockito.captor.ArgCaptor
 import org.mockito.scalatest.MockitoSugar
 import org.scalacheck.Gen
@@ -29,7 +29,7 @@ import play.api.http.Status
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.api. _
+import play.api._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.platformstatusfrontend.connectors.BackendConnector
 import uk.gov.hmrc.platformstatusfrontend.services.MeasureService
