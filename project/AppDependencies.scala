@@ -9,7 +9,7 @@ val bootstrapVersion = "8.1.0"
 
   val compile = Seq(
 
-    "uk.gov.hmrc"             %% "play-frontend-hmrc-play-30"  % "8.1.0",
+    "uk.gov.hmrc"             %% "play-frontend-hmrc-play-30"  % "8.5.0",
     "uk.gov.hmrc"             %% "bootstrap-frontend-play-30"  % bootstrapVersion,
     "org.mongodb.scala"       %% "mongo-scala-driver"          % "4.8.2",
     "org.typelevel"           %% "cats-core"                   % "2.10.0"
