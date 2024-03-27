@@ -16,10 +16,13 @@
 
 package uk.gov.hmrc.platformstatusfrontend.config
 
-import play.api.Configuration
+import play.api.{Configuration, Logger}
 
+import java.io.File
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.duration.{Duration, FiniteDuration}
+import scala.io.Source
+import scala.util.Using
 
 @Singleton
 class AppConfig @Inject()(config: Configuration) {
@@ -47,4 +50,15 @@ class AppConfig @Inject()(config: Configuration) {
   lazy val iteration3Enabled: Boolean = config.get[Boolean]("checks.iteration3.enabled")
   lazy val iteration4Enabled: Boolean = config.get[Boolean]("checks.iteration4.enabled")
   lazy val iteration5Enabled: Boolean = config.get[Boolean]("checks.iteration5.enabled")
+
+  val logger = Logger(getClass)
+  lazy val filePath = config.getOptional[String]("test.file.path")
+  filePath.map { path =>
+    val file = new File(path)
+    Using(Source.fromFile(file)) { source =>
+      val lines = source.getLines().mkString
+
+      logger.info(s"Successfully loaded file from $filePath - content: $lines")
+    }
+  }
 }
