@@ -56,9 +56,9 @@ class AppConfig @Inject()(config: Configuration) {
   filePath.map { path =>
     val file = new File(path)
     Using(Source.fromFile(file)) { source =>
-      val lines = source.getLines().mkString
+      val lines = source.getLines().mkString("\n")
 
-      logger.info(s"Successfully loaded file from $filePath - content: $lines")
+      logger.info(s"Successfully loaded file from $path - content: $lines")
     }
   }
 }
