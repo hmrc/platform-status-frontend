@@ -17,21 +17,22 @@
 package uk.gov.hmrc.platformstatusfrontend.services
 
 import org.apache.pekko.actor.ActorSystem
-import org.mockito.scalatest.MockitoSugar
+import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.time.Span
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.concurrent.{DefaultFutures, Futures}
 import play.api.libs.ws.WSResponse
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.connectors.{BackendConnector, InternetConnector}
-import uk.gov.hmrc.platformstatusfrontend.services.PlatformStatus._
+import uk.gov.hmrc.platformstatusfrontend.services.PlatformStatus.*
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
 class StatusCheckerSpec
   extends AnyWordSpec

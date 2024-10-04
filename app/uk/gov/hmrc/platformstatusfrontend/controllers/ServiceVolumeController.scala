@@ -18,8 +18,8 @@ package uk.gov.hmrc.platformstatusfrontend.controllers
 
 import play.api.data.Form
 import play.api.data.Forms.{mapping, number, text}
-import play.api.data.validation.Constraints._
-import play.api.mvc.MessagesControllerComponents
+import play.api.data.validation.Constraints.*
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.platformstatusfrontend.models.ServiceVolumeRequest
 import uk.gov.hmrc.platformstatusfrontend.services.ServiceVolumeService
 import uk.gov.hmrc.platformstatusfrontend.views.html.ServiceVolume
@@ -39,20 +39,20 @@ class ServiceVolumeController @Inject()(
       mapping(
         "url" -> text.verifying(pattern("https?://[^%#@?]+".r)),
         "n"   -> number
-      )(ServiceVolumeRequest.apply)(ServiceVolumeRequest.unapply)
+      )(ServiceVolumeRequest.apply)(o => Some(Tuple.fromProductTyped(o)))
     )
 
-  def setup() =
+  def setup: Action[AnyContent] =
     Action { implicit request =>
       Ok(view(form.fill(ServiceVolumeRequest())))
     }
 
-  def run() =
+  def run: Action[AnyContent] =
     Action { implicit request =>
       form.bindFromRequest()
         .fold(
           formWithErrors => BadRequest(view(formWithErrors))
-        , form => {
+          , form => {
             service.sendServiceCalls(form.url, form.n)
             Ok("Generated")
           }

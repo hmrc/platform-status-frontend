@@ -17,7 +17,7 @@
 package uk.gov.hmrc.platformstatusfrontend.connectors
 
 import javax.inject.{Inject, Singleton}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse, StringContextOps}
 import uk.gov.hmrc.platformstatusfrontend.models.GcInformation
 import uk.gov.hmrc.platformstatusfrontend.services.PlatformStatus
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -37,14 +37,14 @@ class BackendConnector @Inject()(
     s"${servicesConfig.baseUrl("platform-status-backend")}/platform-status-backend"
 
   def iteration3Status()(implicit hc: HeaderCarrier): Future[PlatformStatus] =
-    http.GET[PlatformStatus](s"$backendBaseUrl/status/iteration3")
+    http.GET[PlatformStatus](url"$backendBaseUrl/status/iteration3")
 
   def iteration5Status()(implicit hc: HeaderCarrier): Future[PlatformStatus] =
-    http.GET[PlatformStatus](s"$backendBaseUrl/status/iteration5")
+    http.GET[PlatformStatus](url"$backendBaseUrl/status/iteration5")
 
   def measure(content: String, headers: Seq[(String, String)] = Seq.empty)(implicit hc: HeaderCarrier): Future[String] =
-    http.POSTString[HttpResponse](s"$backendBaseUrl/measure", content, headers).map(_.body)
+    http.POSTString[HttpResponse](url"$backendBaseUrl/measure", content, headers).map(_.body)
 
   def gcInformation()(implicit hc: HeaderCarrier): Future[GcInformation] =
-    http.GET[GcInformation](s"$backendBaseUrl/gcinfo")
+    http.GET[GcInformation](url"$backendBaseUrl/gcinfo")
 }

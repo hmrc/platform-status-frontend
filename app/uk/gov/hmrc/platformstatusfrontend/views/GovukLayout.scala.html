@@ -19,8 +19,7 @@
 @this(
   govukTemplate: GovukTemplate,
   govukHeader: GovukHeader,
-  govukFooter: GovukFooter,
-  govukBackLink: GovukBackLink
+  govukFooter: GovukFooter
 )
 
 @(
@@ -32,7 +31,7 @@
   footerItems: Seq[FooterItem] = Seq.empty,
   bodyEndBlock: Option[Html] = None,
   scriptsBlock: Option[Html] = None
-)(contentBlock: Html)(implicit messages: Messages, request : Request[_])
+)(contentBlock: Html)(implicit messages: Messages, request : RequestHeader)
 
 @headerDefault = {
   @headerBlock.getOrElse {

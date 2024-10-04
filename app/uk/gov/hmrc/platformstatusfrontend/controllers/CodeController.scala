@@ -16,11 +16,10 @@
 
 package uk.gov.hmrc.platformstatusfrontend.controllers
 
-import play.api.data.Forms._
-import play.api.data._
-import play.api.mvc._
+import play.api.data.Forms.*
+import play.api.data.*
+import play.api.mvc.*
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
-import uk.gov.hmrc.platformstatusfrontend.services.MemoryHog
 import uk.gov.hmrc.platformstatusfrontend.views.html.{Code, CodeResponse}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -35,7 +34,6 @@ case class CodeRequest(
 class CodeController @Inject()(
   appConfig       : AppConfig,
   mcc             : MessagesControllerComponents,
-  memoryHog       : MemoryHog,
   codeView        : Code,
   codeResponseView: CodeResponse
 ) extends FrontendController(mcc) {
@@ -45,15 +43,15 @@ class CodeController @Inject()(
       mapping(
         "code" -> number,
         "message"  -> text
-      )(CodeRequest.apply)(CodeRequest.unapply)
+      )(CodeRequest.apply)(o => Some(Tuple.fromProductTyped(o)))
     )
 
-  def code =
+  def code: Action[Unit] =
     Action(parse.empty) { implicit request =>
       Ok(codeView(codeForm.fill(CodeRequest())))
     }
 
-  def respondWithCode =
+  def respondWithCode: Action[Map[String, Seq[String]]] =
     Action(parse.formUrlEncoded) { implicit request =>
       codeForm.bindFromRequest()
         .fold(

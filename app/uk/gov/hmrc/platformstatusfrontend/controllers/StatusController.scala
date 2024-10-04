@@ -19,7 +19,6 @@ package uk.gov.hmrc.platformstatusfrontend.controllers
 import cats.implicits._
 import play.api.Logger
 import play.api.mvc._
-import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.services.StatusChecker
 import uk.gov.hmrc.platformstatusfrontend.views.html.Status
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -29,7 +28,6 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class StatusController @Inject()(
-  appConfig        : AppConfig,
   mcc              : MessagesControllerComponents,
   val statusChecker: StatusChecker,
   statusView       : Status

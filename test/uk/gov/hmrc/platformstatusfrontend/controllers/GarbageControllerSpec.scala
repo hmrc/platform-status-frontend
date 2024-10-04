@@ -16,20 +16,22 @@
 
 package uk.gov.hmrc.platformstatusfrontend.controllers
 
-import org.mockito.scalatest.MockitoSugar
+import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.any
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api._
+import play.api.*
 import play.api.http.Status
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.platformstatusfrontend.models.GcInformation
 import uk.gov.hmrc.platformstatusfrontend.services.GarbageService
-import uk.gov.hmrc.platformstatusfrontend.views.html.{Garbage => GarbageView}
+import uk.gov.hmrc.platformstatusfrontend.views.html.Garbage as GarbageView
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 
 import java.lang.management.GarbageCollectorMXBean

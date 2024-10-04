@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.platformstatusfrontend.services
 
-import org.mockito.scalatest.MockitoSugar
+import org.mockito.Mockito.{reset, verify}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import uk.gov.hmrc.platformstatusfrontend.connectors.GenericConnector
 

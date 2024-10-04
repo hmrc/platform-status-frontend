@@ -28,7 +28,7 @@
   bodyEndBlock: Option[Html]   = None
 )(contentBlock: Html
 )(implicit
-  request : Request[_],
+  request : RequestHeader,
   messages: Messages
 )
 

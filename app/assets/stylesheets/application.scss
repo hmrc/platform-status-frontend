@@ -2,5 +2,4 @@ $govuk-assets-path: "/platform-status/assets/lib/govuk-frontend/govuk/assets/";
 $hmrc-assets-path: "/platform-status/assets/lib/hmrc-frontend/hmrc/";
 $govuk-suppressed-warnings: "ie8";
 
-@import "lib/govuk-frontend/govuk/all";
-@import "lib/hmrc-frontend/hmrc/all";
+@import "lib/govuk-frontend/dist/govuk/base";

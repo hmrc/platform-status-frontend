@@ -17,27 +17,29 @@
 package uk.gov.hmrc.platformstatusfrontend.controllers
 
 import org.apache.pekko.stream.Materializer
-import org.mockito.captor.ArgCaptor
-import org.mockito.scalatest.MockitoSugar
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{reset, times, verify, when}
+import org.mockito.ArgumentCaptor
 import org.scalacheck.Gen
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.http.Status
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import play.api._
+import play.api.test.Helpers.*
+import play.api.*
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.platformstatusfrontend.connectors.BackendConnector
 import uk.gov.hmrc.platformstatusfrontend.services.MeasureService
-import uk.gov.hmrc.platformstatusfrontend.util.Generators._
-import uk.gov.hmrc.platformstatusfrontend.util.MeasureUtil._
+import uk.gov.hmrc.platformstatusfrontend.util.Generators.*
+import uk.gov.hmrc.platformstatusfrontend.util.MeasureUtil.*
 import uk.gov.hmrc.platformstatusfrontend.views.html.Measure
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-import play.api.test.CSRFTokenHelper._
+import play.api.test.CSRFTokenHelper.*
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -131,16 +133,16 @@ class MeasureControllerSpec
       forAll(Gen.choose(1, 1000000), nonEmptyString) { (bytes, headerName) =>
         reset(backendConnector) //Required to reset so mock verify works when called repeatedly from scalacheck
 
-        val captor = ArgCaptor[Seq[(String, String)]]
+        val captor = ArgumentCaptor.forClass(classOf[Seq[(String, String)]])
 
-        when(backendConnector.measure(any, captor)(any)).thenReturn(Future.successful(s"response from backend"))
+        when(backendConnector.measure(any, captor.capture())(any)).thenReturn(Future.successful(s"response from backend"))
 
         val result = controller.headerOfSizeToBackend()(FakeRequest(GET, s"/?bytes=$bytes&headerName=$headerName").withCSRFToken)
 
         verify(backendConnector, times(1)).measure(any, any)(any)
 
         status(result) shouldBe Status.OK
-        captor.value.toMap.get(headerName).map(byteSize) shouldBe Some(bytes)
+        captor.getValue.toMap.get(headerName).map(byteSize) shouldBe Some(bytes)
       }
     }
   }
@@ -150,16 +152,16 @@ class MeasureControllerSpec
       forAll(Gen.choose(1, 1000000)) { bytes =>
         reset(backendConnector)
 
-        val captor = ArgCaptor[String]
+        val captor = ArgumentCaptor.forClass(classOf[String])
 
-        when(backendConnector.measure(captor.capture, any)(any)).thenReturn(Future.successful(s"response from backend"))
+        when(backendConnector.measure(captor.capture(), any)(any)).thenReturn(Future.successful(s"response from backend"))
 
         val result = controller.bodyOfSizeToBackend()(FakeRequest(GET, s"/?bytes=$bytes&headerName=").withCSRFToken)
 
         verify(backendConnector, times(1)).measure(any, any)(any)
 
         status(result) shouldBe Status.OK
-        byteSize(captor.value) shouldBe bytes
+        byteSize(captor.getValue) shouldBe bytes
       }
     }
   }

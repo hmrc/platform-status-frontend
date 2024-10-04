@@ -47,15 +47,15 @@ class MeasureController @Inject()(
     mapping(
       "headerName" -> text,
       "bytes" -> number
-    )(MeasureRequest.apply)(MeasureRequest.unapply)
+    )(MeasureRequest.apply)(o => Some(Tuple.fromProductTyped(o)))
   )
 
-  def measure =
+  def measure: Action[AnyContent] =
     Action { implicit request =>
       Ok(measureView(measureForm.fill(MeasureRequest())))
     }
 
-  def measureHeader =
+  def measureHeader: Action[AnyContent] =
     Action { implicit request =>
       // This custom header was added to the request by our custom filters, so just pull out its value
       val headerLength = request.headers.get(X_HEADER_LENGTH).map(s => s"$s bytes").getOrElse(s"? Unknown, was not able to extract injected $X_HEADER_LENGTH header")
@@ -63,14 +63,14 @@ class MeasureController @Inject()(
       Ok(s"Total size of all headers received: $headerLength")
     }
 
-  def measureBody =
+  def measureBody: Action[AnyContent] =
     Action { implicit request =>
       val bodyLength = request.headers.get(CONTENT_LENGTH).map(s => s"$s bytes").getOrElse(s"? Unknown, $CONTENT_LENGTH header was not found")
       logger.info(s"Received message with body length: $bodyLength")
       Ok(s"Body length received: $bodyLength")
     }
 
-  def randomResponseHeaderOfSize() =
+  def randomResponseHeaderOfSize: Action[AnyContent] =
     Action { implicit request =>
       measureForm.bindFromRequest()
         .fold(
@@ -84,7 +84,7 @@ class MeasureController @Inject()(
         )
     }
 
-  def randomResponseBodyOfSize() =
+  def randomResponseBodyOfSize: Action[AnyContent] =
     Action { implicit request =>
       measureForm.bindFromRequest()
         .fold(
@@ -97,7 +97,7 @@ class MeasureController @Inject()(
         )
     }
 
-  def headerOfSizeToBackend() =
+  def headerOfSizeToBackend: Action[AnyContent] =
     Action.async { implicit request =>
       measureForm.bindFromRequest()
         .fold(
@@ -110,7 +110,7 @@ class MeasureController @Inject()(
         )
     }
 
-  def bodyOfSizeToBackend() = Action.async { implicit request =>
+  def bodyOfSizeToBackend: Action[AnyContent] = Action.async { implicit request =>
     measureForm.bindFromRequest()
       .fold(
         formWithErrors => Future.successful(BadRequest(measureView(formWithErrors)))

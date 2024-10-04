@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.platformstatusfrontend.services
 
-import org.mockito.scalatest.MockitoSugar
+import org.mockito.Mockito.{reset, verify}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
@@ -31,7 +32,7 @@ class AuditVolumeServiceSpec
      with MockitoSugar
      with BeforeAndAfterEach {
 
-  val auditConnector = mock[AuditConnector]
+  val auditConnector: AuditConnector = mock[AuditConnector]
   val fixture = new AuditVolumeService(auditConnector)
   implicit val hc: HeaderCarrier = HeaderCarrier()
 

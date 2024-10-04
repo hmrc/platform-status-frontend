@@ -16,10 +16,12 @@
 
 package uk.gov.hmrc.platformstatusfrontend.services
 
-import org.mockito.scalatest.MockitoSugar
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
+import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.platformstatusfrontend.connectors.BackendConnector
 import uk.gov.hmrc.platformstatusfrontend.models.{GcBeanInfo, GcInformation}
@@ -32,10 +34,10 @@ class GarbageServiceSpec
      with MockitoSugar
      with BeforeAndAfterEach {
 
-    implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    val backendConnectorMock = mock[BackendConnector]
-    val garbageService       = new GarbageService(backendConnectorMock)
+  val backendConnectorMock = mock[BackendConnector]
+  val garbageService       = new GarbageService(backendConnectorMock)
 
   override def beforeEach(): Unit = {
     reset(backendConnectorMock)
@@ -46,13 +48,13 @@ class GarbageServiceSpec
       when(backendConnectorMock.gcInformation()(any))
         .thenReturn(Future.successful(GcInformation(1, Seq[GcBeanInfo]())))
       val result = garbageService.getBackendGcInfo
-      result map { info => info.coreCount shouldBe 1}
+      result map { info => info.coreCount shouldBe 1 }
     }
     "return core count -1 when backend call fails" in {
       when(backendConnectorMock.gcInformation()(any))
         .thenReturn(Future.failed(new Exception("")))
       val result = garbageService.getBackendGcInfo
-      result map { info => info.coreCount shouldBe -1}
+      result map { info => info.coreCount shouldBe -1 }
     }
   }
   "getFrontendGcInfo" should {

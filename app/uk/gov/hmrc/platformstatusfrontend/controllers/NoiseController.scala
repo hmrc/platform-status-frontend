@@ -21,7 +21,6 @@ import play.api.Logger
 import play.api.data._
 import play.api.data.Forms._
 import play.api.mvc._
-import uk.gov.hmrc.platformstatusfrontend.services.StatusChecker
 import uk.gov.hmrc.platformstatusfrontend.views.html.Noise
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -35,7 +34,6 @@ case class NoiseRequest(
 @Singleton
 class NoiseController @Inject()(
   mcc          : MessagesControllerComponents,
-  statusChecker: StatusChecker,
   noiseView    : Noise
 ) extends FrontendController(mcc) {
 
@@ -47,20 +45,20 @@ class NoiseController @Inject()(
         "level" -> text,
         "message" -> text,
         "amount"  -> number
-      )(NoiseRequest.apply)(NoiseRequest.unapply)
+      )(NoiseRequest.apply)(o => Some(Tuple.fromProductTyped(o)))
     )
 
-  def noise =
+  def noise: Action[AnyContent] =
     Action { implicit request =>
       Ok(noiseView(noiseForm.fill(NoiseRequest())))
     }
 
-  def createNoise =
+  def createNoise: Action[AnyContent] =
     Action { implicit request =>
       noiseForm.bindFromRequest()
         .fold(
           formWithErrors => BadRequest(noiseView(formWithErrors))
-        , noiseRequest => {
+          , noiseRequest => {
             makeSomeNoise(noiseRequest)
             Redirect(routes.NoiseController.noise).flashing("success" -> "Log messages written.")
           }

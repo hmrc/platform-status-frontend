@@ -16,15 +16,16 @@
 
 package uk.gov.hmrc.platformstatusfrontend.guice
 
-import org.mockito.scalatest.MockitoSugar
+import org.mockito.Mockito.when
 import org.scalatest.concurrent.TimeLimits
 import org.scalatest.exceptions.TestFailedDueToTimeoutException
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.time.Span
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
 
 class SlowStartModuleSpec

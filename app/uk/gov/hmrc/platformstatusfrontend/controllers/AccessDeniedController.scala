@@ -31,7 +31,7 @@ class AccessDeniedController @Inject() (
   private val heading = "You do not have permission to access this service"
   private val message = "Contact Platops if you think you do have permission"
 
-  def deny() = Action.async {implicit request =>
+  def deny = Action.async {implicit request =>
     Future.successful(Forbidden(view(heading,heading,message)))
   }
 }

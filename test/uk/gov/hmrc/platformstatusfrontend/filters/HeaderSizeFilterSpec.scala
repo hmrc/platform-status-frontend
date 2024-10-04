@@ -23,10 +23,10 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.mvc.Results.Ok
-import play.api.mvc.{DefaultActionBuilder, Headers}
+import play.api.mvc.{Action, AnyContent, DefaultActionBuilder, Headers}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import uk.gov.hmrc.platformstatusfrontend.util.Generators._
+import play.api.test.Helpers.*
+import uk.gov.hmrc.platformstatusfrontend.util.Generators.*
 import uk.gov.hmrc.platformstatusfrontend.util.MeasureUtil
 
 class HeaderSizeFilterSpec
@@ -40,8 +40,8 @@ class HeaderSizeFilterSpec
 
   val filter = new HeaderSizeFilter()
   val act = app.injector.instanceOf[DefaultActionBuilder]
-  val action = act { request =>
-    Ok("").withHeaders(request.headers.headers : _*)
+  val action: Action[AnyContent] = act { request =>
+    Ok("").withHeaders(request.headers.headers: _*)
   }
 
   "HeaderSizeFilterSpec" should {
