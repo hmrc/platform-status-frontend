@@ -28,9 +28,9 @@ object Generators {
     chooseNum(1, 15).flatMap(n => strGen(n))
 
   val headersGen: Gen[Seq[(String, String)]] =
-    for {
+    for
       numHeaders <- chooseNum(0, 100)
       h          <- listOfN(numHeaders, nonEmptyString)
       v          <- listOfN(numHeaders, nonEmptyString)
-    } yield h.zip(v)
+    yield h.zip(v)
 }

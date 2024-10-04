@@ -35,7 +35,7 @@ case class NoiseRequest(
 class NoiseController @Inject()(
   mcc          : MessagesControllerComponents,
   noiseView    : Noise
-) extends FrontendController(mcc) {
+) extends FrontendController(mcc):
 
   private val logger: Logger = Logger(this.getClass)
 
@@ -66,11 +66,9 @@ class NoiseController @Inject()(
     }
 
   private def makeSomeNoise(request: NoiseRequest) =
-    for(i <- 1 to request.amount)
-      request.level match {
+    for i <- 1 to request.amount do
+      request.level match
         case "ERROR" => logger.error(s"$i: " + request.message, new RuntimeException(request.message))
         case "WARN"  => logger.warn(s"$i: " + request.message)
         case "INFO"  => logger.info(s"$i: " + request.message)
         case _       => logger.warn("Unrecognized log level")
-      }
-}

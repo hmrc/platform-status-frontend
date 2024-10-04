@@ -32,7 +32,7 @@ class ServiceVolumeController @Inject()(
   service: ServiceVolumeService,
   view: ServiceVolume,
   mcc: MessagesControllerComponents
-) extends FrontendController(mcc) {
+) extends FrontendController(mcc):
 
   val form: Form[ServiceVolumeRequest] =
     Form(
@@ -58,4 +58,3 @@ class ServiceVolumeController @Inject()(
           }
         )
     }
-}

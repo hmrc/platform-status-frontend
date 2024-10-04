@@ -40,7 +40,7 @@ class MeasureController @Inject()(
   measureView   : Measure
 )(implicit
  ec: ExecutionContext
-) extends FrontendController(mcc){
+) extends FrontendController(mcc):
   private val logger: Logger = Logger(this.getClass)
 
   val measureForm: Form[MeasureRequest] = Form(
@@ -121,4 +121,3 @@ class MeasureController @Inject()(
         }
       )
   }
-}

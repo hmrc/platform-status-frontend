@@ -26,7 +26,7 @@ import scala.concurrent.Future
 class AccessDeniedController @Inject() (
   mcc   :MessagesControllerComponents,
   view: ErrorTemplate
-  ) extends FrontendController(mcc) {
+  ) extends FrontendController(mcc):
 
   private val heading = "You do not have permission to access this service"
   private val message = "Contact Platops if you think you do have permission"
@@ -34,4 +34,3 @@ class AccessDeniedController @Inject() (
   def deny = Action.async {implicit request =>
     Future.successful(Forbidden(view(heading,heading,message)))
   }
-}

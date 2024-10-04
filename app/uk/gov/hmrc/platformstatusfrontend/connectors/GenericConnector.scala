@@ -16,16 +16,16 @@
 
 package uk.gov.hmrc.platformstatusfrontend.connectors
 
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, StringContextOps}
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import java.net.URL
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class GenericConnector @Inject()(http: HttpClient)(implicit ec: ExecutionContext) {
+class GenericConnector @Inject()(http: HttpClientV2)(implicit ec: ExecutionContext):
   import HttpReads.Implicits._
 
   def callWebService(url: URL)(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    http.GET[HttpResponse](url)
-}
+    http.get(url"$url").execute

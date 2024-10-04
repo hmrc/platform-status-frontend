@@ -33,12 +33,11 @@ class StatusController @Inject()(
   statusView       : Status
 )(implicit
   ec: ExecutionContext
-) extends FrontendController(mcc) {
+) extends FrontendController(mcc):
 
   def defaultLanding: Action[AnyContent] =
-    Action {
+    Action:
       Redirect(routes.StatusController.platformStatus)
-    }
 
   def platformStatus: Action[AnyContent] =
     Action.async { implicit request =>
@@ -58,4 +57,3 @@ class StatusController @Inject()(
         )))
       )
     }
-}

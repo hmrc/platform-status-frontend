@@ -36,7 +36,7 @@ class KillController @Inject()(
   mcc      : MessagesControllerComponents,
   memoryHog: MemoryHog,
   killView : Kill
-) extends FrontendController(mcc) {
+) extends FrontendController(mcc):
 
   val leakForm: Form[LeakRequest] = Form(
     mapping(
@@ -49,10 +49,9 @@ class KillController @Inject()(
     Future.successful( Ok(killView( leakForm.fill(LeakRequest()))  ) )
   }
 
-  def meteOutDeath: Action[AnyContent] = Action {
+  def meteOutDeath: Action[AnyContent] = Action:
     System.exit(0)
     Redirect(routes.KillController.kill).flashing("success" -> "If you see this then the container did not die.")
-  }
 
   def leakMemory: Action[AnyContent] = Action { implicit request =>
     leakForm.bindFromRequest()
@@ -64,4 +63,3 @@ class KillController @Inject()(
         }
       )
   }
-}

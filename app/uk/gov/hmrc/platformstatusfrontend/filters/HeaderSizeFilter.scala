@@ -25,7 +25,7 @@ import javax.inject.Inject
 // an EssentialFilter.  By default, the first filter for frontend services is the SecurityHeadersFilter.
 // In this instance we want the HeaderSizeFilter to be the first, therefore we must ensure that it is an EssentialFilter.  When we get to the bottom
 // of the issue, we should be able to revert the HeaderSizeFilter back to extend the Filter wrapper and still see the MDC data in the logs.
-class HeaderSizeFilter @Inject() extends EssentialFilter {
+class HeaderSizeFilter @Inject() extends EssentialFilter:
 
   override def apply(nextFilter: EssentialAction): EssentialAction = { requestHeader =>
     val allHeaders = requestHeader.headers.headers
@@ -40,4 +40,3 @@ class HeaderSizeFilter @Inject() extends EssentialFilter {
 
     nextFilter(requestHeader.withHeaders(requestHeader.headers.add(headerLength)))
   }
-}

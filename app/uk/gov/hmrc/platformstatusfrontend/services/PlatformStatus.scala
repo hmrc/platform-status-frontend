@@ -26,7 +26,7 @@ case class PlatformStatus(
   reason     : Option[String] = None
 )
 
-object PlatformStatus {
+object PlatformStatus:
   implicit val mongoFormat: OFormat[PlatformStatus] = Json.format[PlatformStatus]
 
   val baseIteration1Status = PlatformStatus(
@@ -63,4 +63,3 @@ object PlatformStatus {
     isWorking   = true,
     description = "Call through to service in protected zone that can call a HOD via DES"
   )
-}

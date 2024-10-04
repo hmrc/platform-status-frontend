@@ -31,7 +31,7 @@ class AuditVolumeController @Inject()(
   service: AuditVolumeService,
   view   : AuditVolume,
   mcc    : MessagesControllerComponents
-) extends FrontendController(mcc) {
+) extends FrontendController(mcc):
 
   val form: Form[AuditVolumeRequest] =
     Form(
@@ -57,4 +57,3 @@ class AuditVolumeController @Inject()(
           }
         )
     }
-}

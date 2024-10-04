@@ -36,7 +36,7 @@ class CodeController @Inject()(
   mcc             : MessagesControllerComponents,
   codeView        : Code,
   codeResponseView: CodeResponse
-) extends FrontendController(mcc) {
+) extends FrontendController(mcc):
 
   val codeForm: Form[CodeRequest] =
     Form(
@@ -57,10 +57,9 @@ class CodeController @Inject()(
         .fold(
           formWithErrors => BadRequest(codeView(formWithErrors) )
         , codeRequest => {
-            if (codeRequest.code == 504)
+            if codeRequest.code == 504 then
               Thread.sleep(appConfig.badGatewayTimeout.toMillis)
             new Status(codeRequest.code)(codeResponseView(codeRequest.code, codeRequest.message))
           }
         )
     }
-}

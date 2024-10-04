@@ -26,7 +26,7 @@ case class GcInformation(
 )
 
 
-object GcInformation {
+object GcInformation:
   def apply(
     coreCount: Int,
     beans    : Iterable[GarbageCollectorMXBean]
@@ -34,7 +34,6 @@ object GcInformation {
     new GcInformation(coreCount, beans.map(GcBeanInfo(_)).toSeq)
 
   implicit val formatter: OFormat[GcInformation] = Json.format[GcInformation]
-}
 
 case class GcBeanInfo(
   name           : String,
@@ -42,12 +41,11 @@ case class GcBeanInfo(
   collectionTime : Long
 )
 
-object GcBeanInfo {
+object GcBeanInfo:
   def apply(bean: GarbageCollectorMXBean): GcBeanInfo =
     new GcBeanInfo(bean.getName, bean.getCollectionCount, bean.getCollectionTime)
 
   implicit val formatter: OFormat[GcBeanInfo] = Json.format[GcBeanInfo]
-}
 
 case class GcSummary(
   frontend: GcInformation,

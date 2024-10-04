@@ -23,9 +23,8 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class AuditVolumeService @Inject()(auditConnector: AuditConnector)(implicit ec: ExecutionContext) {
+class AuditVolumeService @Inject()(auditConnector: AuditConnector)(implicit ec: ExecutionContext):
 
   def sendAuditMessages(auditType: String, n: Int)(implicit hc: HeaderCarrier) =
     (1 to n).foreach(i => auditConnector.sendExplicitAudit(auditType, Map("messageNo" -> i.toString)))
 
-}

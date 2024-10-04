@@ -22,7 +22,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.duration.{Duration, FiniteDuration}
 
 @Singleton
-class AppConfig @Inject()(config: Configuration) {
+class AppConfig @Inject()(config: Configuration):
 
   val analyticsToken: String      = config.get[String](s"google-analytics.token")
   val analyticsHost : String      = config.get[String](s"google-analytics.host")
@@ -47,4 +47,3 @@ class AppConfig @Inject()(config: Configuration) {
   lazy val iteration3Enabled: Boolean = config.get[Boolean]("checks.iteration3.enabled")
   lazy val iteration4Enabled: Boolean = config.get[Boolean]("checks.iteration4.enabled")
   lazy val iteration5Enabled: Boolean = config.get[Boolean]("checks.iteration5.enabled")
-}
