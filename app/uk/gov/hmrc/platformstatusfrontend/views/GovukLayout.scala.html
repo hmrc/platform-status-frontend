@@ -1,5 +1,5 @@
 @*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,61 +14,12 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.govukfrontend.views.html.components._
+@this()
 
-@this(
-  govukTemplate: GovukTemplate,
-  govukHeader: GovukHeader,
-  govukFooter: GovukFooter
-)
+@(contentBlock: Html)
 
-@(
-  pageTitle: Option[String] = None,
-  headBlock: Option[Html] = None,
-  headerBlock: Option[Html] = None,
-  beforeContentBlock: Option[Html] = None,
-  footerBlock: Option[Html] = None,
-  footerItems: Seq[FooterItem] = Seq.empty,
-  bodyEndBlock: Option[Html] = None,
-  scriptsBlock: Option[Html] = None
-)(contentBlock: Html)(implicit messages: Messages, request : RequestHeader)
-
-@headerDefault = {
-  @headerBlock.getOrElse {
-    @govukHeader(Header(
-      homepageUrl = Some("https://www.gov.uk/"),
-      serviceName = Some(messages("service.name")),
-      serviceUrl = Some(messages("service.homePageUrl")),
-      containerClasses = None))
-  }
-}
-
-@footerDefault = {
-  @footerBlock.getOrElse {
-    @govukFooter(new Footer(meta = Some(Meta(items = Some(footerItems)))))
-  }
-}
-
-@bodyEndDefault = {
-  @bodyEndBlock
-  @scriptsBlock
-}
-
-@mainContentDefault = {
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column">
-    @contentBlock
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        @contentBlock
     </div>
-  </div>
-}
-
-@govukTemplate(
-  htmlLang = Some(messages.lang.code),
-  pageTitle = pageTitle,
-  headBlock = headBlock,
-  headerBlock = headerDefault,
-  beforeContentBlock = beforeContentBlock,
-  footerBlock = footerDefault,
-  mainClasses = Some("govuk-main-wrapper--auto-spacing"),
-  bodyEndBlock = Some(bodyEndDefault)
-)(mainContentDefault)
+</div>

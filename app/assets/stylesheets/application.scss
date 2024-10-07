@@ -3,3 +3,4 @@ $hmrc-assets-path: "/platform-status/assets/lib/hmrc-frontend/hmrc/";
 $govuk-suppressed-warnings: "ie8";
 
 @import "lib/govuk-frontend/dist/govuk/base";
+@import "lib/hmrc-frontend/hmrc/all";
