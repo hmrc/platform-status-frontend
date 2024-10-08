@@ -19,7 +19,6 @@ package uk.gov.hmrc.platformstatusfrontend.controllers
 import cats.implicits._
 import play.api.Logger
 import play.api.mvc._
-import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.services.StatusChecker
 import uk.gov.hmrc.platformstatusfrontend.views.html.Status
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -29,35 +28,33 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class StatusController @Inject()(
-  appConfig        : AppConfig,
   mcc              : MessagesControllerComponents,
   val statusChecker: StatusChecker,
   statusView       : Status
-)(implicit
+)(using
   ec: ExecutionContext
-) extends FrontendController(mcc) {
+) extends FrontendController(mcc):
 
   def defaultLanding: Action[AnyContent] =
-    Action {
+    Action:
       Redirect(routes.StatusController.platformStatus)
-    }
 
   def platformStatus: Action[AnyContent] =
-    Action.async { implicit request =>
-      Logger("StatusController").info(s"in platformStatus: ${org.slf4j.MDC.getCopyOfContextMap}")
-      ( statusChecker.iteration1Status()
-      , statusChecker.iteration2Status()
-      , statusChecker.iteration3Status()
-      , statusChecker.iteration4Status()
-      , statusChecker.iteration5Status()
-      ).mapN((iter1, iter2, iter3, iter4, iter5) =>
-        Ok(statusView(List(
-          iter1,
-          iter2,
-          iter3,
-          iter4,
-          iter5
-        )))
-      )
-    }
-}
+    Action.async:
+      implicit request =>
+        Logger("StatusController").info(s"in platformStatus: ${org.slf4j.MDC.getCopyOfContextMap}")
+        (
+          statusChecker.iteration1Status(),
+          statusChecker.iteration2Status(),
+          statusChecker.iteration3Status(),
+          statusChecker.iteration4Status(),
+          statusChecker.iteration5Status()
+        ).mapN((iter1, iter2, iter3, iter4, iter5) =>
+          Ok(statusView(List(
+            iter1,
+            iter2,
+            iter3,
+            iter4,
+            iter5
+          )))
+        )

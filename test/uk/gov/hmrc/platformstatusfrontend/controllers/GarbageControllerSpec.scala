@@ -16,20 +16,22 @@
 
 package uk.gov.hmrc.platformstatusfrontend.controllers
 
-import org.mockito.scalatest.MockitoSugar
+import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.any
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api._
+import play.api.*
 import play.api.http.Status
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.platformstatusfrontend.models.GcInformation
 import uk.gov.hmrc.platformstatusfrontend.services.GarbageService
-import uk.gov.hmrc.platformstatusfrontend.views.html.{Garbage => GarbageView}
+import uk.gov.hmrc.platformstatusfrontend.views.html.Garbage as GarbageView
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 
 import java.lang.management.GarbageCollectorMXBean
@@ -41,7 +43,7 @@ class GarbageControllerSpec
      with Matchers
      with GuiceOneAppPerSuite
      with MockitoSugar
-     with BeforeAndAfterEach {
+     with BeforeAndAfterEach:
 
   private val fakeRequest = FakeRequest("GET", "/")
 
@@ -52,29 +54,24 @@ class GarbageControllerSpec
       )
       .build()
 
-  private trait Setup {
-    implicit val hc: HeaderCarrier = HeaderCarrier()
+  private trait Setup:
+    given HeaderCarrier = HeaderCarrier()
 
     private val garbageService = mock[GarbageService]
     private val dummyInfo = GcInformation(1, Seq[GarbageCollectorMXBean]())
-    when(garbageService.getBackendGcInfo(any)).thenReturn(Future.successful(dummyInfo))
-    when(garbageService.getFrontendGcInfo).thenReturn(Future.successful(dummyInfo))
+    when(garbageService.getBackendGcInfo()(using any)).thenReturn(Future.successful(dummyInfo))
+    when(garbageService.getFrontendGcInfo()).thenReturn(Future.successful(dummyInfo))
 
     private val garbageView = app.injector.instanceOf[GarbageView]
 
     val controller = new GarbageController(stubMessagesControllerComponents(), garbageService, garbageView)
-  }
-
-  "GET /" should {
-    "return 200" in new Setup() {
+  
+  "GET /" should:
+    "return 200" in new Setup():
       val result = controller.garbage(fakeRequest)
       status(result) shouldBe Status.OK
-    }
 
-    "return HTML" in new Setup() {
+    "return HTML" in new Setup():
       val result = controller.garbage(fakeRequest)
       contentType(result) shouldBe Some("text/html")
       charset(result)     shouldBe Some("utf-8")
-    }
-  }
-}

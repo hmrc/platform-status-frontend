@@ -14,29 +14,28 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcStandardFooter
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.*
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage.*
 
 @this(
-  govukLayout       : GovukLayout,
-  head              : Head,
-  hmrcStandardFooter: HmrcStandardFooter,
-  scripts           : Scripts
+  hmrcStandardPage  : HmrcStandardPage,
+  govukLayout       : GovukLayout
 )
-@(
-  pageTitle   : Option[String] = None,
-  headBlock   : Option[Html]   = None,
-  bodyEndBlock: Option[Html]   = None
-)(contentBlock: Html
+
+@(pageTitle   : Option[String] = None)(
+  contentBlock: Html
 )(implicit
-  request : Request[_],
+  request : RequestHeader,
   messages: Messages
 )
 
-@govukLayout(
-  pageTitle          = pageTitle,
-  headBlock          = Some(head(headBlock)),
-  beforeContentBlock = None,
-  footerBlock        = Some(hmrcStandardFooter()),
-  scriptsBlock       = Some(scripts()),
-  bodyEndBlock       = bodyEndBlock
-)(contentBlock)
+@hmrcStandardPage(HmrcStandardPageParams(
+    pageTitle = pageTitle,
+    isWelshTranslationAvailable = false,
+    serviceURLs = ServiceURLs(
+        serviceUrl = Some(uk.gov.hmrc.platformstatusfrontend.controllers.routes.StatusController.platformStatus.url)
+    ),
+    templateOverrides = TemplateOverrides(
+        mainContentLayout = Some(govukLayout(_))
+    )
+))(contentBlock)

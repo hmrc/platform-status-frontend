@@ -1,5 +1,5 @@
 @*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@
         Fire off a specified number of audit requests asynchronously
     </p>
 
-    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.AuditVolumeController.run()){
+    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.AuditVolumeController.run){
         @CSRF.formField
         @helper.inputText(auditVolumeForm("auditType"), Symbol("_label") -> "Audit Type to be used in Datastream messages")
         @helper.inputText(auditVolumeForm("n"), Symbol("_label") -> "Number of audit messages")

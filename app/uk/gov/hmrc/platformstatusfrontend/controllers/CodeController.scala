@@ -16,11 +16,10 @@
 
 package uk.gov.hmrc.platformstatusfrontend.controllers
 
-import play.api.data.Forms._
-import play.api.data._
-import play.api.mvc._
+import play.api.data.Forms.*
+import play.api.data.*
+import play.api.mvc.*
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
-import uk.gov.hmrc.platformstatusfrontend.services.MemoryHog
 import uk.gov.hmrc.platformstatusfrontend.views.html.{Code, CodeResponse}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -35,34 +34,31 @@ case class CodeRequest(
 class CodeController @Inject()(
   appConfig       : AppConfig,
   mcc             : MessagesControllerComponents,
-  memoryHog       : MemoryHog,
   codeView        : Code,
   codeResponseView: CodeResponse
-) extends FrontendController(mcc) {
+) extends FrontendController(mcc):
 
   val codeForm: Form[CodeRequest] =
     Form(
       mapping(
         "code" -> number,
         "message"  -> text
-      )(CodeRequest.apply)(CodeRequest.unapply)
+      )(CodeRequest.apply)(o => Some(Tuple.fromProductTyped(o)))
     )
 
-  def code =
-    Action(parse.empty) { implicit request =>
-      Ok(codeView(codeForm.fill(CodeRequest())))
-    }
+  def code: Action[Unit] =
+    Action(parse.empty):
+      implicit request =>
+        Ok(codeView(codeForm.fill(CodeRequest())))
 
-  def respondWithCode =
-    Action(parse.formUrlEncoded) { implicit request =>
-      codeForm.bindFromRequest()
-        .fold(
-          formWithErrors => BadRequest(codeView(formWithErrors) )
-        , codeRequest => {
-            if (codeRequest.code == 504)
-              Thread.sleep(appConfig.badGatewayTimeout.toMillis)
-            new Status(codeRequest.code)(codeResponseView(codeRequest.code, codeRequest.message))
-          }
-        )
-    }
-}
+  def respondWithCode: Action[Map[String, Seq[String]]] =
+    Action(parse.formUrlEncoded):
+      implicit request =>
+        codeForm.bindFromRequest()
+          .fold(
+            formWithErrors => BadRequest(codeView(formWithErrors)),
+            codeRequest =>
+              if codeRequest.code == 504 then
+                Thread.sleep(appConfig.badGatewayTimeout.toMillis)
+              new Status(codeRequest.code)(codeResponseView(codeRequest.code, codeRequest.message))
+          )

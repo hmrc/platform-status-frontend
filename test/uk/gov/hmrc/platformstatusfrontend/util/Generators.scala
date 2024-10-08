@@ -19,7 +19,7 @@ package uk.gov.hmrc.platformstatusfrontend.util
 import org.scalacheck.Gen
 import org.scalacheck.Gen.{alphaChar, chooseNum, listOfN}
 
-object Generators {
+object Generators:
 
   val strGen: Int => Gen[String] =
     (n: Int) => listOfN(n, alphaChar).map(_.mkString)
@@ -28,9 +28,8 @@ object Generators {
     chooseNum(1, 15).flatMap(n => strGen(n))
 
   val headersGen: Gen[Seq[(String, String)]] =
-    for {
+    for
       numHeaders <- chooseNum(0, 100)
       h          <- listOfN(numHeaders, nonEmptyString)
       v          <- listOfN(numHeaders, nonEmptyString)
-    } yield h.zip(v)
-}
+    yield h.zip(v)

@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.platformstatusfrontend.services
 
-import org.mockito.scalatest.MockitoSugar
+import org.mockito.Mockito.{reset, verify}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
@@ -29,23 +30,19 @@ class AuditVolumeServiceSpec
   extends AnyWordSpec
      with Matchers
      with MockitoSugar
-     with BeforeAndAfterEach {
+     with BeforeAndAfterEach:
 
-  val auditConnector = mock[AuditConnector]
+  val auditConnector: AuditConnector = mock[AuditConnector]
   val fixture = new AuditVolumeService(auditConnector)
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+  given HeaderCarrier = HeaderCarrier()
 
-  override def beforeEach(): Unit = {
+  override def beforeEach(): Unit =
     reset(auditConnector)
-  }
 
-  "sendAuditMessages" should {
-    "send a specified number of messages" in {
+  "sendAuditMessages" should:
+    "send a specified number of messages" in:
       fixture.sendAuditMessages("test", 3)
 
       verify(auditConnector).sendExplicitAudit("test", Map("messageNo" -> "1"))
       verify(auditConnector).sendExplicitAudit("test", Map("messageNo" -> "2"))
       verify(auditConnector).sendExplicitAudit("test", Map("messageNo" -> "3"))
-    }
-  }
-}

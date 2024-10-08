@@ -20,7 +20,7 @@ import java.nio.charset.StandardCharsets
 
 import scala.util.Random
 
-object MeasureUtil {
+object MeasureUtil:
 
   val X_HEADER_LENGTH = "X-Header-Length"
   val X_TEST_HEADER_NAME = "X-Test-Header-Name"
@@ -28,8 +28,6 @@ object MeasureUtil {
   def byteSize(s: String): Int =
     s.getBytes(StandardCharsets.UTF_8).length
 
-  def generateStringOfSize(length: Int): String = {
+  def generateStringOfSize(length: Int): String =
     def r: Char = Random.alphanumeric.filter(_.isLetter).head
     (1 to length).map(_ => r).mkString
-  }
-}

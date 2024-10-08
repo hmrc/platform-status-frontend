@@ -26,25 +26,33 @@ import uk.gov.hmrc.platformstatusfrontend.util.MeasureUtil.X_TEST_HEADER_NAME
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class MeasureService @Inject()(backendConnector: BackendConnector) {
+class MeasureService @Inject()(backendConnector: BackendConnector):
 
   private val logger = Logger(this.getClass)
 
-  def bodyToBackend(content: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String] =
+  def bodyToBackend(
+    content: String
+  )(using
+    hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[String] =
     backendConnector.measure(content, Seq.empty)
-      .recoverWith {
+      .recoverWith:
         case ex: Exception =>
           val msg = s"bodyToBackend call to backend service failed"
           logger.warn(msg, ex)
           Future.successful(s"$msg: ${ex.getMessage}")
-      }
 
-  def headerToBackend(content: String, headerName: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String] =
+  def headerToBackend(
+    content: String,
+    headerName: String
+  )(using
+    hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[String] =
     backendConnector.measure("", Seq(headerName -> content, X_TEST_HEADER_NAME -> headerName))
-      .recoverWith {
+      .recoverWith:
         case ex: Exception =>
           val msg = s"headerToBackend call to backend service failed"
           logger.warn(msg, ex)
           Future.successful(s"$msg: ${ex.getMessage}")
-      }
-}

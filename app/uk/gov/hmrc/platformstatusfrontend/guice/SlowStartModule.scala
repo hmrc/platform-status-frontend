@@ -21,7 +21,7 @@ import play.api.{Configuration, Environment, Logger}
 import play.api.inject.{Binding, Module}
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 
-class SlowStartModule extends Module {
+class SlowStartModule extends Module:
   override def bindings(
     environment  : Environment,
     configuration: Configuration
@@ -29,16 +29,14 @@ class SlowStartModule extends Module {
     Seq(
       bind[SlowStarter].to[DefaultSlowStarter].eagerly()
     )
-}
 
 trait SlowStarter
 
-class DefaultSlowStarter @Inject()(config: AppConfig) extends SlowStarter {
+class DefaultSlowStarter @Inject()(config: AppConfig) extends SlowStarter:
 
   private val logger = Logger(this.getClass)
 
-  config.startupDelay.foreach { delay =>
-    logger.info(s"Delaying application startup by $delay milliseconds, as specified by 'startup-delay' configuration")
-    Thread.sleep(delay)
-  }
-}
+  config.startupDelay.foreach:
+    delay =>
+      logger.info(s"Delaying application startup by $delay milliseconds, as specified by 'startup-delay' configuration")
+      Thread.sleep(delay)

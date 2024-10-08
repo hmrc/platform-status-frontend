@@ -16,10 +16,12 @@
 
 package uk.gov.hmrc.platformstatusfrontend.services
 
-import org.mockito.scalatest.MockitoSugar
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
+import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.platformstatusfrontend.connectors.BackendConnector
 import uk.gov.hmrc.platformstatusfrontend.models.{GcBeanInfo, GcInformation}
@@ -30,35 +32,31 @@ class GarbageServiceSpec
   extends AsyncWordSpec
      with Matchers
      with MockitoSugar
-     with BeforeAndAfterEach {
+     with BeforeAndAfterEach:
 
-    implicit val hc: HeaderCarrier = HeaderCarrier()
+  given HeaderCarrier = HeaderCarrier()
 
-    val backendConnectorMock = mock[BackendConnector]
-    val garbageService       = new GarbageService(backendConnectorMock)
+  val backendConnectorMock: BackendConnector = mock[BackendConnector]
+  val garbageService      : GarbageService   = new GarbageService(backendConnectorMock)
 
-  override def beforeEach(): Unit = {
+  override def beforeEach(): Unit =
     reset(backendConnectorMock)
-  }
 
-  "getBackendGcInfo" should {
-    "return Gc Info" in {
-      when(backendConnectorMock.gcInformation()(any))
+  "getBackendGcInfo" should:
+    "return Gc Info" in:
+      when(backendConnectorMock.gcInformation()(using any))
         .thenReturn(Future.successful(GcInformation(1, Seq[GcBeanInfo]())))
-      val result = garbageService.getBackendGcInfo
-      result map { info => info.coreCount shouldBe 1}
-    }
-    "return core count -1 when backend call fails" in {
-      when(backendConnectorMock.gcInformation()(any))
+      val result = garbageService.getBackendGcInfo()
+      result map { info => info.coreCount shouldBe 1 }
+    
+    "return core count -1 when backend call fails" in:
+      when(backendConnectorMock.gcInformation()(using any))
         .thenReturn(Future.failed(new Exception("")))
-      val result = garbageService.getBackendGcInfo
-      result map { info => info.coreCount shouldBe -1}
-    }
-  }
-  "getFrontendGcInfo" should {
-    "Return a coreCount > 0" in {
-      val result = garbageService.getFrontendGcInfo
+      val result = garbageService.getBackendGcInfo()
+      result map { info => info.coreCount shouldBe -1 }
+    
+
+  "getFrontendGcInfo" should:
+    "Return a coreCount > 0" in:
+      val result = garbageService.getFrontendGcInfo()
       result.map(info => info.coreCount should be > 0)
-    }
-  }
-}

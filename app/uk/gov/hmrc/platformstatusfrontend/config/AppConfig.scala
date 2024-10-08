@@ -22,13 +22,13 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.duration.{Duration, FiniteDuration}
 
 @Singleton
-class AppConfig @Inject()(config: Configuration) {
+class AppConfig @Inject()(config: Configuration):
 
   val analyticsToken: String      = config.get[String](s"google-analytics.token")
   val analyticsHost : String      = config.get[String](s"google-analytics.host")
   val startupDelay  : Option[Int] = config.getOptional[Int]("startup-delay")
 
-  lazy val dbUrl                  = config.get[String]("mongodb.uri")
+  lazy val dbUrl: String = config.get[String]("mongodb.uri")
 
   lazy val proxyProtocol: String   = config.get[String]("proxy.protocol")
   lazy val proxyHost    : String   = config.get[String]("proxy.host")
@@ -47,4 +47,3 @@ class AppConfig @Inject()(config: Configuration) {
   lazy val iteration3Enabled: Boolean = config.get[Boolean]("checks.iteration3.enabled")
   lazy val iteration4Enabled: Boolean = config.get[Boolean]("checks.iteration4.enabled")
   lazy val iteration5Enabled: Boolean = config.get[Boolean]("checks.iteration5.enabled")
-}

@@ -36,32 +36,29 @@ class KillController @Inject()(
   mcc      : MessagesControllerComponents,
   memoryHog: MemoryHog,
   killView : Kill
-) extends FrontendController(mcc) {
+) extends FrontendController(mcc):
 
   val leakForm: Form[LeakRequest] = Form(
     mapping(
-      "mb" -> number,
-      "sleep"  -> number
-    )(LeakRequest.apply)(LeakRequest.unapply)
+      "mb"    -> number,
+      "sleep" -> number
+    )(LeakRequest.apply)(o => Some(Tuple.fromProductTyped(o)))
   )
 
-  def kill = Action.async { implicit request =>
-    Future.successful( Ok(killView( leakForm.fill(LeakRequest()))  ) )
-  }
+  def kill: Action[AnyContent] = Action.async:
+    implicit request =>
+      Future.successful( Ok( killView( leakForm.fill(LeakRequest()) ) ) )
 
-  def meteOutDeath = Action {
+  def meteOutDeath: Action[AnyContent] = Action:
     System.exit(0)
     Redirect(routes.KillController.kill).flashing("success" -> "If you see this then the container did not die.")
-  }
 
-  def leakMemory = Action { implicit request =>
-    leakForm.bindFromRequest()
-      .fold(
-        formWithErrors => BadRequest(killView(formWithErrors))
-      , killRequest => {
-          memoryHog.eatMemory(killRequest.mb, killRequest.sleep)
-          Redirect(routes.KillController.kill).flashing("success" -> "If you see this then the container did not die.")
-        }
-      )
-  }
-}
+  def leakMemory: Action[AnyContent] = Action:
+    implicit request =>
+      leakForm.bindFromRequest()
+        .fold(
+          formWithErrors => BadRequest(killView(formWithErrors)),
+          killRequest =>
+            memoryHog.eatMemory(killRequest.mb, killRequest.sleep)
+            Redirect(routes.KillController.kill).flashing("success" -> "If you see this then the container did not die.")
+        )
