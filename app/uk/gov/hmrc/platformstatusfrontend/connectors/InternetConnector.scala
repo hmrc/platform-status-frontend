@@ -17,32 +17,31 @@
 package uk.gov.hmrc.platformstatusfrontend.connectors
 
 import com.google.inject.Inject
+
 import javax.inject.Singleton
-import play.api.Logger
-import play.api.libs.ws.{DefaultWSProxyServer, WSClient}
+import play.api.Logging
+import play.api.libs.ws.{DefaultWSProxyServer, WSClient, WSResponse}
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 
+import scala.concurrent.Future
+
 @Singleton
-class InternetConnector @Inject()(config: AppConfig, wsClient: WSClient):
+class InternetConnector @Inject()(
+  config: AppConfig,
+  wsClient: WSClient
+) extends Logging:
 
-  val logger = Logger(this.getClass)
-
-  lazy val proxyServer = DefaultWSProxyServer(
+  private lazy val proxyServer = DefaultWSProxyServer(
     protocol = Some(config.proxyProtocol),
     host = config.proxyHost,
     port = config.proxyPort,
     principal = Some(config.proxyUsername),
-    password = Some(config.proxyPassword))
+    password = Some(config.proxyPassword)
+  )
 
-  def callTheWeb(url: String, proxyRequired: Boolean)=
-    proxyRequired match
-      case true => wsClient.url(url).withProxyServer(proxyServer).get()
-      case _ => {
-        logger.info("Proxy configured off.  Attempting to access internet directly. Consider setting the proxy.required config setting.")
-        wsClient.url(url).get()
-      }
-
-
-
-
-
+  def callTheWeb(url: String, proxyRequired: Boolean): Future[WSResponse] =
+    if proxyRequired then
+      wsClient.url(url).withProxyServer(proxyServer).get()
+    else
+      logger.info("Proxy configured off.  Attempting to access internet directly. Consider setting the proxy.required config setting.")
+      wsClient.url(url).get()

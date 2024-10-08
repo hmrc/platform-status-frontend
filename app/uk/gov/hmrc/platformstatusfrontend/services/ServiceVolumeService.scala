@@ -24,6 +24,10 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class ServiceVolumeService @Inject()(connector: GenericConnector):
 
-  def sendServiceCalls(url: String, n: Int)(implicit hc: HeaderCarrier) =
+  def sendServiceCalls(
+    url: String,
+    n: Int
+  )(using
+    hc: HeaderCarrier
+  ): Unit =
     (1 to n).foreach(i => connector.callWebService(url"$url?messageNo=$i"))
-

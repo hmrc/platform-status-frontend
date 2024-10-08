@@ -33,21 +33,21 @@ class GarbageController @Inject()(
   mcc           : MessagesControllerComponents,
   garbageService: GarbageService,
   garbageView   : Garbage
-)(implicit
+)(using
   ec: ExecutionContext
 ) extends FrontendController(mcc):
 
   private val logger = Logger(this.getClass)
 
   def garbage: Action[AnyContent] =
-    Action.async { implicit request =>
-      val properties = System.getProperties.asScala
-      for (k,v) <- properties do logger.debug(s"key: $k, value: $v")
-
-      val gcSummaryFuture = for
-        backend  <- garbageService.getBackendGcInfo
-        frontend <- garbageService.getFrontendGcInfo
-      yield GcSummary(frontend, backend)
-
-      gcSummaryFuture.map(gcSummary => Ok(garbageView(gcSummary)))
-    }
+    Action.async:
+      implicit request =>
+        val properties = System.getProperties.asScala
+        for (k,v) <- properties do logger.debug(s"key: $k, value: $v")
+  
+        val gcSummaryFuture = for
+          backend  <- garbageService.getBackendGcInfo()
+          frontend <- garbageService.getFrontendGcInfo()
+        yield GcSummary(frontend, backend)
+  
+        gcSummaryFuture.map(gcSummary => Ok(garbageView(gcSummary)))

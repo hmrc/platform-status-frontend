@@ -31,28 +31,29 @@ import scala.concurrent.{ExecutionContext, Future}
 class BackendConnector @Inject()(
   http          : HttpClientV2,
   servicesConfig: ServicesConfig
-)(implicit
-   ec: ExecutionContext
-) extends DefaultBodyWritables:
+)(using
+  ec: ExecutionContext
+):
   import HttpReads.Implicits._
+  import DefaultBodyWritables.writeableOf_String
 
   private val backendBaseUrl: String =
     s"${servicesConfig.baseUrl("platform-status-backend")}/platform-status-backend"
 
-  def iteration3Status()(implicit hc: HeaderCarrier): Future[PlatformStatus] =
+  def iteration3Status()(using hc: HeaderCarrier): Future[PlatformStatus] =
     http.get(url"$backendBaseUrl/status/iteration3")
       .execute[PlatformStatus]
 
-  def iteration5Status()(implicit hc: HeaderCarrier): Future[PlatformStatus] =
+  def iteration5Status()(using hc: HeaderCarrier): Future[PlatformStatus] =
     http.get(url"$backendBaseUrl/status/iteration5")
       .execute[PlatformStatus]
 
-  def measure(content: String, headers: Seq[(String, String)] = Seq.empty)(implicit hc: HeaderCarrier): Future[String] =
+  def measure(content: String, headers: Seq[(String, String)] = Seq.empty)(using hc: HeaderCarrier): Future[String] =
     http.post(url"$backendBaseUrl/measure")
       .withBody(content)
       .setHeader(headers :_*)
       .execute[String]
 
-  def gcInformation()(implicit hc: HeaderCarrier): Future[GcInformation] =
+  def gcInformation()(using hc: HeaderCarrier): Future[GcInformation] =
     http.get(url"$backendBaseUrl/gcinfo")
       .execute[GcInformation]

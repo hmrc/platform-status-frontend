@@ -47,19 +47,18 @@ class CodeController @Inject()(
     )
 
   def code: Action[Unit] =
-    Action(parse.empty) { implicit request =>
-      Ok(codeView(codeForm.fill(CodeRequest())))
-    }
+    Action(parse.empty):
+      implicit request =>
+        Ok(codeView(codeForm.fill(CodeRequest())))
 
   def respondWithCode: Action[Map[String, Seq[String]]] =
-    Action(parse.formUrlEncoded) { implicit request =>
-      codeForm.bindFromRequest()
-        .fold(
-          formWithErrors => BadRequest(codeView(formWithErrors) )
-        , codeRequest => {
-            if codeRequest.code == 504 then
-              Thread.sleep(appConfig.badGatewayTimeout.toMillis)
-            new Status(codeRequest.code)(codeResponseView(codeRequest.code, codeRequest.message))
-          }
-        )
-    }
+    Action(parse.formUrlEncoded):
+      implicit request =>
+        codeForm.bindFromRequest()
+          .fold(
+            formWithErrors => BadRequest(codeView(formWithErrors)),
+            codeRequest =>
+              if codeRequest.code == 504 then
+                Thread.sleep(appConfig.badGatewayTimeout.toMillis)
+              new Status(codeRequest.code)(codeResponseView(codeRequest.code, codeRequest.message))
+          )

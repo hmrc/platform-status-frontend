@@ -25,42 +25,40 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.ws.{WSClient, WSResponse}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 
-class AccessDeniedControllerITSpec extends AnyWordSpec with Matchers with GuiceOneServerPerSuite {
+class AccessDeniedControllerITSpec
+  extends AnyWordSpec
+    with Matchers
+    with GuiceOneServerPerSuite:
 
   private val serviceUrl: String = s"http://localhost:$port/platform-status"
   private val trueClientIpHeader = "True-Client-Ip"
   private lazy val allowedIpAddresses = Seq("10.0.0.1")
 
-  private  lazy val wsClient: WSClient = app.injector.instanceOf[WSClient]
+  private lazy val wsClient: WSClient = app.injector.instanceOf[WSClient]
 
   private lazy val config: Map[String, Any] = Map(
     "bootstrap.filters.allowlist.enabled" -> "true",
-    "bootstrap.filters.allowlist.ips" -> allowedIpAddresses
-    )
+    "bootstrap.filters.allowlist.ips"     -> allowedIpAddresses
+  )
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()
     .configure(config)
     .build()
 
 
-  "With the Allowlist filter enabled" when {
-    s"a request is made with an ip in the $trueClientIpHeader which is not on the allowlist it" should {
-      "return 403 Forbidden" in {
-        lazy val result: WSResponse = {
-          await(wsClient.url(serviceUrl).withFollowRedirects(true).withHttpHeaders(
-            Seq(trueClientIpHeader -> "192.168.2.1"): _*).get())
-        }
+  "With the Allowlist filter enabled" when:
+    s"a request is made with an ip in the $trueClientIpHeader which is not on the allowlist it" should:
+      "return 403 Forbidden" in:
+        lazy val result: WSResponse =
+          await(wsClient.url(serviceUrl).withFollowRedirects(true)
+            .withHttpHeaders(Seq(trueClientIpHeader -> "192.168.2.1"): _*).get())
+        
         result.status shouldBe FORBIDDEN
-      }
-    }
-    s"a request is made with an ip in the $trueClientIpHeader which is on the allowlist it" should {
-      "return a 200 OK" in {
-        lazy val result: WSResponse = {
-          await(wsClient.url(serviceUrl).withFollowRedirects(true).withHttpHeaders(
-            Seq(trueClientIpHeader -> allowedIpAddresses.mkString): _*).get())
-        }
+
+    s"a request is made with an ip in the $trueClientIpHeader which is on the allowlist it" should:
+      "return a 200 OK" in:
+        lazy val result: WSResponse =
+          await(wsClient.url(serviceUrl).withFollowRedirects(true)
+            .withHttpHeaders(Seq(trueClientIpHeader -> allowedIpAddresses.mkString): _*).get())
+
         result.status shouldBe OK
-      }
-    }
-  }
-}

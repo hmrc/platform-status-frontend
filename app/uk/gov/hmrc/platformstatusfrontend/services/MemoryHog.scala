@@ -20,16 +20,15 @@ import javax.inject.Singleton
 import play.api.Logger
 
 @Singleton
-class MemoryHog ():
+class MemoryHog:
   private val logger = Logger(this.getClass)
 
   private val megabyte = 1024 * 1024
 
-  def eatMemory(mbs: Int, sleep: Int) =
+  def eatMemory(mbs: Int, sleep: Int): Unit =
     var bigArray = Array[Array[Byte]]()
 
     while true do
       bigArray = bigArray :+ Array.fill[Byte](mbs * megabyte)('a')
       logger.info(s"Leaking memory! - Max memory:${Runtime.getRuntime.maxMemory() / megabyte} - Free memory:${Runtime.getRuntime().freeMemory() / megabyte}")
       Thread.sleep(sleep)
-

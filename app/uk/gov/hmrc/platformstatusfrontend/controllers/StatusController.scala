@@ -31,7 +31,7 @@ class StatusController @Inject()(
   mcc              : MessagesControllerComponents,
   val statusChecker: StatusChecker,
   statusView       : Status
-)(implicit
+)(using
   ec: ExecutionContext
 ) extends FrontendController(mcc):
 
@@ -40,20 +40,21 @@ class StatusController @Inject()(
       Redirect(routes.StatusController.platformStatus)
 
   def platformStatus: Action[AnyContent] =
-    Action.async { implicit request =>
-      Logger("StatusController").info(s"in platformStatus: ${org.slf4j.MDC.getCopyOfContextMap}")
-      ( statusChecker.iteration1Status()
-      , statusChecker.iteration2Status()
-      , statusChecker.iteration3Status()
-      , statusChecker.iteration4Status()
-      , statusChecker.iteration5Status()
-      ).mapN((iter1, iter2, iter3, iter4, iter5) =>
-        Ok(statusView(List(
-          iter1,
-          iter2,
-          iter3,
-          iter4,
-          iter5
-        )))
-      )
-    }
+    Action.async:
+      implicit request =>
+        Logger("StatusController").info(s"in platformStatus: ${org.slf4j.MDC.getCopyOfContextMap}")
+        (
+          statusChecker.iteration1Status(),
+          statusChecker.iteration2Status(),
+          statusChecker.iteration3Status(),
+          statusChecker.iteration4Status(),
+          statusChecker.iteration5Status()
+        ).mapN((iter1, iter2, iter3, iter4, iter5) =>
+          Ok(statusView(List(
+            iter1,
+            iter2,
+            iter3,
+            iter4,
+            iter5
+          )))
+        )

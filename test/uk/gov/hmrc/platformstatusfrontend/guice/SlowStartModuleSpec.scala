@@ -32,24 +32,16 @@ class SlowStartModuleSpec
   extends AnyWordSpec
      with Matchers
      with MockitoSugar
-     with TimeLimits {
+     with TimeLimits:
 
-  private trait Setup {
+  private trait Setup:
     val testTimeoutDuration: Span = 100.milliseconds
+    val appConfig: AppConfig = mock[AppConfig]
 
-    val appConfig = mock[AppConfig]
-  }
-
-  "DefaultSlowStarter" should {
-    "wait n time before startup" in new Setup() {
+  "DefaultSlowStarter" should:
+    "wait n time before startup" in new Setup():
       when(appConfig.startupDelay).thenReturn(Some(5000))
 
-      intercept[TestFailedDueToTimeoutException] {
-        failAfter(testTimeoutDuration) {
+      intercept[TestFailedDueToTimeoutException]:
+        failAfter(testTimeoutDuration):
           new DefaultSlowStarter(appConfig)
-        }
-      }
-    }
-  }
-
-}

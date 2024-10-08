@@ -28,11 +28,11 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
 @Singleton
-class GarbageService @Inject()(backendConnector: BackendConnector)(implicit ec: ExecutionContext):
+class GarbageService @Inject()(backendConnector: BackendConnector)(using ec: ExecutionContext):
 
   private val logger = Logger(this.getClass)
 
-  def getBackendGcInfo(implicit hc: HeaderCarrier): Future[GcInformation] =
+  def getBackendGcInfo()(using hc: HeaderCarrier): Future[GcInformation] =
     backendConnector.gcInformation()
       .recoverWith:
         case ex: Exception =>
@@ -40,7 +40,7 @@ class GarbageService @Inject()(backendConnector: BackendConnector)(implicit ec: 
           logger.warn(msg, ex)
           Future.successful(GcInformation(-1, Seq[GarbageCollectorMXBean]()))
 
-  def getFrontendGcInfo: Future[GcInformation] =
+  def getFrontendGcInfo(): Future[GcInformation] =
     import java.lang.management.ManagementFactory
 
     val gBeans = ManagementFactory.getGarbageCollectorMXBeans.asScala.toList

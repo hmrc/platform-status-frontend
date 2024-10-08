@@ -38,86 +38,83 @@ class MeasureController @Inject()(
   mcc           : MessagesControllerComponents,
   measureService: MeasureService,
   measureView   : Measure
-)(implicit
- ec: ExecutionContext
+)(using
+  ec: ExecutionContext
 ) extends FrontendController(mcc):
   private val logger: Logger = Logger(this.getClass)
 
   val measureForm: Form[MeasureRequest] = Form(
     mapping(
       "headerName" -> text,
-      "bytes" -> number
+      "bytes"      -> number
     )(MeasureRequest.apply)(o => Some(Tuple.fromProductTyped(o)))
   )
 
   def measure: Action[AnyContent] =
-    Action { implicit request =>
-      Ok(measureView(measureForm.fill(MeasureRequest())))
-    }
+    Action:
+      implicit request =>
+        Ok(measureView(measureForm.fill(MeasureRequest())))
 
   def measureHeader: Action[AnyContent] =
-    Action { implicit request =>
-      // This custom header was added to the request by our custom filters, so just pull out its value
-      val headerLength = request.headers.get(X_HEADER_LENGTH).map(s => s"$s bytes").getOrElse(s"? Unknown, was not able to extract injected $X_HEADER_LENGTH header")
-      logger.info(s"Received message with header length: $headerLength")
-      Ok(s"Total size of all headers received: $headerLength")
-    }
+    Action:
+      implicit request =>
+        // This custom header was added to the request by our custom filters, so just pull out its value
+        val headerLength = request.headers.get(X_HEADER_LENGTH).map(s => s"$s bytes").getOrElse(s"? Unknown, was not able to extract injected $X_HEADER_LENGTH header")
+        logger.info(s"Received message with header length: $headerLength")
+        Ok(s"Total size of all headers received: $headerLength")
 
   def measureBody: Action[AnyContent] =
-    Action { implicit request =>
-      val bodyLength = request.headers.get(CONTENT_LENGTH).map(s => s"$s bytes").getOrElse(s"? Unknown, $CONTENT_LENGTH header was not found")
-      logger.info(s"Received message with body length: $bodyLength")
-      Ok(s"Body length received: $bodyLength")
-    }
+    Action:
+      implicit request =>
+        val bodyLength = request.headers.get(CONTENT_LENGTH).map(s => s"$s bytes").getOrElse(s"? Unknown, $CONTENT_LENGTH header was not found")
+        logger.info(s"Received message with body length: $bodyLength")
+        Ok(s"Body length received: $bodyLength")
 
   def randomResponseHeaderOfSize: Action[AnyContent] =
-    Action { implicit request =>
-      measureForm.bindFromRequest()
-        .fold(
-          formWithErrors => BadRequest(measureView(formWithErrors))
-        , measureRequest => {
-            val generated = generateStringOfSize(measureRequest.bytes)
-            val headerName = measureRequest.headerName
-            logger.info(s"Generated random content for header '$headerName' of ${measureRequest.bytes} bytes to send in response")
-            Ok(s"Response header ${measureRequest.headerName} filled with ${measureRequest.bytes} random bytes").withHeaders(headerName -> generated)
-          }
-        )
-    }
+    Action:
+      implicit request =>
+        measureForm.bindFromRequest()
+          .fold(
+            formWithErrors => BadRequest(measureView(formWithErrors)),
+            measureRequest =>
+              val generated = generateStringOfSize(measureRequest.bytes)
+              val headerName = measureRequest.headerName
+              logger.info(s"Generated random content for header '$headerName' of ${measureRequest.bytes} bytes to send in response")
+              Ok(s"Response header ${measureRequest.headerName} filled with ${measureRequest.bytes} random bytes").withHeaders(headerName -> generated)
+          )
 
   def randomResponseBodyOfSize: Action[AnyContent] =
-    Action { implicit request =>
-      measureForm.bindFromRequest()
-        .fold(
-          formWithErrors => BadRequest(measureView(formWithErrors))
-        , measureRequest => {
-            val generated = generateStringOfSize(measureRequest.bytes)
-            logger.info(s"Generated random body of ${measureRequest.bytes} bytes")
-            Ok(s"$generated")
-          }
-        )
-    }
+    Action:
+      implicit request =>
+        measureForm.bindFromRequest()
+          .fold(
+            formWithErrors => BadRequest(measureView(formWithErrors)),
+            measureRequest =>
+              val generated = generateStringOfSize(measureRequest.bytes)
+              logger.info(s"Generated random body of ${measureRequest.bytes} bytes")
+              Ok(s"$generated")
+          )
 
   def headerOfSizeToBackend: Action[AnyContent] =
-    Action.async { implicit request =>
-      measureForm.bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(measureView(formWithErrors)))
-        , measureRequest => {
-            val generated = generateStringOfSize(measureRequest.bytes)
-            logger.info(s"Generated random content for header '${measureRequest.headerName}' of ${measureRequest.bytes} bytes to send to backend")
-            measureService.headerToBackend(generated, measureRequest.headerName).map(Ok(_))
-          }
-        )
-    }
+    Action.async:
+      implicit request =>
+        measureForm.bindFromRequest()
+          .fold(
+            formWithErrors => Future.successful(BadRequest(measureView(formWithErrors))),
+            measureRequest =>
+              val generated = generateStringOfSize(measureRequest.bytes)
+              logger.info(s"Generated random content for header '${measureRequest.headerName}' of ${measureRequest.bytes} bytes to send to backend")
+              measureService.headerToBackend(generated, measureRequest.headerName).map(Ok(_))
+          )
 
-  def bodyOfSizeToBackend: Action[AnyContent] = Action.async { implicit request =>
-    measureForm.bindFromRequest()
-      .fold(
-        formWithErrors => Future.successful(BadRequest(measureView(formWithErrors)))
-      , measureRequest => {
-          val generated = generateStringOfSize(measureRequest.bytes)
-          logger.info(s"Generated random body of ${measureRequest.bytes} bytes to send to backend")
-          measureService.bodyToBackend(generated).map(Ok(_))
-        }
-      )
-  }
+  def bodyOfSizeToBackend: Action[AnyContent] =
+    Action.async:
+      implicit request =>
+        measureForm.bindFromRequest()
+          .fold(
+            formWithErrors => Future.successful(BadRequest(measureView(formWithErrors))),
+            measureRequest =>
+              val generated = generateStringOfSize(measureRequest.bytes)
+              logger.info(s"Generated random body of ${measureRequest.bytes} bytes to send to backend")
+              measureService.bodyToBackend(generated).map(Ok(_))
+          )

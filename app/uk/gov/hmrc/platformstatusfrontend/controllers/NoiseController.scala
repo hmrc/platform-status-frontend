@@ -42,30 +42,29 @@ class NoiseController @Inject()(
   val noiseForm: Form[NoiseRequest] =
     Form(
       mapping(
-        "level" -> text,
+        "level"   -> text,
         "message" -> text,
         "amount"  -> number
       )(NoiseRequest.apply)(o => Some(Tuple.fromProductTyped(o)))
     )
 
   def noise: Action[AnyContent] =
-    Action { implicit request =>
-      Ok(noiseView(noiseForm.fill(NoiseRequest())))
-    }
+    Action:
+      implicit request =>
+        Ok(noiseView(noiseForm.fill(NoiseRequest())))
 
   def createNoise: Action[AnyContent] =
-    Action { implicit request =>
-      noiseForm.bindFromRequest()
-        .fold(
-          formWithErrors => BadRequest(noiseView(formWithErrors))
-          , noiseRequest => {
-            makeSomeNoise(noiseRequest)
-            Redirect(routes.NoiseController.noise).flashing("success" -> "Log messages written.")
-          }
-        )
-    }
+    Action:
+      implicit request =>
+        noiseForm.bindFromRequest()
+          .fold(
+            formWithErrors => BadRequest(noiseView(formWithErrors)),
+            noiseRequest   =>
+              makeSomeNoise(noiseRequest)
+              Redirect(routes.NoiseController.noise).flashing("success" -> "Log messages written.")
+          )
 
-  private def makeSomeNoise(request: NoiseRequest) =
+  private def makeSomeNoise(request: NoiseRequest): Unit =
     for i <- 1 to request.amount do
       request.level match
         case "ERROR" => logger.error(s"$i: " + request.message, new RuntimeException(request.message))

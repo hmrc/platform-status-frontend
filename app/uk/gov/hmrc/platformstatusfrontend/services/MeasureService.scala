@@ -30,7 +30,12 @@ class MeasureService @Inject()(backendConnector: BackendConnector):
 
   private val logger = Logger(this.getClass)
 
-  def bodyToBackend(content: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String] =
+  def bodyToBackend(
+    content: String
+  )(using
+    hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[String] =
     backendConnector.measure(content, Seq.empty)
       .recoverWith:
         case ex: Exception =>
@@ -38,7 +43,13 @@ class MeasureService @Inject()(backendConnector: BackendConnector):
           logger.warn(msg, ex)
           Future.successful(s"$msg: ${ex.getMessage}")
 
-  def headerToBackend(content: String, headerName: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String] =
+  def headerToBackend(
+    content: String,
+    headerName: String
+  )(using
+    hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[String] =
     backendConnector.measure("", Seq(headerName -> content, X_TEST_HEADER_NAME -> headerName))
       .recoverWith:
         case ex: Exception =>

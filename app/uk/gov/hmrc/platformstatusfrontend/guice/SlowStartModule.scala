@@ -36,7 +36,7 @@ class DefaultSlowStarter @Inject()(config: AppConfig) extends SlowStarter:
 
   private val logger = Logger(this.getClass)
 
-  config.startupDelay.foreach { delay =>
-    logger.info(s"Delaying application startup by $delay milliseconds, as specified by 'startup-delay' configuration")
-    Thread.sleep(delay)
-  }
+  config.startupDelay.foreach:
+    delay =>
+      logger.info(s"Delaying application startup by $delay milliseconds, as specified by 'startup-delay' configuration")
+      Thread.sleep(delay)

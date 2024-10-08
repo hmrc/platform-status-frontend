@@ -28,7 +28,7 @@ class AppConfig @Inject()(config: Configuration):
   val analyticsHost : String      = config.get[String](s"google-analytics.host")
   val startupDelay  : Option[Int] = config.getOptional[Int]("startup-delay")
 
-  lazy val dbUrl                  = config.get[String]("mongodb.uri")
+  lazy val dbUrl: String = config.get[String]("mongodb.uri")
 
   lazy val proxyProtocol: String   = config.get[String]("proxy.protocol")
   lazy val proxyHost    : String   = config.get[String]("proxy.host")

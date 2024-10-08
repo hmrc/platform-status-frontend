@@ -38,41 +38,47 @@ class StatusControllerSpec
   extends AnyWordSpec
      with Matchers
      with GuiceOneAppPerSuite
-     with MockitoSugar {
+     with MockitoSugar:
 
   private val fakeRequest = FakeRequest("GET", "/")
 
-  private trait Setup {
-    implicit val hc: HeaderCarrier = HeaderCarrier()
+  private trait Setup:
+    given HeaderCarrier = HeaderCarrier()
 
     private val statusChecker = mock[StatusChecker]
-    private val dummyStatus = PlatformStatus(enabled = true, "name", isWorking = true, "description", Some("No reason"))
+    private val statusView: StatusView = app.injector.instanceOf[StatusView]
+    private val dummyStatus = PlatformStatus(
+      enabled = true,
+      "name",
+      isWorking = true,
+      "description",
+      Some("No reason")
+    )
+    
     when(statusChecker.iteration1Status())
       .thenReturn(Future.successful(dummyStatus.copy(name = "it1")))
+    
     when(statusChecker.iteration2Status())
       .thenReturn(Future.successful(dummyStatus.copy(name = "it2")))
-    when(statusChecker.iteration3Status()(any[HeaderCarrier]))
+    
+    when(statusChecker.iteration3Status()(using any[HeaderCarrier]))
       .thenReturn(Future.successful(dummyStatus.copy(name = "it3")))
+    
     when(statusChecker.iteration4Status())
       .thenReturn(Future.successful(dummyStatus.copy(name = "it4")))
-    when(statusChecker.iteration5Status()(any[HeaderCarrier]))
+    
+    when(statusChecker.iteration5Status()(using any[HeaderCarrier]))
       .thenReturn(Future.successful(dummyStatus.copy(name = "it5")))
-
-    private val statusView: StatusView = app.injector.instanceOf[StatusView]
-
+    
     val controller = new StatusController(stubMessagesControllerComponents(), statusChecker, statusView)
-  }
 
-  "GET /" should {
-    "return 200" in new Setup() {
+  
+  "GET /" should:
+    "return 200" in new Setup():
       private val result = controller.platformStatus(fakeRequest)
       status(result) shouldBe Status.OK
-    }
 
-    "return HTML" in new Setup() {
+    "return HTML" in new Setup():
       private val result = controller.platformStatus(fakeRequest)
       contentType(result) shouldBe Some("text/html")
       charset(result)     shouldBe Some("utf-8")
-    }
-  }
-}

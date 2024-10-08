@@ -19,17 +19,13 @@ package uk.gov.hmrc.platformstatusfrontend.services
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
 
-class MemoryHogTest extends AnyWordSpec with Matchers {
+class MemoryHogTest extends AnyWordSpec with Matchers:
 
-  "MemoryHog" should {
-    "eat memory" in {
+  "MemoryHog" should:
+    "eat memory" in:
       try {
         val memHog = new MemoryHog()
         memHog.eatMemory(50, 25)
       } catch {
         case _: OutOfMemoryError =>
       }
-    }
-  }
-
-}

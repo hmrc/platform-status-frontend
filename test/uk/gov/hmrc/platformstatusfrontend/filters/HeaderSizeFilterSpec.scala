@@ -34,18 +34,18 @@ class HeaderSizeFilterSpec
       with Matchers
       with GuiceOneAppPerSuite
       with ScalaCheckDrivenPropertyChecks
-      with ScalaFutures {
+      with ScalaFutures:
 
   private implicit lazy val materializer: Materializer = app.materializer
 
   val filter = new HeaderSizeFilter()
-  val act = app.injector.instanceOf[DefaultActionBuilder]
-  val action: Action[AnyContent] = act { request =>
-    Ok("").withHeaders(request.headers.headers: _*)
-  }
+  val act: DefaultActionBuilder = app.injector.instanceOf[DefaultActionBuilder]
+  val action: Action[AnyContent] = act:
+    request =>
+      Ok("").withHeaders(request.headers.headers: _*)
 
-  "HeaderSizeFilterSpec" should {
-    "add an X_HEADER_LENGTH header with value 0 if there are no headers on the request" in {
+  "HeaderSizeFilterSpec" should:
+    "add an X_HEADER_LENGTH header with value 0 if there are no headers on the request" in:
       val headers = Headers.create()
 
       val request = FakeRequest(POST, "/").withHeaders(headers)
@@ -53,8 +53,8 @@ class HeaderSizeFilterSpec
 
       status(result) shouldBe OK
       header(MeasureUtil.X_HEADER_LENGTH, result) shouldBe Some("0")
-    }
-    "add an X_HEADER_LENGTH header with value of the header size in bytes" in {
+
+    "add an X_HEADER_LENGTH header with value of the header size in bytes" in:
       val headers = Headers("SOME_HEADER" -> "my value")
 
       val request = FakeRequest(POST, "/").withHeaders(headers)
@@ -65,21 +65,17 @@ class HeaderSizeFilterSpec
 
       status(result) shouldBe OK
       header(MeasureUtil.X_HEADER_LENGTH, result) shouldBe Some(expectedSize.toString)
-    }
-    "add an X_HEADER_LENGTH header with value of the header size in bytes for multiple headers" in {
-      forAll(headersGen) { rawHeaders =>
-        val headers = Headers(rawHeaders : _*)
 
-        val request = FakeRequest(POST, "/").withHeaders(headers)
-        val result = filter(action)(request).run()
+    "add an X_HEADER_LENGTH header with value of the header size in bytes for multiple headers" in:
+      forAll(headersGen):
+        rawHeaders =>
+          val headers = Headers(rawHeaders : _*)
+  
+          val request = FakeRequest(POST, "/").withHeaders(headers)
+          val result = filter(action)(request).run()
 
-        val expectedSize =
-          MeasureUtil.byteSize(rawHeaders.map{ case (k,v) => s"$k: $v"}.mkString("\r\n"))
-
-        status(result) shouldBe OK
-        header(MeasureUtil.X_HEADER_LENGTH, result) shouldBe Some(expectedSize.toString)
-      }
-    }
-  }
-
-}
+          val expectedSize =
+            MeasureUtil.byteSize(rawHeaders.map { case (k, v) => s"$k: $v" }.mkString("\r\n"))
+  
+          status(result) shouldBe OK
+          header(MeasureUtil.X_HEADER_LENGTH, result) shouldBe Some(expectedSize.toString)

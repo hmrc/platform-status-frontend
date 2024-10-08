@@ -24,8 +24,8 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class GenericConnector @Inject()(http: HttpClientV2)(implicit ec: ExecutionContext):
+class GenericConnector @Inject()(http: HttpClientV2)(using ec: ExecutionContext):
   import HttpReads.Implicits._
 
-  def callWebService(url: URL)(implicit hc: HeaderCarrier): Future[HttpResponse] =
+  def callWebService(url: URL)(using hc: HeaderCarrier): Future[HttpResponse] =
     http.get(url"$url").execute

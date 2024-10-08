@@ -32,35 +32,31 @@ class GarbageServiceSpec
   extends AsyncWordSpec
      with Matchers
      with MockitoSugar
-     with BeforeAndAfterEach {
+     with BeforeAndAfterEach:
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+  given HeaderCarrier = HeaderCarrier()
 
-  val backendConnectorMock = mock[BackendConnector]
-  val garbageService       = new GarbageService(backendConnectorMock)
+  val backendConnectorMock: BackendConnector = mock[BackendConnector]
+  val garbageService      : GarbageService   = new GarbageService(backendConnectorMock)
 
-  override def beforeEach(): Unit = {
+  override def beforeEach(): Unit =
     reset(backendConnectorMock)
-  }
 
-  "getBackendGcInfo" should {
-    "return Gc Info" in {
-      when(backendConnectorMock.gcInformation()(any))
+  "getBackendGcInfo" should:
+    "return Gc Info" in:
+      when(backendConnectorMock.gcInformation()(using any))
         .thenReturn(Future.successful(GcInformation(1, Seq[GcBeanInfo]())))
-      val result = garbageService.getBackendGcInfo
+      val result = garbageService.getBackendGcInfo()
       result map { info => info.coreCount shouldBe 1 }
-    }
-    "return core count -1 when backend call fails" in {
-      when(backendConnectorMock.gcInformation()(any))
+    
+    "return core count -1 when backend call fails" in:
+      when(backendConnectorMock.gcInformation()(using any))
         .thenReturn(Future.failed(new Exception("")))
-      val result = garbageService.getBackendGcInfo
+      val result = garbageService.getBackendGcInfo()
       result map { info => info.coreCount shouldBe -1 }
-    }
-  }
-  "getFrontendGcInfo" should {
-    "Return a coreCount > 0" in {
-      val result = garbageService.getFrontendGcInfo
+    
+
+  "getFrontendGcInfo" should:
+    "Return a coreCount > 0" in:
+      val result = garbageService.getFrontendGcInfo()
       result.map(info => info.coreCount should be > 0)
-    }
-  }
-}

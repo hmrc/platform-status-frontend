@@ -38,97 +38,81 @@ class StatusCheckerSpec
   extends AnyWordSpec
      with Matchers
      with MockitoSugar
-     with ScalaFutures {
+     with ScalaFutures:
 
   private val testTimeoutDuration: Span = 6.seconds // underlying method calls should timeout before this
 
-  private trait Setup {
-    implicit val hc: HeaderCarrier = HeaderCarrier()
-    val backendConnectorMock       = mock[BackendConnector]
-    val internetConnector          = mock[InternetConnector]
-    implicit val futures: Futures  = new DefaultFutures(ActorSystem.create())
-    val appConfig                  = mock[AppConfig]
-    val statusChecker              = new StatusChecker(backendConnectorMock, internetConnector, appConfig)
-  }
+  private trait Setup:
+    given HeaderCarrier = HeaderCarrier()
+    given Futures       = new DefaultFutures(ActorSystem.create())
+    
+    val backendConnectorMock: BackendConnector  = mock[BackendConnector]
+    val internetConnector   : InternetConnector = mock[InternetConnector]
+    val appConfig           : AppConfig         = mock[AppConfig]
+    val statusChecker       : StatusChecker     = new StatusChecker(backendConnectorMock, internetConnector, appConfig)
 
-  "iteration 2 status checker" should {
-    "connect to Mongo" in new Setup() {
+
+  "iteration 2 status checker" should:
+    "connect to Mongo" in new Setup():
       when(appConfig.dbUrl).thenReturn("mongodb://localhost:27017")
       when(appConfig.iteration2Enabled).thenReturn(true)
-      whenReady(statusChecker.iteration2Status(), timeout(testTimeoutDuration)) {
+      whenReady(statusChecker.iteration2Status(), timeout(testTimeoutDuration)):
         r =>
           r shouldBe baseIteration2Status
           r.isWorking shouldBe true
-      }
-    }
 
-    "fail to connect to Mongo" in new Setup() {
+    "fail to connect to Mongo" in new Setup():
       when(appConfig.dbUrl).thenReturn("mongodb://not_there:27017")
       when(appConfig.iteration2Enabled).thenReturn(true)
-      whenReady(statusChecker.iteration2Status(), timeout(testTimeoutDuration)) {
-        r => r shouldBe baseIteration2Status.copy(isWorking = false, reason = Some("Timeout after 2 seconds"))
+      whenReady(statusChecker.iteration2Status(), timeout(testTimeoutDuration)):
+        r =>
+          r shouldBe baseIteration2Status.copy(isWorking = false, reason = Some("Timeout after 2 seconds"))
           r.isWorking shouldBe false
-      }
-    }
-  }
 
-  "iteration 3 status check" should {
-    "be happy when backend responds with a good result" in new Setup() {
+  
+  "iteration 3 status check" should:
+    "be happy when backend responds with a good result" in new Setup():
       when(backendConnectorMock.iteration3Status()).thenReturn(Future.successful(baseIteration3Status))
       when(appConfig.iteration3Enabled).thenReturn(true)
-      whenReady(statusChecker.iteration3Status(), timeout(testTimeoutDuration) ){
+      whenReady(statusChecker.iteration3Status(), timeout(testTimeoutDuration)):
         result => result shouldBe baseIteration3Status
-      }
-    }
 
-    "not blow up when backend responds with a bad result" in new Setup() {
+    "not blow up when backend responds with a bad result" in new Setup():
       when(backendConnectorMock.iteration3Status()).thenReturn(Future.failed(UpstreamErrorResponse("Borked", 500, 500)))
       when(appConfig.iteration3Enabled).thenReturn(true)
-      whenReady(statusChecker.iteration3Status(), timeout(testTimeoutDuration) ){
+      whenReady(statusChecker.iteration3Status(), timeout(testTimeoutDuration)):
         result => result shouldBe baseIteration3Status.copy(isWorking = false, reason = Some("Borked"))
-      }
-    }
-  }
 
-  "iteration 4 outbound call via squid" should {
-    "be happy when a response is received" in new Setup() {
-      val fakeResponse = mock[WSResponse]
+  
+  "iteration 4 outbound call via squid" should:
+    "be happy when a response is received" in new Setup():
+      val fakeResponse: WSResponse = mock[WSResponse]
       when(appConfig.proxyRequired).thenReturn(false)
       when(appConfig.proxyTimeout).thenReturn(Duration(2, SECONDS))
       when(appConfig.iteration4Enabled).thenReturn(true)
       when(fakeResponse.status).thenReturn(200)
       when(internetConnector.callTheWeb(statusChecker.webTestEndpoint, false)).thenReturn(Future.successful(fakeResponse))
-      whenReady(statusChecker.iteration4Status(), timeout(testTimeoutDuration)) {
+      whenReady(statusChecker.iteration4Status(), timeout(testTimeoutDuration)):
         result => result shouldBe baseIteration4Status
-      }
-    }
 
-    "handle things when an error response is received" in new Setup() {
+    "handle things when an error response is received" in new Setup():
       when(appConfig.proxyRequired).thenReturn(false)
       when(appConfig.proxyTimeout).thenReturn(Duration(2, SECONDS))
       when(appConfig.iteration4Enabled).thenReturn(true)
       when(internetConnector.callTheWeb(statusChecker.webTestEndpoint, false)).thenReturn(Future.failed(new Exception("Borked")))
-      whenReady(statusChecker.iteration4Status(), timeout(testTimeoutDuration)) {
+      whenReady(statusChecker.iteration4Status(), timeout(testTimeoutDuration)):
         result => result shouldBe baseIteration4Status.copy(isWorking = false, reason = Some("Borked"))
-      }
-    }
-  }
 
-  "iteration 5 status check" should {
-    "be happy when backend responds with a good result" in new Setup() {
+  
+  "iteration 5 status check" should:
+    "be happy when backend responds with a good result" in new Setup():
       when(backendConnectorMock.iteration5Status()).thenReturn(Future.successful(baseIteration5Status))
       when(appConfig.iteration5Enabled).thenReturn(true)
-      whenReady(statusChecker.iteration5Status(), timeout(testTimeoutDuration) ){
+      whenReady(statusChecker.iteration5Status(), timeout(testTimeoutDuration)):
         result => result shouldBe baseIteration5Status
-      }
-    }
 
-    "not blow up when backend responds with a bad result" in new Setup() {
+    "not blow up when backend responds with a bad result" in new Setup():
       when(backendConnectorMock.iteration5Status()).thenReturn(Future.failed(UpstreamErrorResponse("Borked", 500, 500)))
       when(appConfig.iteration5Enabled).thenReturn(true)
-      whenReady(statusChecker.iteration5Status(), timeout(testTimeoutDuration) ){
+      whenReady(statusChecker.iteration5Status(), timeout(testTimeoutDuration)):
         result => result shouldBe baseIteration5Status.copy(isWorking = false, reason = Some("Borked"))
-      }
-    }
-  }
-}

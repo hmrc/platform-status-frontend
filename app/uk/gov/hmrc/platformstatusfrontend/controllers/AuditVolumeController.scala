@@ -42,18 +42,17 @@ class AuditVolumeController @Inject()(
     )
 
   def setup: Action[AnyContent] =
-    Action { implicit request =>
-      Ok(view(form.fill(AuditVolumeRequest())))
-    }
+    Action:
+      implicit request =>
+        Ok(view(form.fill(AuditVolumeRequest())))
 
   def run: Action[AnyContent] =
-    Action { implicit request =>
-      form.bindFromRequest()
-        .fold(
-          formWithErrors => BadRequest(view(formWithErrors))
-        , form => {
-            service.sendAuditMessages(form.auditType, form.n)
-            Ok("Generated")
-          }
-        )
-    }
+    Action:
+      implicit request =>
+        form.bindFromRequest()
+          .fold(
+            formWithErrors => BadRequest(view(formWithErrors)),
+            form =>
+              service.sendAuditMessages(form.auditType, form.n)
+              Ok("Generated")
+          )

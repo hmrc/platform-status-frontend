@@ -20,7 +20,7 @@ import com.google.inject.Inject
 import org.mongodb.scala._
 import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model.ReplaceOptions
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.concurrent.Futures
 import play.api.libs.concurrent.Futures._
 import play.api.libs.ws.WSResponse
@@ -38,11 +38,10 @@ class StatusChecker @Inject()(
   backendConnector : BackendConnector,
   internetConnector: InternetConnector,
   appConfig        : AppConfig
-)(implicit
+)(using
   ec     : ExecutionContext,
   futures: Futures
-):
-  val logger: Logger = Logger(this.getClass)
+) extends Logging:
 
   val webTestEndpoint = "https://www.gov.uk/bank-holidays.json"
 
@@ -63,7 +62,8 @@ class StatusChecker @Inject()(
               genericError(baseIteration2Status, ex)
       catch
         case ex: Exception => genericError(baseIteration2Status, ex)
-    else Future.successful(baseIteration2Status.copy(enabled = false))
+    else
+      Future.successful(baseIteration2Status.copy(enabled = false))
 
   private def checkMongoConnection(dbUrl: String): Future[PlatformStatus] =
     val mongoClient: MongoClient               = MongoClient(dbUrl)
@@ -79,13 +79,14 @@ class StatusChecker @Inject()(
       // TODO - handle error states better
     yield result
 
-  def iteration3Status()(implicit hc: HeaderCarrier): Future[PlatformStatus] =
+  def iteration3Status()(using hc: HeaderCarrier): Future[PlatformStatus] =
     if appConfig.iteration3Enabled then
       backendConnector.iteration3Status().recoverWith:
         case ex: Exception =>
           logger.warn("iteration3Status call to backend service failed.")
           genericError(baseIteration3Status, ex)
-    else Future.successful(baseIteration3Status.copy(enabled = false))
+    else
+      Future.successful(baseIteration3Status.copy(enabled = false))
 
   def iteration4Status(): Future[PlatformStatus] =
     if appConfig.iteration4Enabled then
@@ -102,9 +103,10 @@ class StatusChecker @Inject()(
           case r: WSResponse if r.status < 300 => baseIteration4Status
           case e: PlatformStatus => e
           case _ => throw new IllegalStateException("That shouldn't happen")
-    else Future.successful(baseIteration4Status.copy(enabled = false))
+    else
+      Future.successful(baseIteration4Status.copy(enabled = false))
 
-  def iteration5Status()(implicit hc: HeaderCarrier): Future[PlatformStatus] =
+  def iteration5Status()(using hc: HeaderCarrier): Future[PlatformStatus] =
     if appConfig.iteration5Enabled then
       backendConnector.iteration5Status()
         .recoverWith:

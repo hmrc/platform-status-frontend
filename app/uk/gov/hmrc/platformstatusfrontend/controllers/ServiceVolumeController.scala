@@ -43,18 +43,17 @@ class ServiceVolumeController @Inject()(
     )
 
   def setup: Action[AnyContent] =
-    Action { implicit request =>
-      Ok(view(form.fill(ServiceVolumeRequest())))
-    }
+    Action:
+      implicit request =>
+        Ok(view(form.fill(ServiceVolumeRequest())))
 
   def run: Action[AnyContent] =
-    Action { implicit request =>
-      form.bindFromRequest()
-        .fold(
-          formWithErrors => BadRequest(view(formWithErrors))
-          , form => {
-            service.sendServiceCalls(form.url, form.n)
-            Ok("Generated")
-          }
-        )
-    }
+    Action:
+      implicit request =>
+        form.bindFromRequest()
+          .fold(
+            formWithErrors => BadRequest(view(formWithErrors)),
+            form =>
+              service.sendServiceCalls(form.url, form.n)
+              Ok("Generated")
+          )

@@ -28,23 +28,20 @@ class ServiceVolumeServiceSpec
   extends AnyWordSpec
      with Matchers
      with MockitoSugar
-     with BeforeAndAfterEach {
+     with BeforeAndAfterEach:
 
-  val connector = mock[GenericConnector]
-  val fixture = new ServiceVolumeService(connector)
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+  val connector: GenericConnector     = mock[GenericConnector]
+  val fixture  : ServiceVolumeService = new ServiceVolumeService(connector)
+  
+  given HeaderCarrier = HeaderCarrier()
 
-  override def beforeEach(): Unit = {
+  override def beforeEach(): Unit =
     reset(connector)
-  }
 
-  "sendServiceCalls" should {
-    "send a specified number of messages" in {
+  "sendServiceCalls" should:
+    "send a specified number of messages" in:
       fixture.sendServiceCalls("http://localhost:9000/", 3)
 
-      verify(connector).callWebService(url"http://localhost:9000/?messageNo=1");
-      verify(connector).callWebService(url"http://localhost:9000/?messageNo=2");
-      verify(connector).callWebService(url"http://localhost:9000/?messageNo=3");
-    }
-  }
-}
+      verify(connector).callWebService(url"http://localhost:9000/?messageNo=1")
+      verify(connector).callWebService(url"http://localhost:9000/?messageNo=2")
+      verify(connector).callWebService(url"http://localhost:9000/?messageNo=3")
