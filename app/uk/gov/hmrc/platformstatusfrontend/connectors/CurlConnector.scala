@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.platformstatusfrontend.connectors
 
+import play.api.Logging
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, StringContextOps}
 import uk.gov.hmrc.platformstatusfrontend.controllers.CurlRequest
@@ -25,7 +26,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CurlConnector @Inject()(http: HttpClientV2)(using ec: ExecutionContext):
+class CurlConnector @Inject()(http: HttpClientV2)(using ec: ExecutionContext) extends Logging:
 
   import HttpReads.Implicits.*
 
@@ -35,7 +36,9 @@ class CurlConnector @Inject()(http: HttpClientV2)(using ec: ExecutionContext):
         case CurlRequest(requestType, url) if requestType == "GET" => http.get(url"$url").execute
         case CurlRequest(requestType, url) if requestType == "POST" => http.post(url"$url").execute
     catch
-      case ex: Exception => Future.successful(HttpResponse(
-        status = 419,
-        body = s"Error occurred inside Scala: ${ex.getMessage}"
-      ))
+      case ex: Exception =>
+        logger.error("Webservice connector call failed: " + ex.getMessage, ex)
+        Future.successful(HttpResponse(
+          status = 419,
+          body = s"Error occurred inside Scala: ${ex.getMessage}"
+        ))
