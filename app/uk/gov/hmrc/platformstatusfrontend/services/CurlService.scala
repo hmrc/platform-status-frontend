@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.platformstatusfrontend.services
 
+import play.api.Logging
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.platformstatusfrontend.connectors.CurlConnector
 import uk.gov.hmrc.platformstatusfrontend.controllers.{CurlController, CurlRequest}
@@ -24,10 +25,11 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CurlService @Inject()(curlConnector: CurlConnector)(using ec: ExecutionContext):
+class CurlService @Inject()(curlConnector: CurlConnector)(using ec: ExecutionContext) extends Logging:
 
   def makeCurlRequest(curlRequest: CurlRequest)(using hc: HeaderCarrier): Future[HttpResponse] =
     curlConnector.callWebService(curlRequest).recoverWith { ex =>
+      logger.error("Webservice call failed: " + ex.getStackTrace.mkString(">>"))
       Future.successful(HttpResponse(
         status = 419,
         body = s"Error occurred inside Scala: ${ex.getMessage}"
