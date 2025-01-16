@@ -29,7 +29,7 @@ class CurlService @Inject()(curlConnector: CurlConnector)(using ec: ExecutionCon
 
   def makeCurlRequest(curlRequest: CurlRequest)(using hc: HeaderCarrier): Future[HttpResponse] =
     curlConnector.callWebService(curlRequest).recoverWith { ex =>
-      logger.error("Webservice call failed: " + ex.getStackTrace.mkString(">>"))
+      logger.error("Webservice call failed: " + ex.getMessage, ex)
       Future.successful(HttpResponse(
         status = 419,
         body = s"Error occurred inside Scala: ${ex.getMessage}"

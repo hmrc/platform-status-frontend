@@ -37,7 +37,7 @@ class CurlConnector @Inject()(http: HttpClientV2)(using ec: ExecutionContext) ex
         case CurlRequest(requestType, url) if requestType == "POST" => http.post(url"$url").execute
     catch
       case ex: Exception =>
-        logger.error("Webservice call failed: " + ex.getStackTrace.mkString(">>"))
+        logger.error("Webservice connector call failed: " + ex.getMessage, ex)
         Future.successful(HttpResponse(
           status = 419,
           body = s"Error occurred inside Scala: ${ex.getMessage}"
