@@ -41,9 +41,10 @@ class AccessDeniedControllerITSpec
     "bootstrap.filters.allowlist.ips"     -> allowedIpAddresses
   )
 
-  override implicit lazy val app: Application = new GuiceApplicationBuilder()
-    .configure(config)
-    .build()
+  override implicit lazy val app: Application =
+    GuiceApplicationBuilder()
+      .configure(config)
+      .build()
 
 
   "With the Allowlist filter enabled" when:
@@ -52,7 +53,7 @@ class AccessDeniedControllerITSpec
         lazy val result: WSResponse =
           await(wsClient.url(serviceUrl).withFollowRedirects(true)
             .withHttpHeaders(Seq(trueClientIpHeader -> "192.168.2.1"): _*).get())
-        
+
         result.status shouldBe FORBIDDEN
 
     s"a request is made with an ip in the $trueClientIpHeader which is on the allowlist it" should:

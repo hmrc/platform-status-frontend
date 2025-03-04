@@ -17,9 +17,8 @@
 package uk.gov.hmrc.platformstatusfrontend.controllers
 
 import javax.inject.{Inject, Singleton}
-import play.api.data.Forms._
-import play.api.data._
-import play.api.mvc._
+import play.api.data.{Form, Forms}
+import play.api.mvc.*
 import uk.gov.hmrc.platformstatusfrontend.services.MemoryHog
 import uk.gov.hmrc.platformstatusfrontend.views.html.Kill
 
@@ -38,27 +37,33 @@ class KillController @Inject()(
   killView : Kill
 ) extends FrontendController(mcc):
 
-  val leakForm: Form[LeakRequest] = Form(
-    mapping(
-      "mb"    -> number,
-      "sleep" -> number
-    )(LeakRequest.apply)(o => Some(Tuple.fromProductTyped(o)))
-  )
+  val leakForm: Form[LeakRequest] =
+    Form(
+      Forms.mapping(
+        "mb"    -> Forms.number,
+        "sleep" -> Forms.number
+      )(LeakRequest.apply)(o => Some(Tuple.fromProductTyped(o)))
+    )
 
-  def kill: Action[AnyContent] = Action.async:
-    implicit request =>
-      Future.successful( Ok( killView( leakForm.fill(LeakRequest()) ) ) )
+  def kill: Action[AnyContent] =
+    Action.async: request =>
+      given MessagesRequestHeader = request
+      Future.successful(Ok(killView(leakForm.fill(LeakRequest()))))
 
-  def meteOutDeath: Action[AnyContent] = Action:
-    System.exit(0)
-    Redirect(routes.KillController.kill).flashing("success" -> "If you see this then the container did not die.")
+  def meteOutDeath: Action[AnyContent] =
+    Action:
+      System.exit(0)
+      Redirect(routes.KillController.kill)
+        .flashing("success" -> "If you see this then the container did not die.")
 
-  def leakMemory: Action[AnyContent] = Action:
-    implicit request =>
+  def leakMemory: Action[AnyContent] =
+    Action: request =>
+      given MessagesRequest[AnyContent] = request
       leakForm.bindFromRequest()
         .fold(
           formWithErrors => BadRequest(killView(formWithErrors)),
           killRequest =>
             memoryHog.eatMemory(killRequest.mb, killRequest.sleep)
-            Redirect(routes.KillController.kill).flashing("success" -> "If you see this then the container did not die.")
+            Redirect(routes.KillController.kill)
+              .flashing("success" -> "If you see this then the container did not die.")
         )

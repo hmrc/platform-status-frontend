@@ -22,7 +22,12 @@
   appConfig: AppConfig
 )
 
-@(statusList: List[PlatformStatus])(implicit request: Request[_], messages: Messages)
+@(
+  statusList: List[PlatformStatus]
+)(implicit
+  request : RequestHeader
+, messages: Messages
+)
 
 @layout(pageTitle = Some("Platform Status")) {
     <h1>Platform Status - what's up and what's not</h1>

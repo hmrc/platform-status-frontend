@@ -33,7 +33,7 @@ class AuditVolumeServiceSpec
      with BeforeAndAfterEach:
 
   val auditConnector: AuditConnector = mock[AuditConnector]
-  val fixture = new AuditVolumeService(auditConnector)
+  val fixture = AuditVolumeService(auditConnector)
   given HeaderCarrier = HeaderCarrier()
 
   override def beforeEach(): Unit =

@@ -19,7 +19,7 @@ package uk.gov.hmrc.platformstatusfrontend.controllers
 import play.api.data.Form
 import play.api.data.Forms.{mapping, number, text}
 import play.api.data.validation.Constraints.*
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, MessagesRequest, MessagesRequestHeader}
 import uk.gov.hmrc.platformstatusfrontend.models.ServiceVolumeRequest
 import uk.gov.hmrc.platformstatusfrontend.services.ServiceVolumeService
 import uk.gov.hmrc.platformstatusfrontend.views.html.ServiceVolume
@@ -43,17 +43,17 @@ class ServiceVolumeController @Inject()(
     )
 
   def setup: Action[AnyContent] =
-    Action:
-      implicit request =>
-        Ok(view(form.fill(ServiceVolumeRequest())))
+    Action: request =>
+      given MessagesRequestHeader = request
+      Ok(view(form.fill(ServiceVolumeRequest())))
 
   def run: Action[AnyContent] =
-    Action:
-      implicit request =>
-        form.bindFromRequest()
-          .fold(
-            formWithErrors => BadRequest(view(formWithErrors)),
-            form =>
-              service.sendServiceCalls(form.url, form.n)
-              Ok("Generated")
-          )
+    Action: request =>
+      given MessagesRequest[AnyContent] = request
+      form.bindFromRequest()
+        .fold(
+          formWithErrors => BadRequest(view(formWithErrors)),
+          form =>
+            service.sendServiceCalls(form.url, form.n)
+            Ok("Generated")
+        )

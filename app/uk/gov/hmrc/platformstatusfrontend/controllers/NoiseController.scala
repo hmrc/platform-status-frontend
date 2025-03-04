@@ -18,16 +18,15 @@ package uk.gov.hmrc.platformstatusfrontend.controllers
 
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
-import play.api.data._
-import play.api.data.Forms._
-import play.api.mvc._
+import play.api.data.{Form, Forms}
+import play.api.mvc.*
 import uk.gov.hmrc.platformstatusfrontend.views.html.Noise
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 case class NoiseRequest(
   level  : String = "INFO",
   message: String = "###platform-status-frontend###",
-  amount : Int = 1
+  amount : Int    = 1
 )
 
 
@@ -41,33 +40,33 @@ class NoiseController @Inject()(
 
   val noiseForm: Form[NoiseRequest] =
     Form(
-      mapping(
-        "level"   -> text,
-        "message" -> text,
-        "amount"  -> number
+      Forms.mapping(
+        "level"   -> Forms.text,
+        "message" -> Forms.text,
+        "amount"  -> Forms.number
       )(NoiseRequest.apply)(o => Some(Tuple.fromProductTyped(o)))
     )
 
   def noise: Action[AnyContent] =
-    Action:
-      implicit request =>
-        Ok(noiseView(noiseForm.fill(NoiseRequest())))
+    Action: request =>
+      given MessagesRequestHeader = request
+      Ok(noiseView(noiseForm.fill(NoiseRequest())))
 
   def createNoise: Action[AnyContent] =
-    Action:
-      implicit request =>
-        noiseForm.bindFromRequest()
-          .fold(
-            formWithErrors => BadRequest(noiseView(formWithErrors)),
-            noiseRequest   =>
-              makeSomeNoise(noiseRequest)
-              Redirect(routes.NoiseController.noise).flashing("success" -> "Log messages written.")
-          )
+    Action: request =>
+      given MessagesRequest[AnyContent] = request
+      noiseForm.bindFromRequest()
+        .fold(
+          formWithErrors => BadRequest(noiseView(formWithErrors)),
+          noiseRequest   =>
+            makeSomeNoise(noiseRequest)
+            Redirect(routes.NoiseController.noise).flashing("success" -> "Log messages written.")
+        )
 
   private def makeSomeNoise(request: NoiseRequest): Unit =
     for i <- 1 to request.amount do
       request.level match
-        case "ERROR" => logger.error(s"$i: " + request.message, new RuntimeException(request.message))
+        case "ERROR" => logger.error(s"$i: " + request.message, RuntimeException(request.message))
         case "WARN"  => logger.warn(s"$i: " + request.message)
         case "INFO"  => logger.info(s"$i: " + request.message)
         case _       => logger.warn("Unrecognized log level")

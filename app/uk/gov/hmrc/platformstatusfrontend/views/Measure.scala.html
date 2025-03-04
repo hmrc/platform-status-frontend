@@ -24,7 +24,7 @@
 @(
   measureForm: Form[MeasureRequest]
 )(implicit
-  request : Request[_],
+  request : RequestHeader,
   messages: Messages,
   flash   : Flash
 )

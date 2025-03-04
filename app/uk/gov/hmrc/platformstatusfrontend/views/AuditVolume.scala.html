@@ -24,9 +24,9 @@
 @(
   auditVolumeForm: Form[AuditVolumeRequest]
 )(implicit
-  request: Request[_],
+  request : RequestHeader,
   messages: Messages,
-  flash: Flash
+  flash   : Flash
 )
 
 @layout(pageTitle = Some("Hello from platform-status-frontend")) {

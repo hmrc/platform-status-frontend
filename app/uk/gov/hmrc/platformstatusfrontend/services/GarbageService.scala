@@ -25,7 +25,7 @@ import uk.gov.hmrc.platformstatusfrontend.models.GcInformation
 import java.lang.management.GarbageCollectorMXBean
 import javax.inject.Singleton
 import scala.concurrent.{ExecutionContext, Future}
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 @Singleton
 class GarbageService @Inject()(backendConnector: BackendConnector)(using ec: ExecutionContext):

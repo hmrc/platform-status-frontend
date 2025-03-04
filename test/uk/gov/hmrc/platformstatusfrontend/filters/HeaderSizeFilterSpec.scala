@@ -38,7 +38,7 @@ class HeaderSizeFilterSpec
 
   private implicit lazy val materializer: Materializer = app.materializer
 
-  val filter = new HeaderSizeFilter()
+  val filter = HeaderSizeFilter()
   val act: DefaultActionBuilder = app.injector.instanceOf[DefaultActionBuilder]
   val action: Action[AnyContent] = act:
     request =>
@@ -70,12 +70,12 @@ class HeaderSizeFilterSpec
       forAll(headersGen):
         rawHeaders =>
           val headers = Headers(rawHeaders : _*)
-  
+
           val request = FakeRequest(POST, "/").withHeaders(headers)
           val result = filter(action)(request).run()
 
           val expectedSize =
             MeasureUtil.byteSize(rawHeaders.map { case (k, v) => s"$k: $v" }.mkString("\r\n"))
-  
+
           status(result) shouldBe OK
           header(MeasureUtil.X_HEADER_LENGTH, result) shouldBe Some(expectedSize.toString)

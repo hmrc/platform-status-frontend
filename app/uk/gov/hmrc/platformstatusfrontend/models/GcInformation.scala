@@ -31,7 +31,7 @@ object GcInformation:
     coreCount: Int,
     beans    : Iterable[GarbageCollectorMXBean]
   ): GcInformation =
-    new GcInformation(coreCount, beans.map(GcBeanInfo(_)).toSeq)
+    GcInformation(coreCount, beans.map(GcBeanInfo(_)).toSeq)
 
   given OFormat[GcInformation] = Json.format[GcInformation]
 
@@ -43,7 +43,7 @@ case class GcBeanInfo(
 
 object GcBeanInfo:
   def apply(bean: GarbageCollectorMXBean): GcBeanInfo =
-    new GcBeanInfo(bean.getName, bean.getCollectionCount, bean.getCollectionTime)
+    GcBeanInfo(bean.getName, bean.getCollectionCount, bean.getCollectionTime)
 
   given OFormat[GcBeanInfo] = Json.format[GcBeanInfo]
 

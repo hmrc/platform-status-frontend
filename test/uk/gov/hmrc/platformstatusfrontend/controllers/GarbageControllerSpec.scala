@@ -48,10 +48,7 @@ class GarbageControllerSpec
   private val fakeRequest = FakeRequest("GET", "/")
 
   override def fakeApplication(): Application =
-    new GuiceApplicationBuilder()
-      .configure(
-        "metrics.jvm" -> false
-      )
+    GuiceApplicationBuilder()
       .build()
 
   private trait Setup:
@@ -64,8 +61,8 @@ class GarbageControllerSpec
 
     private val garbageView = app.injector.instanceOf[GarbageView]
 
-    val controller = new GarbageController(stubMessagesControllerComponents(), garbageService, garbageView)
-  
+    val controller = GarbageController(stubMessagesControllerComponents(), garbageService, garbageView)
+
   "GET /" should:
     "return 200" in new Setup():
       val result = controller.garbage(fakeRequest)

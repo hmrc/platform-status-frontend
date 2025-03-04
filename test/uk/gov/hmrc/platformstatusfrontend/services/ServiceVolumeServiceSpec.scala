@@ -31,8 +31,8 @@ class ServiceVolumeServiceSpec
      with BeforeAndAfterEach:
 
   val connector: GenericConnector     = mock[GenericConnector]
-  val fixture  : ServiceVolumeService = new ServiceVolumeService(connector)
-  
+  val fixture  : ServiceVolumeService = ServiceVolumeService(connector)
+
   given HeaderCarrier = HeaderCarrier()
 
   override def beforeEach(): Unit =

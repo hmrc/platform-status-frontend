@@ -37,7 +37,7 @@ class GarbageServiceSpec
   given HeaderCarrier = HeaderCarrier()
 
   val backendConnectorMock: BackendConnector = mock[BackendConnector]
-  val garbageService      : GarbageService   = new GarbageService(backendConnectorMock)
+  val garbageService      : GarbageService   = GarbageService(backendConnectorMock)
 
   override def beforeEach(): Unit =
     reset(backendConnectorMock)
@@ -48,13 +48,13 @@ class GarbageServiceSpec
         .thenReturn(Future.successful(GcInformation(1, Seq[GcBeanInfo]())))
       val result = garbageService.getBackendGcInfo()
       result map { info => info.coreCount shouldBe 1 }
-    
+
     "return core count -1 when backend call fails" in:
       when(backendConnectorMock.gcInformation()(using any))
-        .thenReturn(Future.failed(new Exception("")))
+        .thenReturn(Future.failed(Exception("")))
       val result = garbageService.getBackendGcInfo()
       result map { info => info.coreCount shouldBe -1 }
-    
+
 
   "getFrontendGcInfo" should:
     "Return a coreCount > 0" in:
