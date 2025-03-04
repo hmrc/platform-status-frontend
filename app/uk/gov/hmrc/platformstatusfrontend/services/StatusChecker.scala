@@ -17,20 +17,19 @@
 package uk.gov.hmrc.platformstatusfrontend.services
 
 import com.google.inject.Inject
-import org.mongodb.scala._
-import org.mongodb.scala.model.Filters._
-import org.mongodb.scala.model.ReplaceOptions
+import org.mongodb.scala.*
+import org.mongodb.scala.model.{Filters, ReplaceOptions}
 import play.api.Logging
 import play.api.libs.concurrent.Futures
-import play.api.libs.concurrent.Futures._
+import play.api.libs.concurrent.Futures.FutureOps
 import play.api.libs.ws.WSResponse
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.connectors.{BackendConnector, InternetConnector}
-import uk.gov.hmrc.platformstatusfrontend.services.PlatformStatus._
+import uk.gov.hmrc.platformstatusfrontend.services.PlatformStatus.*
 
 import javax.inject.Singleton
-import scala.concurrent.duration._
+import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -73,7 +72,7 @@ class StatusChecker @Inject()(
 
     for
       _      <- collection
-                  .replaceOne(equal(fieldName = "_id", value = 0), doc, ReplaceOptions().upsert(true))
+                  .replaceOne(Filters.equal(fieldName = "_id", value = 0), doc, ReplaceOptions().upsert(true))
                   .toFuture()
       result =  baseIteration2Status
       // TODO - handle error states better
@@ -102,7 +101,7 @@ class StatusChecker @Inject()(
         wsResult match
           case r: WSResponse if r.status < 300 => baseIteration4Status
           case e: PlatformStatus => e
-          case _ => throw new IllegalStateException("That shouldn't happen")
+          case _ => throw IllegalStateException("That shouldn't happen")
     else
       Future.successful(baseIteration4Status.copy(enabled = false))
 

@@ -25,7 +25,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 
-import scala.concurrent.duration.*
+import scala.concurrent.duration.DurationInt
 
 
 class SlowStartModuleSpec
@@ -44,4 +44,4 @@ class SlowStartModuleSpec
 
       intercept[TestFailedDueToTimeoutException]:
         failAfter(testTimeoutDuration):
-          new DefaultSlowStarter(appConfig)
+          DefaultSlowStarter(appConfig)

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.platformstatusfrontend.filters
 
-import play.api.mvc._
+import play.api.mvc.*
 import uk.gov.hmrc.platformstatusfrontend.util.MeasureUtil.{X_HEADER_LENGTH, byteSize}
 
 import javax.inject.Inject
@@ -30,13 +30,13 @@ class HeaderSizeFilter @Inject() extends EssentialFilter:
   override def apply(nextFilter: EssentialAction): EssentialAction =
     requestHeader =>
       val allHeaders = requestHeader.headers.headers
-  
+
       // Reconstructing the headers as they would be in the HTTP spec for the purpose of calculating the byte size
       // N.B. Would be nice to just access the raw request bytes and measure the size up to the first blank line (after headers),
       // but doesn't look possible to access the raw request bytes (not just the raw *body* bytes).
       val headers = allHeaders.map{ case (k,v) => s"$k: $v"}.mkString("\r\n")
-  
+
       // Add a custom header to the request just for convenience that we can pull out later
       val headerLength = X_HEADER_LENGTH -> byteSize(headers).toString
-  
+
       nextFilter(requestHeader.withHeaders(requestHeader.headers.add(headerLength)))

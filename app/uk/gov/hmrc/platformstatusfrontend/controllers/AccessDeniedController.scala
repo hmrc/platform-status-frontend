@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.platformstatusfrontend.controllers
 
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, MessagesRequestHeader}
 import uk.gov.hmrc.platformstatusfrontend.views.html.ErrorTemplate
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -31,6 +31,7 @@ class AccessDeniedController @Inject() (
   private val heading = "You do not have permission to access this service"
   private val message = "Contact Platops if you think you do have permission"
 
-  def deny: Action[AnyContent] = Action.async:
-    implicit request =>
+  def deny: Action[AnyContent] =
+    Action.async: request =>
+      given MessagesRequestHeader = request
       Future.successful(Forbidden(view(heading,heading,message)))

@@ -18,7 +18,7 @@ package uk.gov.hmrc.platformstatusfrontend.controllers
 
 import play.api.data.Form
 import play.api.data.Forms.{mapping, number, text}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, MessagesRequest, MessagesRequestHeader}
 import uk.gov.hmrc.platformstatusfrontend.models.AuditVolumeRequest
 import uk.gov.hmrc.platformstatusfrontend.services.AuditVolumeService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -42,17 +42,17 @@ class AuditVolumeController @Inject()(
     )
 
   def setup: Action[AnyContent] =
-    Action:
-      implicit request =>
-        Ok(view(form.fill(AuditVolumeRequest())))
+    Action: request =>
+      given MessagesRequestHeader = request
+      Ok(view(form.fill(AuditVolumeRequest())))
 
   def run: Action[AnyContent] =
-    Action:
-      implicit request =>
-        form.bindFromRequest()
-          .fold(
-            formWithErrors => BadRequest(view(formWithErrors)),
-            form =>
-              service.sendAuditMessages(form.auditType, form.n)
-              Ok("Generated")
-          )
+    Action: request =>
+      given MessagesRequest[AnyContent] = request
+      form.bindFromRequest()
+        .fold(
+          formWithErrors => BadRequest(view(formWithErrors)),
+          form =>
+            service.sendAuditMessages(form.auditType, form.n)
+            Ok("Generated")
+        )

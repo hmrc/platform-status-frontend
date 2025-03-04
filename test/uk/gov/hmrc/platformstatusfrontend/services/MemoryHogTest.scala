@@ -23,9 +23,8 @@ class MemoryHogTest extends AnyWordSpec with Matchers:
 
   "MemoryHog" should:
     "eat memory" in:
-      try {
-        val memHog = new MemoryHog()
+      try
+        val memHog = MemoryHog()
         memHog.eatMemory(50, 25)
-      } catch {
+      catch
         case _: OutOfMemoryError =>
-      }

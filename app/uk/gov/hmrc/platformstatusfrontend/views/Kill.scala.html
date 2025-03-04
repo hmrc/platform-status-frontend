@@ -24,7 +24,7 @@
 @(
   leakForm: Form[LeakRequest]
 )(implicit
-  request : Request[_],
+  request : RequestHeader,
   messages: Messages,
   flash   : Flash
 )

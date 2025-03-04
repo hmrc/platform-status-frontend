@@ -54,25 +54,25 @@ class StatusControllerSpec
       "description",
       Some("No reason")
     )
-    
+
     when(statusChecker.iteration1Status())
       .thenReturn(Future.successful(dummyStatus.copy(name = "it1")))
-    
+
     when(statusChecker.iteration2Status())
       .thenReturn(Future.successful(dummyStatus.copy(name = "it2")))
-    
+
     when(statusChecker.iteration3Status()(using any[HeaderCarrier]))
       .thenReturn(Future.successful(dummyStatus.copy(name = "it3")))
-    
+
     when(statusChecker.iteration4Status())
       .thenReturn(Future.successful(dummyStatus.copy(name = "it4")))
-    
+
     when(statusChecker.iteration5Status()(using any[HeaderCarrier]))
       .thenReturn(Future.successful(dummyStatus.copy(name = "it5")))
-    
-    val controller = new StatusController(stubMessagesControllerComponents(), statusChecker, statusView)
 
-  
+    val controller = StatusController(stubMessagesControllerComponents(), statusChecker, statusView)
+
+
   "GET /" should:
     "return 200" in new Setup():
       private val result = controller.platformStatus(fakeRequest)

@@ -24,7 +24,7 @@
 @(
   noiseForm: Form[NoiseRequest]
 )(implicit
-  request : Request[_],
+  request : RequestHeader,
   messages: Messages,
   flash   : Flash
 )

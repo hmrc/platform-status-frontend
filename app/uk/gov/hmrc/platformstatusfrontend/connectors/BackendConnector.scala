@@ -34,7 +34,7 @@ class BackendConnector @Inject()(
 )(using
   ec: ExecutionContext
 ):
-  import HttpReads.Implicits._
+  import HttpReads.Implicits.*
   import DefaultBodyWritables.writeableOf_String
 
   private val backendBaseUrl: String =

@@ -32,7 +32,7 @@ import uk.gov.hmrc.platformstatusfrontend.services.PlatformStatus.*
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.concurrent.duration.*
+import scala.concurrent.duration.DurationInt
 
 class StatusCheckerSpec
   extends AnyWordSpec
@@ -44,12 +44,12 @@ class StatusCheckerSpec
 
   private trait Setup:
     given HeaderCarrier = HeaderCarrier()
-    given Futures       = new DefaultFutures(ActorSystem.create())
-    
+    given Futures       = DefaultFutures(ActorSystem.create())
+
     val backendConnectorMock: BackendConnector  = mock[BackendConnector]
     val internetConnector   : InternetConnector = mock[InternetConnector]
     val appConfig           : AppConfig         = mock[AppConfig]
-    val statusChecker       : StatusChecker     = new StatusChecker(backendConnectorMock, internetConnector, appConfig)
+    val statusChecker       : StatusChecker     = StatusChecker(backendConnectorMock, internetConnector, appConfig)
 
 
   "iteration 2 status checker" should:
@@ -69,7 +69,7 @@ class StatusCheckerSpec
           r shouldBe baseIteration2Status.copy(isWorking = false, reason = Some("Timeout after 2 seconds"))
           r.isWorking shouldBe false
 
-  
+
   "iteration 3 status check" should:
     "be happy when backend responds with a good result" in new Setup():
       when(backendConnectorMock.iteration3Status()).thenReturn(Future.successful(baseIteration3Status))
@@ -83,12 +83,12 @@ class StatusCheckerSpec
       whenReady(statusChecker.iteration3Status(), timeout(testTimeoutDuration)):
         result => result shouldBe baseIteration3Status.copy(isWorking = false, reason = Some("Borked"))
 
-  
+
   "iteration 4 outbound call via squid" should:
     "be happy when a response is received" in new Setup():
       val fakeResponse: WSResponse = mock[WSResponse]
       when(appConfig.proxyRequired).thenReturn(false)
-      when(appConfig.proxyTimeout).thenReturn(Duration(2, SECONDS))
+      when(appConfig.proxyTimeout).thenReturn(2.seconds)
       when(appConfig.iteration4Enabled).thenReturn(true)
       when(fakeResponse.status).thenReturn(200)
       when(internetConnector.callTheWeb(statusChecker.webTestEndpoint, false)).thenReturn(Future.successful(fakeResponse))
@@ -97,13 +97,13 @@ class StatusCheckerSpec
 
     "handle things when an error response is received" in new Setup():
       when(appConfig.proxyRequired).thenReturn(false)
-      when(appConfig.proxyTimeout).thenReturn(Duration(2, SECONDS))
+      when(appConfig.proxyTimeout).thenReturn(2.seconds)
       when(appConfig.iteration4Enabled).thenReturn(true)
-      when(internetConnector.callTheWeb(statusChecker.webTestEndpoint, false)).thenReturn(Future.failed(new Exception("Borked")))
+      when(internetConnector.callTheWeb(statusChecker.webTestEndpoint, false)).thenReturn(Future.failed(Exception("Borked")))
       whenReady(statusChecker.iteration4Status(), timeout(testTimeoutDuration)):
         result => result shouldBe baseIteration4Status.copy(isWorking = false, reason = Some("Borked"))
 
-  
+
   "iteration 5 status check" should:
     "be happy when backend responds with a good result" in new Setup():
       when(backendConnectorMock.iteration5Status()).thenReturn(Future.successful(baseIteration5Status))

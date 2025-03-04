@@ -32,6 +32,3 @@ GET         /service-volume                uk.gov.hmrc.platformstatusfrontend.co
 POST        /service-volume                uk.gov.hmrc.platformstatusfrontend.controllers.ServiceVolumeController.run
 
 GET         /denied                        uk.gov.hmrc.platformstatusfrontend.controllers.AccessDeniedController.deny
-
-GET         /curl                          uk.gov.hmrc.platformstatusfrontend.controllers.CurlController.curl
-POST        /curl-response                 uk.gov.hmrc.platformstatusfrontend.controllers.CurlController.curlCall

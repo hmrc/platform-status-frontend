@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.platformstatusfrontend.controllers
 
-import play.api.mvc._
+import play.api.mvc.*
 import uk.gov.hmrc.platformstatusfrontend.models.GcSummary
 import uk.gov.hmrc.platformstatusfrontend.services.GarbageService
 import uk.gov.hmrc.platformstatusfrontend.views.html.Garbage
@@ -24,7 +24,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 import play.api.Logger
 
 
@@ -40,14 +40,15 @@ class GarbageController @Inject()(
   private val logger = Logger(this.getClass)
 
   def garbage: Action[AnyContent] =
-    Action.async:
-      implicit request =>
-        val properties = System.getProperties.asScala
-        for (k,v) <- properties do logger.debug(s"key: $k, value: $v")
-  
-        val gcSummaryFuture = for
+    Action.async: request =>
+      given MessagesRequestHeader = request
+      val properties = System.getProperties.asScala
+      for (k,v) <- properties do logger.debug(s"key: $k, value: $v")
+
+      val gcSummaryFuture =
+        for
           backend  <- garbageService.getBackendGcInfo()
           frontend <- garbageService.getFrontendGcInfo()
         yield GcSummary(frontend, backend)
-  
-        gcSummaryFuture.map(gcSummary => Ok(garbageView(gcSummary)))
+
+      gcSummaryFuture.map(gcSummary => Ok(garbageView(gcSummary)))
