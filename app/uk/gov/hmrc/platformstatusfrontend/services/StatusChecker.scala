@@ -26,7 +26,6 @@ import play.api.libs.ws.WSResponse
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.connectors.{BackendConnector, InternetConnector}
-import uk.gov.hmrc.platformstatusfrontend.services.PlatformStatus.*
 
 import javax.inject.Singleton
 import scala.concurrent.duration.DurationInt
@@ -42,7 +41,7 @@ class StatusChecker @Inject()(
   futures: Futures
 ) extends Logging:
 
-  val webTestEndpoint = "https://www.gov.uk/bank-holidays.json"
+  import StatusChecker.*
 
   def iteration1Status(): Future[PlatformStatus] =
     if appConfig.iteration1Enabled then
@@ -87,6 +86,8 @@ class StatusChecker @Inject()(
     else
       Future.successful(baseIteration3Status.copy(enabled = false))
 
+  val webTestEndpoint = "https://www.gov.uk/bank-holidays.json"
+
   def iteration4Status(): Future[PlatformStatus] =
     if appConfig.iteration4Enabled then
       for
@@ -114,5 +115,57 @@ class StatusChecker @Inject()(
             genericError(baseIteration5Status, ex)
     else Future.successful(baseIteration5Status.copy(enabled = false))
 
+  def iteration6Status()(using hc: HeaderCarrier): Future[PlatformStatus] =
+    if appConfig.iteration6Enabled then
+      backendConnector.iteration6Status().recoverWith:
+        case ex: Exception =>
+          logger.warn("iteration6Status call to consul backend service failed.")
+          genericError(baseIteration6Status, ex)
+    else
+      Future.successful(baseIteration6Status.copy(enabled = false))
+
   private def genericError(status: PlatformStatus, ex: Exception): Future[PlatformStatus] =
     Future.successful(status.copy(isWorking = false, reason = Some(ex.getMessage)))
+
+object StatusChecker:
+  import play.api.libs.json.{Json, OFormat}
+
+  case class PlatformStatus(
+    name       : String,
+    description: String,
+    reason     : Option[String] = None,
+    enabled    : Boolean = true, // updated by serviceChecker above
+    isWorking  : Boolean = true, // updated by serviceChecker above
+  )
+
+  given OFormat[PlatformStatus] = Json.format[PlatformStatus]
+
+  val baseIteration1Status: PlatformStatus = PlatformStatus(
+    name        = "iteration 1",
+    description = "Service up and running in the public zone."
+  )
+
+  val baseIteration2Status: PlatformStatus = PlatformStatus(
+    name        = "iteration 2",
+    description = "Read and write to Mongo in public zone"
+  )
+
+  val baseIteration3Status: PlatformStatus = PlatformStatus(
+    name        = "iteration 3",
+    description = "Call through to service in protected zone that can read/write to protected Mongo"
+  )
+
+  val baseIteration4Status: PlatformStatus = PlatformStatus(
+    name        = "iteration 4",
+    description = "Call out to internet via squid from a service in the public zone"
+  )
+
+  val baseIteration5Status: PlatformStatus = PlatformStatus(
+    name        = "iteration 5",
+    description = "Call through to service in protected zone that can call a HOD via DES"
+  )
+
+  val baseIteration6Status: PlatformStatus = PlatformStatus(
+    name        = "iteration 6",
+    description = "Call through to Consul service in protected zone that can read/write to protected Mongo"
+  )

@@ -22,7 +22,7 @@ import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, StringContextOps}
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.platformstatusfrontend.models.GcInformation
-import uk.gov.hmrc.platformstatusfrontend.services.PlatformStatus
+import uk.gov.hmrc.platformstatusfrontend.services.StatusChecker.PlatformStatus
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -40,12 +40,19 @@ class BackendConnector @Inject()(
   private val backendBaseUrl: String =
     s"${servicesConfig.baseUrl("platform-status-backend")}/platform-status-backend"
 
+  private val consulBackendBaseUrl: String =
+    s"${servicesConfig.baseUrl("platform-status-consul-backend")}/platform-status-consul-backend"
+
   def iteration3Status()(using hc: HeaderCarrier): Future[PlatformStatus] =
     http.get(url"$backendBaseUrl/status/iteration3")
       .execute[PlatformStatus]
 
   def iteration5Status()(using hc: HeaderCarrier): Future[PlatformStatus] =
     http.get(url"$backendBaseUrl/status/iteration5")
+      .execute[PlatformStatus]
+
+  def iteration6Status()(using hc: HeaderCarrier): Future[PlatformStatus] =
+    http.get(url"$consulBackendBaseUrl/status/iteration6")
       .execute[PlatformStatus]
 
   def measure(content: String, headers: Seq[(String, String)] = Seq.empty)(using hc: HeaderCarrier): Future[String] =

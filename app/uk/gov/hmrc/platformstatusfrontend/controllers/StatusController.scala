@@ -47,13 +47,15 @@ class StatusController @Inject()(
         statusChecker.iteration2Status(),
         statusChecker.iteration3Status(),
         statusChecker.iteration4Status(),
-        statusChecker.iteration5Status()
-      ).mapN((iter1, iter2, iter3, iter4, iter5) =>
+        statusChecker.iteration5Status(),
+        statusChecker.iteration6Status()
+      ).mapN((iter1, iter2, iter3, iter4, iter5, iter6) =>
         Ok(statusView(List(
           iter1,
           iter2,
           iter3,
           iter4,
-          iter5
+          iter5,
+          iter6
         )))
       )
