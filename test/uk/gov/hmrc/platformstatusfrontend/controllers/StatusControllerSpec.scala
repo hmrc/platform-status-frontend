@@ -27,7 +27,7 @@ import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.platformstatusfrontend.services.{PlatformStatus, StatusChecker}
+import uk.gov.hmrc.platformstatusfrontend.services.StatusChecker
 import uk.gov.hmrc.platformstatusfrontend.views.html.Status as StatusView
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 
@@ -47,10 +47,8 @@ class StatusControllerSpec
 
     private val statusChecker = mock[StatusChecker]
     private val statusView: StatusView = app.injector.instanceOf[StatusView]
-    private val dummyStatus = PlatformStatus(
-      enabled = true,
+    private val dummyStatus = StatusChecker.PlatformStatus(
       "name",
-      isWorking = true,
       "description",
       Some("No reason")
     )
@@ -70,8 +68,10 @@ class StatusControllerSpec
     when(statusChecker.iteration5Status()(using any[HeaderCarrier]))
       .thenReturn(Future.successful(dummyStatus.copy(name = "it5")))
 
-    val controller = StatusController(stubMessagesControllerComponents(), statusChecker, statusView)
+    when(statusChecker.iteration6Status()(using any[HeaderCarrier]))
+      .thenReturn(Future.successful(dummyStatus.copy(name = "it6")))
 
+    val controller = StatusController(stubMessagesControllerComponents(), statusChecker, statusView)
 
   "GET /" should:
     "return 200" in new Setup():

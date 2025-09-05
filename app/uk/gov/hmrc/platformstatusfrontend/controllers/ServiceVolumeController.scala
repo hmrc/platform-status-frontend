@@ -37,7 +37,7 @@ class ServiceVolumeController @Inject()(
   val form: Form[ServiceVolumeRequest] =
     Form(
       mapping(
-        "url" -> text.verifying(pattern("https?://[^%#@?]+".r)),
+        "url" -> text.verifying(pattern("""https?://[^%#@?]+""".r, name="url.pattern")),
         "n"   -> number
       )(ServiceVolumeRequest.apply)(o => Some(Tuple.fromProductTyped(o)))
     )

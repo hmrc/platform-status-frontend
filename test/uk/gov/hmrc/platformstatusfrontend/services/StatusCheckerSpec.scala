@@ -28,7 +28,7 @@ import play.api.libs.ws.WSResponse
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.platformstatusfrontend.config.AppConfig
 import uk.gov.hmrc.platformstatusfrontend.connectors.{BackendConnector, InternetConnector}
-import uk.gov.hmrc.platformstatusfrontend.services.PlatformStatus.*
+import uk.gov.hmrc.platformstatusfrontend.services.StatusChecker.*
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
