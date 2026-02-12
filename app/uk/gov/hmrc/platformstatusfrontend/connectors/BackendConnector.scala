@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.platformstatusfrontend.connectors
 
+import play.api.Logging
 import play.api.libs.ws.DefaultBodyWritables
 
 import javax.inject.{Inject, Singleton}
@@ -33,7 +34,8 @@ class BackendConnector @Inject()(
   servicesConfig: ServicesConfig
 )(using
   ec: ExecutionContext
-):
+)
+  extends Logging:
   import HttpReads.Implicits.*
   import DefaultBodyWritables.writeableOf_String
 
@@ -42,6 +44,8 @@ class BackendConnector @Inject()(
 
   private val consulBackendBaseUrl: String =
     s"${servicesConfig.baseUrl("platform-status-consul-backend")}/platform-status-consul-backend"
+
+  logger.info(s"Calls to platform-status-backend will use $backendBaseUrl")
 
   def iteration3Status()(using hc: HeaderCarrier): Future[PlatformStatus] =
     http.get(url"$backendBaseUrl/status/iteration3")
