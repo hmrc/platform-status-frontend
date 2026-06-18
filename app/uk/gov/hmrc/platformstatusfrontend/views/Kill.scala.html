@@ -44,7 +44,7 @@
         If you kill the final instance then you will see a 4xx/5xx
     </p>
 
-    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.KillController.meteOutDeath){
+    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.AuthenticatedPlatformStatusController.meteOutDeath){
         @CSRF.formField
         <input type="submit" value="Kill the Java process">
     }
@@ -58,12 +58,12 @@
         You can alter how quickly the service will run out of memory by playing with these 2 values, taking into account how much free memory it currently has.
     </p>
 
-    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.KillController.leakMemory){
+    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.AuthenticatedPlatformStatusController.leakMemory){
         @CSRF.formField
         @helper.inputText(leakForm("mb"), Symbol("_label") -> "Megabytes to eat in each iteration.")
         @helper.inputText(leakForm("sleep"), Symbol("_label") -> "Milliseconds to sleep between each iteration.")
         <input type="submit" value="Leak memory">
     }
     <hr/>
-    <p><a href="@uk.gov.hmrc.platformstatusfrontend.controllers.routes.StatusController.platformStatus">frontpage</a></p>
+    <p><a href="@uk.gov.hmrc.platformstatusfrontend.controllers.routes.AuthenticatedPlatformStatusController.platformStatus">frontpage</a></p>
 }

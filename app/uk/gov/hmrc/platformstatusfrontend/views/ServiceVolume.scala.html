@@ -31,12 +31,12 @@
 @layout(pageTitle = Some("Generate service traffic")) {
     <h1>@flash.get("success").getOrElse("Generate service traffic")</h1>
 
-    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.ServiceVolumeController.run){
+    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.AuthenticatedPlatformStatusController.serviceVolumeRun){
         @helper.CSRF.formField
         @helper.inputText(form("url"), Symbol("_label") -> "Service name")
         @helper.inputText(form("n")  , Symbol("_label") -> "Number of calls")
 
         <input type="submit" value="Submit">
     }
-    <p><a href="@uk.gov.hmrc.platformstatusfrontend.controllers.routes.StatusController.platformStatus">frontpage</a></p>
+    <p><a href="@uk.gov.hmrc.platformstatusfrontend.controllers.routes.AuthenticatedPlatformStatusController.platformStatus">frontpage</a></p>
 }

@@ -32,7 +32,7 @@
 @layout(pageTitle = Some("Generate specific response codes")) {
     <h1>@flash.get("success").getOrElse("Player 1, choose your response code...")</h1>
 
-    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.CodeController.respondWithCode){
+    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.AuthenticatedPlatformStatusController.respondWithCode){
         @CSRF.formField
         @helper.select(codeForm("code"), Seq(
             "200" -> "200 - OK",
@@ -69,5 +69,5 @@
 
         <input type="submit" value="Submit">
     }
-    <p><a href="@uk.gov.hmrc.platformstatusfrontend.controllers.routes.StatusController.platformStatus">frontpage</a></p>
+    <p><a href="@uk.gov.hmrc.platformstatusfrontend.controllers.routes.AuthenticatedPlatformStatusController.platformStatus">frontpage</a></p>
 }

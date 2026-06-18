@@ -37,7 +37,7 @@ class StatusController @Inject()(
 
   def defaultLanding: Action[AnyContent] =
     Action:
-      Redirect(routes.StatusController.platformStatus)
+      Redirect(routes.AuthenticatedPlatformStatusController.platformStatus)
 
   def platformStatus: Action[AnyContent] =
     Action.async: request =>
