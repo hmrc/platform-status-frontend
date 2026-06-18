@@ -33,7 +33,7 @@
     <h1>@flash.get("success").getOrElse("Generate some noise in ELK")</h1>
 
     <p>Note: Choosing 'error' level will also result in exception being thrown</p>
-    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.NoiseController.createNoise){
+    @helper.form(action = uk.gov.hmrc.platformstatusfrontend.controllers.routes.AuthenticatedPlatformStatusController.createNoise){
         @CSRF.formField
         @helper.select(noiseForm("level"), Seq("INFO" -> "INFO", "WARN" -> "WARN", "ERROR" -> "ERROR"))
         @helper.inputText(noiseForm("message"), args = Symbol("size") -> 60)
@@ -41,5 +41,5 @@
 
         <input type="submit" value="Submit">
     }
-    <p><a href="@uk.gov.hmrc.platformstatusfrontend.controllers.routes.StatusController.platformStatus">frontpage</a></p>
+    <p><a href="@uk.gov.hmrc.platformstatusfrontend.controllers.routes.AuthenticatedPlatformStatusController.platformStatus">frontpage</a></p>
 }

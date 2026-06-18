@@ -53,7 +53,7 @@ class KillController @Inject()(
   def meteOutDeath: Action[AnyContent] =
     Action:
       System.exit(0)
-      Redirect(routes.KillController.kill)
+      Redirect(routes.AuthenticatedPlatformStatusController.kill)
         .flashing("success" -> "If you see this then the container did not die.")
 
   def leakMemory: Action[AnyContent] =
@@ -64,6 +64,6 @@ class KillController @Inject()(
           formWithErrors => BadRequest(killView(formWithErrors)),
           killRequest =>
             memoryHog.eatMemory(killRequest.mb, killRequest.sleep)
-            Redirect(routes.KillController.kill)
+            Redirect(routes.AuthenticatedPlatformStatusController.kill)
               .flashing("success" -> "If you see this then the container did not die.")
         )

@@ -3,32 +3,32 @@
 ->          /hmrc-frontend                 hmrcfrontend.Routes
 
 GET         /assets/*file                  controllers.Assets.versioned(path = "/public", file: Asset)
-GET         /                              uk.gov.hmrc.platformstatusfrontend.controllers.StatusController.defaultLanding
-GET         /status                        uk.gov.hmrc.platformstatusfrontend.controllers.StatusController.platformStatus
-GET         /noise                         uk.gov.hmrc.platformstatusfrontend.controllers.NoiseController.noise
-POST        /noise                         uk.gov.hmrc.platformstatusfrontend.controllers.NoiseController.createNoise
+GET         /                              uk.gov.hmrc.platformstatusfrontend.controllers.AuthenticatedPlatformStatusController.defaultLanding
+GET         /status                        uk.gov.hmrc.platformstatusfrontend.controllers.AuthenticatedPlatformStatusController.platformStatus
+GET         /noise                         uk.gov.hmrc.platformstatusfrontend.controllers.AuthenticatedPlatformStatusController.noise
+POST        /noise                         uk.gov.hmrc.platformstatusfrontend.controllers.AuthenticatedPlatformStatusController.createNoise
 
-GET         /kill                          uk.gov.hmrc.platformstatusfrontend.controllers.KillController.kill
-POST        /kill                          uk.gov.hmrc.platformstatusfrontend.controllers.KillController.meteOutDeath
-POST        /leak                          uk.gov.hmrc.platformstatusfrontend.controllers.KillController.leakMemory
+GET         /kill                          uk.gov.hmrc.platformstatusfrontend.controllers.AuthenticatedPlatformStatusController.kill
+POST        /kill                          uk.gov.hmrc.platformstatusfrontend.controllers.AuthenticatedPlatformStatusController.meteOutDeath
+POST        /leak                          uk.gov.hmrc.platformstatusfrontend.controllers.AuthenticatedPlatformStatusController.leakMemory
 
-GET         /garbage                       uk.gov.hmrc.platformstatusfrontend.controllers.GarbageController.garbage
+GET         /garbage                       uk.gov.hmrc.platformstatusfrontend.controllers.AuthenticatedPlatformStatusController.garbage
 
-GET         /code                          uk.gov.hmrc.platformstatusfrontend.controllers.CodeController.code
-POST        /code                          uk.gov.hmrc.platformstatusfrontend.controllers.CodeController.respondWithCode
+GET         /code                          uk.gov.hmrc.platformstatusfrontend.controllers.AuthenticatedPlatformStatusController.code
+POST        /code                          uk.gov.hmrc.platformstatusfrontend.controllers.AuthenticatedPlatformStatusController.respondWithCode
 
-GET         /measure                       uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.measure
-GET         /measure-header                uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.measureHeader
-POST        /measure-body                  uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.measureBody
-GET         /measure-random-header         uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.randomResponseHeaderOfSize
-GET         /measure-random-body           uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.randomResponseBodyOfSize
-GET         /measure-header-backend        uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.headerOfSizeToBackend
-GET         /measure-body-backend          uk.gov.hmrc.platformstatusfrontend.controllers.MeasureController.bodyOfSizeToBackend
+GET         /measure                       uk.gov.hmrc.platformstatusfrontend.controllers.AuthenticatedPlatformStatusController.measure
+GET         /measure-header                uk.gov.hmrc.platformstatusfrontend.controllers.AuthenticatedPlatformStatusController.measureHeader
+POST        /measure-body                  uk.gov.hmrc.platformstatusfrontend.controllers.AuthenticatedPlatformStatusController.measureBody
+GET         /measure-random-header         uk.gov.hmrc.platformstatusfrontend.controllers.AuthenticatedPlatformStatusController.randomResponseHeaderOfSize
+GET         /measure-random-body           uk.gov.hmrc.platformstatusfrontend.controllers.AuthenticatedPlatformStatusController.randomResponseBodyOfSize
+GET         /measure-header-backend        uk.gov.hmrc.platformstatusfrontend.controllers.AuthenticatedPlatformStatusController.headerOfSizeToBackend
+GET         /measure-body-backend          uk.gov.hmrc.platformstatusfrontend.controllers.AuthenticatedPlatformStatusController.bodyOfSizeToBackend
 
-GET         /audit-volume                  uk.gov.hmrc.platformstatusfrontend.controllers.AuditVolumeController.setup
-POST        /audit-volume                  uk.gov.hmrc.platformstatusfrontend.controllers.AuditVolumeController.run
+GET         /audit-volume                  uk.gov.hmrc.platformstatusfrontend.controllers.AuthenticatedPlatformStatusController.auditVolumeSetup
+POST        /audit-volume                  uk.gov.hmrc.platformstatusfrontend.controllers.AuthenticatedPlatformStatusController.auditVolumeRun
 
-GET         /service-volume                uk.gov.hmrc.platformstatusfrontend.controllers.ServiceVolumeController.setup
-POST        /service-volume                uk.gov.hmrc.platformstatusfrontend.controllers.ServiceVolumeController.run
+GET         /service-volume                uk.gov.hmrc.platformstatusfrontend.controllers.AuthenticatedPlatformStatusController.serviceVolumeSetup
+POST        /service-volume                uk.gov.hmrc.platformstatusfrontend.controllers.AuthenticatedPlatformStatusController.serviceVolumeRun
 
 GET         /denied                        uk.gov.hmrc.platformstatusfrontend.controllers.AccessDeniedController.deny

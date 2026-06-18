@@ -33,7 +33,7 @@
     pageTitle = pageTitle,
     isWelshTranslationAvailable = false,
     serviceURLs = ServiceURLs(
-        serviceUrl = Some(uk.gov.hmrc.platformstatusfrontend.controllers.routes.StatusController.platformStatus.url)
+        serviceUrl = Some(uk.gov.hmrc.platformstatusfrontend.controllers.routes.AuthenticatedPlatformStatusController.platformStatus.url)
     ),
     templateOverrides = TemplateOverrides(
         mainContentLayout = Some(govukLayout(_))

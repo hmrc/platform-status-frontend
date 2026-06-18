@@ -16,29 +16,40 @@
 
 package uk.gov.hmrc.platformstatusfrontend.controllers
 
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
-import play.api.http.Status.{FORBIDDEN,OK}
+import play.api.http.Status.{FORBIDDEN, OK}
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.ws.{WSClient, WSResponse}
+import play.api.libs.ws.{DefaultWSCookie, WSCookie, WSClient, WSResponse}
+import play.api.mvc.{Session, SessionCookieBaker}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
+import uk.gov.hmrc.crypto.PlainText
+import uk.gov.hmrc.http.SessionKeys
+import uk.gov.hmrc.http.test.WireMockSupport
+import uk.gov.hmrc.play.bootstrap.frontend.filters.crypto.SessionCookieCrypto
 
 class AccessDeniedControllerITSpec
   extends AnyWordSpec
     with Matchers
-    with GuiceOneServerPerSuite:
+    with GuiceOneServerPerSuite
+    with WireMockSupport:
 
-  private val serviceUrl: String = s"http://localhost:$port/platform-status"
+  private val serviceUrl: String = s"http://localhost:$port/platform-status/noise"
   private val trueClientIpHeader = "True-Client-Ip"
   private lazy val allowedIpAddresses = Seq("10.0.0.1")
 
   private lazy val wsClient: WSClient = app.injector.instanceOf[WSClient]
+  private lazy val sessionCookieBaker: SessionCookieBaker = app.injector.instanceOf[SessionCookieBaker]
+  private lazy val sessionCookieCrypto: SessionCookieCrypto = app.injector.instanceOf[SessionCookieCrypto]
 
   private lazy val config: Map[String, Any] = Map(
-    "bootstrap.filters.allowlist.enabled" -> "true",
-    "bootstrap.filters.allowlist.ips"     -> allowedIpAddresses
+    "bootstrap.filters.allowlist.enabled"      -> "true",
+    "bootstrap.filters.allowlist.ips"          -> allowedIpAddresses,
+    "microservice.services.internal-auth.host" -> wireMockHost,
+    "microservice.services.internal-auth.port" -> wireMockPort
   )
 
   override implicit lazy val app: Application =
@@ -58,8 +69,23 @@ class AccessDeniedControllerITSpec
 
     s"a request is made with an ip in the $trueClientIpHeader which is on the allowlist it" should:
       "return a 200 OK" in:
+        stubFor(
+          post(urlEqualTo("/internal-auth/auth"))
+            .willReturn(okJson("""{"retrievals": []}"""))
+        )
+
         lazy val result: WSResponse =
           await(wsClient.url(serviceUrl).withFollowRedirects(true)
+            .withCookies(authCookie("Token token"))
             .withHttpHeaders(Seq(trueClientIpHeader -> allowedIpAddresses.mkString): _*).get())
 
         result.status shouldBe OK
+
+  private def authCookie(value: String): WSCookie =
+    val sessionCookie =
+      sessionCookieBaker
+        .encodeAsCookie(Session(Map(SessionKeys.authToken -> value)))
+    DefaultWSCookie(
+      sessionCookie.name,
+      sessionCookieCrypto.crypto.encrypt(PlainText(sessionCookie.value)).value
+    )

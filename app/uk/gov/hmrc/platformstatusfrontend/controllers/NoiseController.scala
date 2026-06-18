@@ -60,7 +60,7 @@ class NoiseController @Inject()(
           formWithErrors => BadRequest(noiseView(formWithErrors)),
           noiseRequest   =>
             makeSomeNoise(noiseRequest)
-            Redirect(routes.NoiseController.noise).flashing("success" -> "Log messages written.")
+            Redirect(routes.AuthenticatedPlatformStatusController.noise).flashing("success" -> "Log messages written.")
         )
 
   private def makeSomeNoise(request: NoiseRequest): Unit =
